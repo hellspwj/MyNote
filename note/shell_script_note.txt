@@ -1,6 +1,8 @@
 shell scripts的编写
 第一行#!/bin/bash宣告这个script使用的shell名称
 
+$IFS（Internal Field Separator）	单词分隔符,可以在脚本中设置此值,以防止某些文件名含空格的问题
+
 一般sh是bash的软链接,但是使用sh和bash会有区别,当bash执行时,发现$0是sh时,就会要求代码执行一定的规范,使之符合POSIX标准
 
 数字运算
@@ -120,6 +122,8 @@ function fname(){
 	方式1:value_name=`func_name arg1...`  ,将标准输出传递给value_name变量,而不是返回值
 	方式2:func_name arg1...;echo $?			接收返回值状态,也就是return返回的值
 	在函数里$1表示第一个参数,$2表示第2个参数...,$0表示脚本名称,取第10个参数需要用${10},而不是$10
+	
+$(命令)与`命令`的区别是$(命令)里反斜杠'\'可以被转义,而在`命令`中不可以
 
 循环
 while [ condition ]   当condition条件成立时,就进行循环

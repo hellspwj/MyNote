@@ -152,7 +152,7 @@ mount	参数  装置名称代号  挂载点
 -a	依照/etc/fstab的内容将所有相关的磁盘都挂上来
 -n	一般来说,当我们挂载档案系统到Linux上头时,Linux会主动将目前的partition与filesystem还有对应的挂载点,都记录到/etc/mtab档案中,不过有些时刻(例如不正常关机导致一些问题,而进入单人维护模式)系统
 -L	取表头名称,可以用来挂载
--t	指定挂载的系统类型(如ext3,ext2),例: mount -o nolock,rw,soft,timeo=30,retry=3 -t nfs 10.8.9.102:/home/hells/armDisk /home/panwenjian/remoteDisk  如果挂载不上,可以使用-o vers=3,表示指定使用nfs版本3
+-t	指定挂载的系统类型(如ext3,ext2),例: mount -o nolock,rw,soft,timeo=30,retry=3 -t nfs 10.12.4.12:/home/hells/armDisk /home/panwenjian/remoteDisk  如果挂载不上,可以使用-o vers=3,表示指定使用nfs版本3
 mount -t cifs -o username=panwenjian //10.16.137.15/daofengpk1 /home/hells/daofengpk1		挂载windows共享目录
 --bind	将某个目录挂到另一个目录下面
 -o	额外参数
@@ -765,7 +765,7 @@ printf '打印格式' 实际内容
 %ni
 %N.nf
 
-sed  -nefr  动作 (支持BRES,ERES -r)   在sed中引用shell变量sed '' 改为sed ""即可
+sed  -nefr  动作 (支持BRES,ERES -r)   在sed中引用shell变量sed '' 改为sed ""即可,不支持非懒惰匹配
 -i	直接在原文件上操作
 -n	使用安静模式,在一般sed的用法中,所有来自STDIN的数据一般都会被列出到屏幕上,但如果加上-n参数后,则只有经过sed特殊处理的那一行(或者动作)才会被列出来
 -e	直接在指令列模式上进行sed的动作编辑
@@ -785,11 +785,16 @@ sed  -nefr  动作 (支持BRES,ERES -r)   在sed中引用shell变量sed '' 改�
 sed ‘s/Tom/Lisy/2’ < Test.txt   仅匹配第二个Tom
 sed 's#10#100#g' example-----不论什么字符,紧跟着s命令的都被认为是新的分隔符,所以,“#”在这里是分隔符,代替了默认的“/”分隔符。表示把所有10替换成100。
 	sed指令中 &  表示前面搜索的字符串,可以在替换时使用
+sed中使用变量的方法
+1.eval sed ’s/$a/$b/’ filename
+2.sed "s/$a/$b/" filename
+3.sed ’s/’$a’/’$b’/’ filename 
+4.sed s/$a/$b/ filename
 
 args	将上一个命令的结果按照小块分段分别传入下一个命令
 
-awk	'条件类型1{动作1}  条件类型2{动作2}...'	filename	处理每一行的字段内的数据,预设的字段分隔符为"空格键"或“[tab]键”(支持ERES)
-	例last | awk '/pattern/{prin $1 "\t" $3}',$1代表第一列,$0代表一行
+awk	'条件类型1{动作1}  条件类型2{动作2}...'	filename	处理每一行的字段内的数据,预设的字段分隔符为"空格键"或“[tab]键”(支持ERES),awk中支持c语法
+	例last | awk '/pattern/{print $1 "\t" $3}',$1代表第一列,$0代表一行
 -F 指定分隔符,可以-F[],指定多个分隔符
 -v 定义变量,例vaa="${arr[*]}",arr为shell变量
 awk处理流程
@@ -1042,6 +1047,10 @@ cron
 		-2	代表由键盘输入ctrl+c同样的动作
 		-9	立刻强制删除一个工作
 		-15	以正常的程序方式终止一项工作
+		
+pidof	-sx		program_name
+	-s	仅列出一个PID而不列出所有的PID
+	-x	同时列出该program name可能的PPID那个程序的PID
 
 ps aux
 ps -lA
@@ -1390,11 +1399,6 @@ lsblk	列出所有可用块设备信息,还能显示他们之间的依赖关系,
 -o, --output 输出列。 -P, --pairs 使用key="value"格式显示
 -r, --raw 使用原始格式显示。 -t, --topology 显示拓扑结构信息
 
-
-pidof	-sx		program_name
-	-s	仅列出一个PID而不列出所有的PID
-	-x	同时列出该program name可能的PPID那个程序的PID
-
 run level:
 	0	-halt(系统直接关机)
 	1	-single user mode(单人维护模式,用在系统出问题时的维护)
@@ -1423,6 +1427,9 @@ iconv	编码转换
 -f, --from-code=名称 原始文本编码
 -t, --to-code=名称 输出编码
 -l, --list 列举所有已知的字符集
+
+xxd   文件名   		以十六进制显示一个文件
+	-p		以 postscript 的 连续 十六进制 转储 输出. 这 也叫做 纯 十六进制 转储
 
 输出控制：
 -c 从输出中忽略无效的字符
@@ -2218,4 +2225,109 @@ smbstatus		    查看samba服务运行状态及客户端人数,只有root才可�
 factor   正整数		分解因数
 shred    文件名		粉碎文件,粉碎后默认是覆盖
 	-u				粉碎后删除
+	
+ssh_pass			若要实现不输入密码登录ssh或telnet,可使用此工具
+
+nc/ncat				在两台电脑之间建立数据流,能建立一个服务器,传输文件,与朋友聊天,查看端口
+-4 使用IPV4
+-6 使用IPV6
+-c, --sh-exec <command> 接收到的命令通过command(例如/bin/bash)执行
+-e, --exec <command> 和-c差不多
+--lua-exec <filename> 接收到的数据通过脚本filename执行
+-m, --max-conns <n> 最大并发连接数(单独开启不生效，需配合--keep-open/--broker使用)
+-d, --delay <time> 读写收发间隔时间
+-o, --output <filename> 将会话数据转储到文件
+-i, --idle-timeout <time> 读写超时时间
+-p, --source-port port 指定连接使用的源端口号(client端使用)
+-s, --source addr 客户端指定连接服务器使用的ip(client端使用)
+-l, --listen 绑定和监听接入连接(server端使用)
+-k, --keep-open 在监听模式中接受多个连接(配合-m使用)
+-n, --nodns 不使用DNS解析主机名
+-t, --telnet 响应telnet连接
+-u, --udp 使用udp协议，默认tcp
+-v, --verbose 显示详细信息
+-w, --wait <time> 连接超时时间
+--allow 允许指定主机连接
+--allowfile 允许指定文件内的主机连接
+--deny 拒绝指定主机连接
+--denyfile 拒绝指定文件内的主机连接
+--broker 启用代理模式
+--proxy <addr[:port]> 指定代理主机ip和port
+--proxy-type <type> 指定代理类型("http" or "socks4")
+--proxy-auth <auth> 代理身份验证
+
+nmap			网络探测工具和安全/端口扫描器
+	-F			扫描100个最有可能开放的端口
+	-v			获取扫描的信息
+	-sT			采用的是tcp扫描,不写默认是tcp扫描
+	-sS			秘密的扫描,相比上面的-sT,-sT会完成三次握手,容易被防火墙和日志记录,而-sS会在扫描端返回ack后发送rst,但-sS需要root权限
+	-p			指定某个端口进行扫描
+	-D			使用诱饵隐蔽扫描,指定一个或多少ip与自己的真实ip同时访问目的主机
+	-S			源地址欺骗,在使用的时候要注意与-e进行使用，因为除了制定要伪装成为的对象IP外，还要指定返回的IP地址
+	-e 			使用指定的接口
+	-T			通过时间优化也提高通过防火墙和IDS的通过率
+	-f			将可疑的探测包进行分片处理（例如将TCP包拆分成多个IP包发送过去），某些简单的防火墙为了加快处理速度可能不会进行重组检查，以此避开其检查。
+	
+端口状态
+	Open	 端口开启，数据有到达主机，有程序在端口上监控
+	Closed	 端口关闭，数据有到达主机，没有程序在端口上监控
+	Filtered	 数据没有到达主机，返回的结果为空，数据被防火墙或者是IDS过滤
+	UnFiltered	 数据有到达主机，但是不能识别端口的当前状态
+	Open|Filtered	 端口没有返回值，主要发生在UDP、IP、FIN、NULL和Xmas扫描中
+	Closed|Filtered  只发生在IP ID idle扫描
+	
+perf		从2.6.31内核开始，linux内核自带了一个性能分析工具perf，能够进行函数级与指令级的热点查找
+			Perf是内置于Linux内核源码树中的性能剖析(profiling)工具。
+			它基于事件采样原理，以性能事件为基础，支持针对处理器相关性能指标与操作系统相关性能指标的性能剖析。
+			常用于性能瓶颈的查找与热点代码的定位
+CPU周期(cpu-cycles)是默认的性能事件，所谓的CPU周期是指CPU所能识别的最小时间单元，通常为亿分之几秒,是CPU执行最简单的指令时所需要的时间，例如读取寄存器中的内容，也叫做clock tick。
+Perf是一个包含22种子工具的工具集，以下是最常用的5种：
+perf list [hw | sw | cache | tracepoint | event_glob]			用来查看perf所支持的性能事件,有软件的也有硬件的
+	指定性能事件(以它的属性),举例:显示内核和模块中，消耗最多CPU周期的函数, perf top -e cycles:k
+	-e <event> : u // userspace	
+	-e <event> : k // kernel
+	-e <event> : h // hypervisor
+	-e <event> : G // guest counting (in KVM guests)
+	-e <event> : H // host counting (not in KVM guests)
+perf stat					用于分析指定程序的性能概况。
+	task-clock：任务真正占用的处理器时间，单位为ms。CPUs utilized = task-clock / time elapsed，CPU的占用率。
+	context-switches：上下文的切换次数。
+	CPU-migrations：处理器迁移次数。Linux为了维持多个处理器的负载均衡，在特定条件下会将某个任务从一个CPU迁移到另一个CPU。
+	page-faults：缺页异常的次数。当应用程序请求的页面尚未建立、请求的页面不在内存中，或者请求的页面虽然在内存中，但物理地址和虚拟地址的映射关系尚未建立时，都会触发一次缺页异常。另外TLB不命中，页面访问权限不匹配等情况也会触发缺页异常。
+	cycles：消耗的处理器周期数。如果把被ls使用的cpu cycles看成是一个处理器的，那么它的主频为2.486GHz。可以用cycles / task-clock算出。
+	stalled-cycles-frontend：略过。
+	stalled-cycles-backend：略过。
+	instructions：执行了多少条指令。IPC为平均每个cpu cycle执行了多少条指令。
+	branches：遇到的分支指令数。branch-misses是预测错误的分支指令数。
+常用参数
+	-e：Select the PMU event.
+	-a：System-wide collection from all CPUs.
+	-p：Record events on existing process ID (comma separated list).
+	-A：Append to the output file to do incremental profiling.
+	-f：Overwrite existing data file.
+	-o：Output file name.
+	-g：Do call-graph (stack chain/backtrace) recording.
+	-C：Collect samples only on the list of CPUs provided.
+perf top [-e <EVENT> | --event=EVENT] [<options>]		对于一个指定的性能事件(默认是CPU周期)，显示消耗最多的函数或指令
+	常用命令行参数
+	-e <event>：指明要分析的性能事件。
+	-p <pid>：Profile events on existing Process ID (comma sperated list). 仅分析目标进程及其创建的线程。
+	-k <path>：Path to vmlinux. Required for annotation functionality. 带符号表的内核映像所在的路径。
+	-K：不显示属于内核或模块的符号。
+	-U：不显示属于用户态程序的符号。
+	-d <n>：界面的刷新周期，默认为2s，因为perf top默认每2s从mmap的内存区域读取一次性能数据。
+	-G：得到函数的调用关系图。
+perf top -G [fractal]，路径概率为相对值，加起来为100%，调用顺序为从下往上。
+perf top -G graph，路径概率为绝对值，加起来为该函数的热度。
+perf record			收集采样信息，并将其记录在数据文件中。
+perf report			读取perf record创建的数据文件，并给出热点分析结果
+常用参数
+	-i：Input file name. (default: perf.data)
+常用交互命令
+h：显示帮助
+UP/DOWN/PGUP/PGDN/SPACE：上下和翻页。
+a：annotate current symbol，注解当前符号。能够给出汇编语言的注解，给出各条指令的采样率。
+d：过滤掉所有不属于此DSO的符号。非常方便查看同一类别的符号。
+P：将当前信息保存到perf.hist.N中。
+
 	
