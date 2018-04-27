@@ -31,6 +31,16 @@ fsck  参数	装置名称   检查与修正硬盘错误
 -C	可以在检验的过程中,使用一个长条图来显示进度
 -f	强制检查,强制进入细部检查
 
+runlevel		查看当前系统运行级别,第一个n显示是前一个运行级别,后一个是当前的运行级别
+0： 关机
+1： 单用户
+2： 无网络的多用户
+3： 命令行模式
+4： 未用
+5： GUI（图形桌面 模式）
+6： 重启
+init 数字	切换运行级别
+
 sync	把内存里的内容写入硬盘
 shutdown	参数 	[时间] [警告信息]         //时间参数必须加入,否则会进入单人维护模式,reboot,halt,poweroff
 -t sec:-t后面加秒数,即过几秒关机的意思
@@ -1496,6 +1506,8 @@ ldd(list dynamic dependencies) [-vdr]  filename  	列出动态库依赖关系,�
 
 strip	name	裁减目标文件name的符号表,使得nm就看不到符号表的名字了,但使用readelf -s仍然可以看到
 
+strings		文件名			打印文件中可打印的字符,可用在二进制文件中
+
 nm  库名	列出file中的所有符号信息
 	-C		限制解码c++符号,用c符号名
 	-c		将符号转化为用户级的名字
@@ -1595,7 +1607,7 @@ systemctl	将service和chkconfig命令结合到了一起
 	enable	服务名	开机自动启动
 	disable	服务名	停止开机自动启动
 	status	服务名	查看服务状态
-	list -units --type=service	查看所有已启动的服务
+	list-units  --type=service	查看所有已启动的服务
 	is-enabled	服务名	查看是否开机启动
 	
 selinux				(Security-Enhanced Linux) 是美国国家安全局（NSA）对于强制访问控制的实现,是 linux历史上最杰出的新安全子系统。它不是用来防火墙设置的。但它对Linux系统的安全很有用
@@ -2219,6 +2231,11 @@ dmidecode			获取硬件信息,会访问/dev/mem,DMI (Desktop Management Interfa
 	-t 16			查看内存信息
 	
 /etc/resolv.conf里配置了dns名字服务器
+
+nslookup domain [dns-server]    用于查询DNS的记录，查看域名解析是否正常，在网络故障的时候用来诊断网络问题
+
+dig		domain					查询dns跟踪记录
++trace		查看详细的域名解析过程
 
 smbstatus		    查看samba服务运行状态及客户端人数,只有root才可执行,也可netstat -atpln |grep 445 |grep ESTABLISHED
 

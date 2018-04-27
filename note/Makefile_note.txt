@@ -414,7 +414,10 @@ cmake命令不区分大小写(参数区分),命令由命令,参数列表组成,参数之间使用空格进行分隔
 		...
 	else()
 		...
-	endif							cmake_minimum_required(VERSION 2.8)  set(YES 0),如果用if($(YES))就是假的了,此功能在cmake2.8才引用
+	endif							
+	
+cmake_minimum_required(VERSION 2.8)  	指定运行此cmake的最低版本,若低于这个版本则会报错
+set(YES 0),如果用if($(YES))就是假的了,此功能在cmake2.8才引用
 	
 操作符优先级:  一元操作符>二元操作符>NOT>AND.OR
 COMMAND  command-name				存在command-name命令,宏或函数且能够被调用,则为真,否则为假
@@ -450,6 +453,7 @@ endfunction()
 	使用${}进行变量的引用,在if等语句中,是直接使用变量名而不通过${}取值
 	
 常用命令
+	option(<option_variable> "help string describing option" [initial value])	提供选项让用户选择是ON还是OFF
 	project(<projectname> [languageName1 languageName2...])						用于指定项目的名称
 	cmake_minimum_required(VERSION major[.minor[.patch][.tweak]]][FATAL_ERROR])	用于指定需要的CMake的最低版本
 	aux_source_directory(<dir> <variable>)										用于将dir目录下的所有源文件的名字保存在变量variable中
@@ -461,6 +465,12 @@ endfunction()
 	set(<variable> <value> [[CACHE <type><docstring> [FORCE]]|PARENT_SCOPE])	用于设定变量variable的值为value,如果指定了CACHE变量将被放入Cachek 
 	unset(<variable> [CACHE])													用于移除变量variable,如果指定了CACHE变量将被从Cache中移除
 	message([STATUS|WARNING|AUTHOR_WARNING|FATAL_ERROR|SEND_ERROR] "message todisplay"...)	用于输出信息
+	include(<file|module> [OPTIONAL] [RESULT_VARIABLE <VAR>] [NO_POLICY_SCOPE])	include从给定的文件中读取CMake的列表文件,在清单文件中的命令会被立即处理,就像它们是写在这条include命令展开的地方一样
+																				如果指定了OPTIONAL选项，那么如果被包含文件不存在的话，不会报错。如果指定了RESULT_VARIABLE选项，那么var或者会被设置为被包含文件的完整路径，或者是NOTFOUND，表示没有找到该文件
+																				如果指定的是一个模块（module）而不是一个文件，查找的对象会变成路径CMAKE_MODULE_PATH下的文件<modulename>.camke。
+																				OPTIONAL 参数的作用是文件不存在也不会产生错误。
+																				可以指定载入一个文件,如果定义的是一个模块,那么将在 CMAKE_MODULE_PATH 中搜索这个模块并载入。
+载入的内容将在处理到 INCLUDE 语句是直接执行。
 	include_directories([AFTER|BEFORE|] [SYSTEM] dir1 dir2...)					用于设定目录,这些设定的目录将被编译器用来查找include文件
 	find_path(<VAR> name1 [path1 path2...])										用于查找包含文件name1的路径,如果找到则将路径保存在VAR中(此路径为绝对路径),如果没有找到则结果为<VAR>-NOTFOUND,默认情况下,VAR会被保存在Cache中,这时候需要清除VAR才可以进行下一次查询(使用unset命令)
 	find_library(<VAR> name1 [path1 path2...])									用于查找库文件name1的路径,如果找到则将路径保存在VAR中(此路径为绝对路径),如果没有找到则结果为<VAR>-NOTFOUND

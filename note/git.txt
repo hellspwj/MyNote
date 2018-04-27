@@ -97,6 +97,7 @@ git branch 分支名             创建一个新的分支,保存着一个名为H
 	-D	   分支名			  强制删除某个分支,因为用-d删除分支时,如果分支没有合并到主分支,表示有尚未合并进来的工作成果,会提示错误
 	--merged				  查看哪些分支被合并到了当前分支,也就是说哪些分支是当前分支的直接上游
 	--no-merged				  查看尚未合并的分支
+	-a						  查看本地及远程分支
 	
 git checkout 分支名           转换分支,如果加上-b参数,表示新建分支并切换,如果在-b参数后加上远程仓库名/分支名,表示用后面的分支来创建新的分支
 
@@ -120,3 +121,5 @@ git apply	*.patch			如果收到的补丁文件是用 git diff 或由其它 Unix
 git am		*.patch			应用format-patch生成的补丁
 
 git cherry-pick				挑拣,如果某个特性分支上有多个commints,而又只想合并一个commints到主分支上,可以使用此命令
+
+如果出现fatal: unable to access...时,执行命令 git config --global http.sslVerify false
