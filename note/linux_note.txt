@@ -546,6 +546,13 @@ n	数字,意思是列出最近n笔命令的意思
 
 ～/.bash_logout	这个档案记录了当我注销后bash后,系统再帮我做完什么动作后才离开
 
+hostname		查看当前主机名
+hostnamectl		允许查看或修改与主机名相关的配置
+	静态(static)的主机名:			也称内核主机名,是系统在启动时从/etc/hostname初始化的主机名
+	瞬态的(transient)的主机名:		是系统在运行时临时分配的主机名,例如通过dhcp或mDNS服务器分配
+	灵活的(pretty)的主机名:			静态和瞬态主机名都遵从作为互联网名同样的命名规则,灵活主机名则允许使用自由形式(包括特殊,空白字符),如Dan's computer
+	set-hostname <host-name> 		同时修改3个名字
+
 source 或小数点 文件名可以立即加载设定文件
 
 stty -a		列出所有终端设置	
@@ -2103,6 +2110,15 @@ strace 	常用来跟踪进程执行时的系统调用和所接收的信号,在Li
 -u username 		以username 的UID和GID执行被跟踪的命令
 
 route				显示 / 操作IP路由表
+add			添加一条路由
+del			删除一条路由
+netmask		为添加的路由指定网络掩码,如指定0.0.0.0是默认路由
+gw			为添加的路由指定网关
+dev if		为添加的路由指定设备关联
+-net		路由目标为网络
+-host		路由目标为主机
+-C			显示内核的路由缓存
+
 route命令输出的路由表字段含义如下：
     Destination 目标
           The destination network or destination host. 目标网络或目标主机。

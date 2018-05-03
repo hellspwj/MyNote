@@ -60,6 +60,7 @@ share---不需要提供用户名和密码。
 user----需要提供用户名和密码，而且身份验证由 samba server 负责。
 server--需要提供用户名和密码，可指定其他机器(winNT/2000/XP)或另一台 samba server作身份验证。
 domain--需要提供用户名和密码，指定winNT/2000/XP域服务器作身份验证。
+ADS ：（Active Directory Service，活动目录服务），是 samba3.0 中新增的身份验证方式，采用 ADS 验证方式，samba 服务器集成到活动目录中
 
 password server
 语法：password server = <IP地址/主机名>;
@@ -178,7 +179,7 @@ smbpasswd
 
 在管理 Samba 的用户账号密码时， 早期是使用 smbpasswd 这个指令，不过因为后来使用 TDB 数据库了，因此建议使用新的 pdbedit 指令来管理用户数据
 
-pdbedit	
+pdbedit				修改密码需要使用smbpasswd
 	选项与参数：
 -L ：列出目前在数据库当中的账号与 UID 等相关信息；
 -v ：需要搭配 -L 来执行，可列出更多的讯息，包括家目录等数据；
