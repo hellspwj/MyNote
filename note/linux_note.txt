@@ -342,13 +342,19 @@ Sticky Bit	目前只针对目录有效,对于档案已经没有效果了,在具�
 
 file	档案	查阅档案的类型
 
+who		显示已经登录的用户,还有ip等
+
+whoami	显示当前有效用户
+
 which  参数	command  寻找执行档     在PATH中查找
 -a	将所有可以找到的指令均列出,而不止第一个被找到的指令
+
 whereis	参数	档案或目录名  寻找特定档案		在PATH中查找
 -b	只找binary的档案
 -m	只找在说明文件manual路径下的档案
 -s	只找source来源档案
 -u	没有说明档的档案
+
 locate	档案或目录名	在数据库中查找  updatedb 更新数据库
 
 find  路径 参数 要查找的文件或目录名	
@@ -1193,6 +1199,16 @@ uname -asrmpi
 	-m	本系统硬件的名称,和arch命令结果一样
 	-p	CPU的类型
 	-i	硬件的平台(ix86)
+	
+/etc/os-release			可查看系统版本
+/etc/redhat-release		可查看系统版本
+
+lsb_release				查看当前系统发行版信息
+	-a					显示所有信息
+	
+getconf		将系统配置变量值打印到输出屏幕上
+	-a		将所有系统配置变量值输出
+	例:		getconf LONG_BIT   输出32还是64来判断系统是多少位的
 
 uptime	显示系统已经开机多久了,以及1,5,15分钟的平均负载,就是top画面的最上面的一行
 

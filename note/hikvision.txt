@@ -18,6 +18,9 @@ ivmslog.log								最新日志
 
 t1										命令,查看tx1情况,最后2条是网关信息,红色的表示异常
 
+IPS			监所
+IED			周界
+
 /home/soft/BigData/ComputingNodeCMS 计算节点安装目录
 /home/soft/SmartNode/arm 底层库，HMS，取流库。
 submint node编号送去140即tx1编号
@@ -203,3 +206,4 @@ psql -U postgres  然后\c ivms_scheduler  进入调度数据库
 select * from temp_job_info where jobid='temp_ad50b4027f9348ec9c3ddefa77dc0328';	查看一个任务粗略信息
 select * from job_data where jobdataid ='temp_ad50b4027f9348ec9c3ddefa77dc0328';    查看一个任务详细信息
 
+pubyjygxn7 初始密码BpH4GA#q 请联系it热线89998555加域
