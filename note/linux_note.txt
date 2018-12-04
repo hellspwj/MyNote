@@ -162,7 +162,7 @@ mount	参数  装置名称代号  挂载点
 -a	依照/etc/fstab的内容将所有相关的磁盘都挂上来
 -n	一般来说,当我们挂载档案系统到Linux上头时,Linux会主动将目前的partition与filesystem还有对应的挂载点,都记录到/etc/mtab档案中,不过有些时刻(例如不正常关机导致一些问题,而进入单人维护模式)系统
 -L	取表头名称,可以用来挂载
--t	指定挂载的系统类型(如ext3,ext2),例: mount -o nolock,rw,soft,timeo=30,retry=3 -t nfs 10.12.4.12:/home/hells/armDisk /home/panwenjian/remoteDisk  如果挂载不上,可以使用-o vers=3,表示指定使用nfs版本3
+-t	指定挂载的系统类型(如ext3,ext2),例: mount -o nolock,rw,soft,timeo=30,retry=3,vers=3 -t nfs 10.12.5.107:/home/hells/armDisk /home/panwenjian/remoteDisk  如果挂载不上,可以使用-o vers=3,表示指定使用nfs版本3
 mount -t cifs -o username=panwenjian //10.16.137.15/daofengpk1 /home/hells/daofengpk1		挂载windows共享目录
 --bind	将某个目录挂到另一个目录下面
 -o	额外参数
@@ -335,10 +335,10 @@ lsattr	参数  档案或目录名称
 -a	将隐藏文件的属性也显示出来
 -R	连同子目录的数据也一并列出来
 
-档案的特殊权限	
-Set UID		仅可以用在binary file,不能够用在批次档,让一般使用者在执行某些程序的时候,能够暂时的具有该程序拥有者的权限 s
-Set GID		若用在binary file上,则不论使用者是谁,在执行该程序时,他的有效群组将会变成该程序的群组所有人,若设定在目录上,则在该目录内所建立的档案或目录的group会变成此A目录的group s
-Sticky Bit	目前只针对目录有效,对于档案已经没有效果了,在具有SBit的目录下,使用者若在该目录下具有w及x的权限,则当使用者在该目录下建立档案或目录时,只有档案拥有者与root才有权力删除 t
+档案的特殊权限,分别是4,2,1的权限,例 chmod 2770 最前面的2代表了SGID的权限
+SUID Set UID		仅可以用在binary file,不能够用在批次档,让一般使用者在执行某些程序的时候,能够暂时的具有该程序拥有者的权限 s
+SGID Set GID		若用在binary file上,则不论使用者是谁,在执行该程序时,他的有效群组将会变成该程序的群组所有人,若设定在目录上,则在该目录内所建立的档案或目录的group会变成此A目录的group s
+SBIT Sticky Bit	    目前只针对目录有效,对于档案已经没有效果了,在具有SBit的目录下,使用者若在该目录下具有w及x的权限,则当使用者在该目录下建立档案或目录时,只有档案拥有者与root才有权力删除 t
 
 file	档案	查阅档案的类型
 
@@ -358,27 +358,27 @@ whereis	参数	档案或目录名  寻找特定档案		在PATH中查找
 locate	档案或目录名	在数据库中查找  updatedb 更新数据库
 
 find  路径 参数 要查找的文件或目录名	
--atime n:n为数字,意义在n天之前的[一天之内]被access过的档案
--ctime n:被change过状态的档案
--mtime n:被modefication过的档案
--new file:file为一个存在的档案,意思是说,只要档案比file还要新,就会被列出来
--uid n:n为数字,这个数字是使用者的账号ID,亦即UID,这个UID是记录在/etc/passwd里的
--gid n:
--user name:账号名称
--group name:群组名称
--nouser:寻找档案的拥有者不存在/etc/passwd的人
--nogroup:寻找档案的拥有群组不存在/etc/group的档案
--name file:搜寻名称为filename的档案
--size [+-]SIZE:搜寻比SIZE还要大(+)或小(-)的档案,c代表byte
--type TYPE:搜寻档案的类型为TYPE的,类型主要有:一般正规档案(f),装置档案(b,c),目录(d),连结档(l),socket(s),及FIFO(p)等属性
--perm mode:搜寻档案属性[刚好等于]mode的档案,四位数的属性
--perm -mode:搜寻档案属性[必须要全部囊括mode的属性]的档案
--perm +mode:搜寻档案属性[包含任一mode的属性]
--exec command:command为其它指令,-exec后面可再接额外的指令来处理搜寻到的结果
--print 将结果打印到屏幕,这个动作是预设的
--newer	file :比file新的文件就列出
--path	"pattern" :匹配完整文件名,包括./
--path 	"pattern"  -prune :除掉某个目录
+	-atime n:n为数字,意义在n天之前的[一天之内]被access过的档案 +1表示1天以前,-1表示1天以内,不带加减表示正好n天,time默认是天
+	-ctime n:被change过状态的档案,-cmin 分钟,是在写入文件、更改所有者、权限或链接设置时随Inode的内容更改而更改的时间。因此对于文件，mtime发生改变，ctime也会随之改变。
+	-mtime n:被modefication过的档案
+	-new file:file为一个存在的档案,意思是说,只要档案比file还要新,就会被列出来
+	-uid n:n为数字,这个数字是使用者的账号ID,亦即UID,这个UID是记录在/etc/passwd里的
+	-gid n:
+	-user name:账号名称
+	-group name:群组名称
+	-nouser:寻找档案的拥有者不存在/etc/passwd的人
+	-nogroup:寻找档案的拥有群组不存在/etc/group的档案
+	-name file:搜寻名称为filename的档案
+	-size [+-]SIZE:搜寻比SIZE还要大(+)或小(-)的档案,c代表byte
+	-type TYPE:搜寻档案的类型为TYPE的,类型主要有:一般正规档案(f),装置档案(b,c),目录(d),连结档(l),socket(s),及FIFO(p)等属性
+	-perm mode:搜寻档案属性[刚好等于]mode的档案,四位数的属性
+	-perm -mode:搜寻档案属性[必须要全部囊括mode的属性]的档案
+	-perm +mode:搜寻档案属性[包含任一mode的属性]
+	-exec command:command为其它指令,-exec后面可再接额外的指令来处理搜寻到的结果
+	-print 将结果打印到屏幕,这个动作是预设的
+	-newer	file :比file新的文件就列出
+	-path	"pattern" :匹配完整文件名,包括./
+	-path 	"pattern"  -prune :除掉某个目录
 
 xargs 	管道实现的是将前面的stdout作为后面的stdin,但有些命令不接受管道的传递方式,如ls,有时,希望传递是参数,直接用管道无法传递到命令的参数位,这时需要xargs,xargs实现的是将管道传输过来的stdin进行处理后传递到命令的参数位上
 		也就是说,xargs实现了2个行为,处理管道传输过来的stdin;将处理后的传递到正确的参数位上
@@ -501,7 +501,7 @@ set命令显示当前shell的变量,包括当前用户的变量;
 env命令显示当前用户的变量;
 export命令显示当前导出成用户变量的shell变量。
 
-ulimit  [-SHacdflmnpstuv]  配额	限制使用者的某些系统资源
+ulimit  [-SHacdflmnpstuv]  配额	限制使用者的某些系统资源,永久修改可以修改/etc/security/limits.conf
 -H	hard limit,严格的设定,必定不能超过设定的值
 -S	soft limit,警告的设定,可以超过这个设定值,但是会有警告讯息,并且,还是无法超过hard limit
 -a	列出所有的限制额度
@@ -512,6 +512,7 @@ ulimit  [-SHacdflmnpstuv]  配额	限制使用者的某些系统资源
 -p	可用以管线处理的数量
 -t	可使用的最大CPU时间(单位为秒)
 -u	单一使用者可以使用的最大程序数量
+-n	每个进程可以同时打开的最大文件数,如http服务器并发数可以看这个
 
 alias ls='ls -l'	设定命令别名
 unlias ls			取消命令别名
@@ -551,6 +552,21 @@ n	数字,意思是列出最近n笔命令的意思
 ~/.bash_history	历史命令记录的档案
 
 ～/.bash_logout	这个档案记录了当我注销后bash后,系统再帮我做完什么动作后才离开
+
+export PS1='[\u@\h \W]\$'
+	\d     ：可显示出『星期 月 日』的日期格式，如："Mon Feb 2"
+ 	\H    ：完整的主机名。举例来说，鸟哥的练习机为『www.vbird.tsai』
+ 	\h    ：仅取主机名在第一个小数点之前的名字，如鸟哥主机则为『www』后面省略
+ 	\t     ：显示时间，为 24 小时格式的『HH:MM:SS』
+ 	\T    ：显示时间，为 12 小时格式的『HH:MM:SS』
+ 	\A    ：显示时间，为 24 小时格式的『HH:MM』
+ 	\@  ：显示时间，为 12 小时格式的『am/pm』样式
+ 	\u    ：目前使用者的账号名称，如『root』；
+ 	\v    ：BASH 的版本信息，如鸟哥的测试主板本为 3.2.25(1)，仅取『3.2』显示
+ 	\w   ：完整的工作目录名称，由根目录写起的目录名称。但家目录会以 ~ 取代；
+ 	\W  ：利用 basename 凼数取得工作目录名称，所以仅会列出最后一个目录名。
+ 	\#   ：下达的第几个指令。
+ 	\$   ：提示字符，如果是 root 时，提示字符为 # ，否则就是 $ 啰～
 
 hostname		查看当前主机名
 hostnamectl		允许查看或修改与主机名相关的配置
@@ -642,59 +658,64 @@ ack  '搜寻字符串'  filename				默认是递归搜索的
  --ignore-dir=downloads			忽略downloads目录
 
 sort  -fbMnrtuk  file or stdin
--f	忽略大小写的差异,例如A与a视为编码相同
--b	忽略最前面的空格符部分
--M	以月份的名字来排序,例如JAN,DEC等等的排序方法
--n	使用纯数字进行排序(预设是以文字开型态来排序的
--r	反向排序
--u	就是uniq,相同的数据中,仅出现一行代表
--t	分隔符,预设是tab键
--k	以那个区间(field)来进行排序的意思
--o  文件名   输出到指定文件
+	-f	忽略大小写的差异,例如A与a视为编码相同
+	-b	忽略最前面的空格符部分
+	-M	以月份的名字来排序,例如JAN,DEC等等的排序方法
+	-n	使用纯数字进行排序(预设是以文字开型态来排序的
+	-r	反向排序
+	-u	就是uniq,相同的数据中,仅出现一行代表
+	-t	分隔符,预设是tab键
+	-k	以那个区间(field)来进行排序的意思
+	-o  文件名   输出到指定文件
 
 uniq  -ic	排序完成后,对重复资料仅列出一个显示
--i	忽略大小写字符的不同
--c	进行计算
+	-i	忽略大小写字符的不同
+	-c	进行计算
 
 wc -lwm
--l	仅列出行
--w	仅列出多少字(英文单字)
--m	多少字符
+	-l	仅列出行
+	-w	仅列出多少字(英文单字)
+	-m	多少字符
 
 tee	-a file		双向重导向
--a	以累加的方式将数据加入file中
-如	last | tee last.list 屏幕上也会有一份显示
+	-a	以累加的方式将数据加入file中
+	如	last | tee last.list 屏幕上也会有一份显示
 
 tr  -ds  SET1   可以用来删除一段讯息当中的文字,默认是替换
--d	删除讯息当中的SET1这个字符串
--s	取代掉重复的字符
+	-d	删除讯息当中的SET1这个字符串
+	-s	取代掉重复的字符
 
 col -x
--x	将tab键转换成对等的空格键
+	-x	将tab键转换成对等的空格键
 expand  -t file
--t 后面可以接数字,一般来说,一个tab按键可以用8个空格键取代。我们可以自定义一个tab按键代表多少个字符
+	-t 后面可以接数字,一般来说,一个tab按键可以用8个空格键取代。我们可以自定义一个tab按键代表多少个字符
 
 join	-ti12  file1 file2
--t	join预设以空格符分隔数据,并且对比第一个字段的数据,如果两个档案相同,刚将两笔数据联成一行,且第一个字段放在第一个
--i	忽略大小写
--1	代表第一个档案要用那个字段来分析的意思
--2	代表第二个档案要用那个字段来分析的意思
+	-t	join预设以空格符分隔数据,并且对比第一个字段的数据,如果两个档案相同,刚将两笔数据联成一行,且第一个字段放在第一个
+	-i	忽略大小写
+	-1	代表第一个档案要用那个字段来分析的意思
+	-2	代表第二个档案要用那个字段来分析的意思
 
 paste	-d file1 file2
--d	后面可以接分隔字符,预设是以tab来分隔的
--	如果file部分写成-,表示来自standard input
+	-d	后面可以接分隔字符,预设是以tab来分隔的
+	-	如果file部分写成-,表示来自standard input
 
 split -bl file PREFIX 将一个大档案分割成几个小档案
--b	后面可以接欲分割的档案大小,可加单位,例如b,k,m等
--l	以行数来进行分割
+	-b	后面可以接欲分割的档案大小,可加单位,例如b,k,m等
+	-l	以行数来进行分割
 
+seq	 [-fsw] first last	产生某个数到另外一个数之间的所有整数
+	-f --format=格式		使用printf样式的格式
+	-s --separator=字符串	使用指定字符串分隔数字(默认使用: \n)
+	-w --equal-width		在列前添加0使得宽度相同
+	
 正则表达法(grep支持 basic)
 []	[]里不论有几个字符,都代表一个
 ^	在[]里代表非,在[]外代表行首
 $	行尾
 .	代表绝对有一个任意字符
 *	代表重复0个或多个前面的字符,o*代表的是空字符或1个o以上的字符
-\{\} 限定连续字符范围,如'o\{2\}',重复2个o
+\{\} 限定连续字符范围,在延伸正则表达式中不需要加'\',如'o\{2\}',重复2个o
 						'o\{2,5\}',重复2-5个o
 						'o\{2,\}',重复2个以上o
 在正规表达式中使用 \( 和 \) 符号括起正规表达式,即可在后面使用\1、\2 等变量来访问 \( 和 \) 中的内容。
@@ -705,6 +726,7 @@ $	行尾
 |	用或的方式找出数个字符串
 ()	找出群组字符串
 	例(xyz)代表包括xyz三个的字符串
+{}	限定连续字符范围
 
 perl regular 
 零宽度表明匹配的是一个位置,而非表达式        在vi里是通过\@替换了括号实现
@@ -1074,33 +1096,43 @@ cron
 pidof	-sx		program_name
 	-s	仅列出一个PID而不列出所有的PID
 	-x	同时列出该program name可能的PPID那个程序的PID
-
-ps aux
-ps -lA
-ps axjf
-ps -xH			显示所有线程信息
-ps -mq	pid		显示某个进程产生的线程数目
-l 长格式输出；
-u 按用户名和启动时间的顺序来显示进程；
-j 用任务格式来显示进程；
-f 用树形格式来显示进程；
-a 显示所有用户的所有进程（包括其它用户）；
-x 显示无控制终端的进程；
-r 显示运行中的进程；
-ww 避免详细参数被截断；
-
--A 列出所有的进程
--w 显示加宽可以显示较多的资讯
--au 显示较详细的资讯
--aux 显示所有包含其他使用者的进程
--e 显示所有进程,环境变量
--f 全格式
--h 不显示标题
--l 长格式
--w 宽输出
-a   显示终端上地所有进程,包括其他用户地进程
-r   只显示正在运行地进程
-x   显示没有控制终端地进程
+	
+ps有3种不同类型的命令选项：
+	UNIX选项，可以组合起来，必须在前面加一个连字符“-”
+		-A 				列出所有的进程
+		-w 				显示加宽可以显示较多的资讯
+		-au 			显示较详细的资讯
+		-aux 			显示所有包含其他使用者的进程
+		-e 				显示所有进程,环境变量
+		-f 				全格式
+		-h 				不显示标题
+		-l 				长格式
+		-w 				宽输出
+		-p	pid			显示某个pid的进程
+		-o				自定义格式,中间以逗号分隔,如ps -p 45510 -o pid,cmd,lstart,etime,uid,gid
+			lstart 	显示进程启动时间
+			pid		进程号
+			cmd		显示命令
+			etime	进程运行的时间
+			uid		显示用户id
+			gid		显示组id
+		ps -e -o pid,cmd,etime,lstart  | grep EngineServer
+		ps -lA
+		ps -xH			显示所有线程信息
+		ps -mq	pid		显示某个进程产生的线程数目
+		tx1下可使用ps -o pid,comm,time,etime | grep EngineServer来查看启动时间
+	BSD选项，可以组合起来，不能使用连字符“-”
+		l  		长格式输出；
+		u  		按用户名和启动时间的顺序来显示进程；
+		j  		用任务格式来显示进程；
+		f  		用树形格式来显示进程；
+		a  		显示所有用户的所有进程（包括其它用户）；
+		x  		显示无控制终端的进程；
+		r  		只显示运行中的进程；
+		ww 		避免详细参数被截断；
+		ps 		aux
+		ps 		axjf
+	GNU长选项，在前面有2个连字符“--"
 
 ps状态
 D		不可中断的睡眠
@@ -1119,6 +1151,7 @@ top -d | top -bnp			默认是按cpu占用量来排序的
 	-n	与-b搭配,意义是,需要进行几次top的输出结果
 	-p	指定某些个PID来进行观察侦测
 	在top执行过程当中可以使用的按键指令
+		1	显示cpu核数及负载
 		?:	显示在top当中可以输入的按键指令
 		P:	以CPU的使用资源排序显示
 		M:	以Memory的使用资源排序显示
@@ -1134,8 +1167,7 @@ top -d | top -bnp			默认是按cpu占用量来排序的
 		f:	可以改变top的显示列
 		A:	切换交替模式(显示四个窗口,Def默认字段组,job任务字段组,Mem内存字段组,User用户字段组),按g再按数字可切换到具体一个组
 		d或s: 	再加一个数字,会以输入的数字作为时间间隔输出top信息
-
-
+		
 mpstat(Multiprocessor Statistics)		报告CPU的一些统计信息,这些信息存放在/proc/stat中
 mpstat [-P {|ALL}] [internal [count]]
 -P {|ALL}	表示监控哪个cpu,cpu在[0,cpu个数-1]中取值
@@ -1210,10 +1242,10 @@ getconf		将系统配置变量值打印到输出屏幕上
 	-a		将所有系统配置变量值输出
 	例:		getconf LONG_BIT   输出32还是64来判断系统是多少位的
 
-uptime	显示系统已经开机多久了,以及1,5,15分钟的平均负载,就是top画面的最上面的一行
+uptime	显示系统当前时间,已经开机多久了,以及1,5,15分钟的平均负载,就是top画面的最上面的一行
 
-ip	选项  参数	用来显示或操纵Linux主机的路由、网络设备、策略路由和隧道，是Linux下较新的功能强大的网络配置工具
-选项
+ip [ OPTIONS ] OBJECT { COMMAND | help }  用来显示或操纵Linux主机的路由、网络设备、策略路由和隧道，是Linux下较新的功能强大的网络配置工具
+OPTIONS
 	-V：显示指令版本信息；
 	-s：输出更详细的信息；
 	-f：强制使用指定的协议族；
@@ -1221,11 +1253,31 @@ ip	选项  参数	用来显示或操纵Linux主机的路由、网络设备、策
 	-6：指定使用的网络层协议是IPv6协议；
 	-0：输出信息每条记录输出一行，即使内容较多也不换行显示；
 	-r：显示主机时，不使用IP地址，而使用主机的域名。
-参数
-	help	显示支持的参数信息
 
+OBJECT 		所有对象名都可以简写,例:address 可以简写为addr,甚至是a
+	link 		网络设备
+	address 	一个设备的协议(IPV4或者IPV6)地址
+	neighbour	ARP或者NDISC缓冲区条目
+	route		路由表条目
+	rule		路由策略数据库中的规则
+	maddress	多播地址
+	mroute		多播路由缓冲区条目
+	monitor		监控网络消息
+	mrule		组播路由策略数据库中的规则
+	tunnel		IP上的通道
+	l2tp		隧道以太网(L2TPV3)
 
-
+	增加IP地址(删除将add改为del): 	ip addr add ADDRESS/MASK dev DEVICE
+	查看网络信息:				  	ip addr show
+	添加路由表(删除将add改为del): 	ip route add TARGET via GW  如 ip route add 172.16.0.0/16 via 192.168.29.1
+	显示路由表:					  	ip route show
+	清空路由表:					  	ip route flush [dev IFACE] [via PREFIX] 如 ip route flush dev ens33
+	显示网络设备运行状态:		  	ip link list
+	查看网卡信息:				  	ip -s link list ens33
+	设置MTU:					  	ip link set ens33 mtu 1400
+	关闭网络设备(开启将down改为up):	ip link set ens33 down
+	
+	
 ss		 显示处于活动状态的套按字信息,比netstat快速高效
 	-h：显示帮助信息；
 	-V：显示指令版本信息；
@@ -1420,42 +1472,6 @@ lsof	-Uu  +d		列出已经被开启的档案与装置
 	-i:端口		查看某端口运行情况
 	-i:port1~port2
 	
-lsblk	列出所有可用块设备信息,还能显示他们之间的依赖关系,但不会列出RAM盘的信息,块设备有硬盘,闪存盘,cd-Rom等
--a, --all 显示所有设备
--b, --bytes 以bytes方式显示设备大小
--d, --nodeps 不显示 slaves 或 holders
--D, --discard print discard capabilities
--e, --exclude 排除设备 (default: RAM disks)
--f, --fs 显示文件系统信息。 -h, --help 显示帮助信息
--i, --ascii use ascii characters only。 -m, --perms 显示权限信息
--l, --list 使用列表格式显示。 -n, --noheadings 不显示标题 
--o, --output 输出列。 -P, --pairs 使用key="value"格式显示
--r, --raw 使用原始格式显示。 -t, --topology 显示拓扑结构信息
-
-run level:
-	0	-halt(系统直接关机)
-	1	-single user mode(单人维护模式,用在系统出问题时的维护)
-	2	-类似下面的3,但无NFS服务
-	3	-完整的含有网络功能的纯文字模式
-	4	-系统保留功能
-	5	-与3类似,但使用X Window
-	6	-reboot(重新开机)
-reunlevel	查看当前的run lenvel;
-
-lsmod	查看目前核心加载了多少模块
-modprobe	自动处理可载入模块
-	-r 模块名	      移除模块
-	-a或--all 　	  载入全部的模块。
-	-c或--show-conf 　显示所有模块的设置信息。
-	-d或--debug 　	  使用排错模式。
-	-l或--list 　	  显示可用的模块。
-	-r或--remove 　	  模块闲置不用时，即自动卸载模块。
-	-t或--type 　	  指定模块类型。
-	-v或--verbose 　  执行时显示详细的信息。
-	-V或--version 　  显示版本信息。
-	-help 　		  显示帮助。
-	
-
 iconv	编码转换
 -f, --from-code=名称 原始文本编码
 -t, --to-code=名称 输出编码
@@ -1475,22 +1491,6 @@ modinfo -adln	module_name|filename
 	-d	公列出该modules的说明(description)
 	-l	仅列出授权
 	-n	仅列出该模块的详细路径
-
-grup-install  [--root-directory=DIR] INSTALL_DEVICE  例grub-install /dev/sda
-	--root-directory=DIR 那个DIR为实际的目录,使用grup-install预设会将grub所有的档案都复制到/boot/grub/*当中,但如果想要复制到其它目录与装置去,就得用这个参数
-
-grub	进入grub shell
-	root (hdx,x)	选择含有/boot目录的那个partition代号
-	用 find /boot/grub/stagel  看看能否找到安装信息档案
-	用 find /boot/vmlinuz	   看看能否找到kernel file
-	用 setup (hdx,x)或setup (hdx)将grub安装在super block或MBR
-	用 quit离开grub shell
-
-开机过程中按下	
-	e:	进入grub shell
-	o:	在游标所在行底下再新增一行
-	d:	将游标所在行删除
-	b:	boot,可以用当前行开机
 
 makefile
 	./configure   建立Makefile
@@ -1590,11 +1590,14 @@ obase =     输出进制
 
 c++filt  函数编译出来的符号		可以查看函数对应的原始名称
 
-md5sum -bct filename
+md5sum -bct filename		支持输入多个文件,支持通配符
+	md5sum是校验文件内容，与文件名是否相同无关；
+	md5sum是逐位校验，所以文件越大，校验时间越长。
+	md5校验，可能极小概率出现不同的文件生成相同的校验和，比md5更安全的校验算法还有SHA*系列，如sha1sum/sha224sum/sha256sum/sha384sum/sha512sum等等，基本用法与md5sum命令类似
 md5sum --status|--warn  --check filename
 	-b	使用binary的读档方式
 	-c	检验md5sum档案指纹
-	-t	以文字形态来读取md5sum的档案指纹
+	-t	以文字形态来读取md5sum的档案指纹(默认)
 
 daemon
 	stand_alone  独立启动,常驻在内存,响应速度快,放置在/etc/init.d这个目录里,路径 start,service 服务 start
@@ -1607,6 +1610,16 @@ super daemon又分为
 		来一个数据,处理一次,再接下一个数据
 
 与服务有关的端口对应资料:  /etc/services
+
+此命令位于包bridge-utils
+brctl show				查看网桥信息
+brctl addbr 网桥名		新建一个网桥
+brctl delbr 网桥名		删除一个网桥
+brctl addif 网桥名  网卡名  将网卡添加到网桥上
+
+pipework  	是一个shell脚本,可以在比较复杂的网络环境中完成容器的连接,底层采用的是ip命令和brctl命令
+	例: 	pipework br0 test 10.207.0.236/24@10.207.0.1 	首先会检查主机是否存在br0网桥,若不存在,就自己创建一个
+			pipework br0 test dhcp		如果主机环境中有DHCP服务,也可以通过DHCP的方式获取IP
 
 service  [service name] (start|stop|restart|status)   去/etc/init.d底下启动某个脚本
 
@@ -1632,10 +1645,40 @@ systemctl	将service和chkconfig命令结合到了一起
 	status	服务名	查看服务状态
 	list-units  --type=service	查看所有已启动的服务
 	is-enabled	服务名	查看是否开机启动
+	daemon-reload	若修改了某个服务的配置,可以使用此命令
+	
+journalctl  服务日志管理
+	-n		显示最后行数的日志
+	-f		显示最详细信息
+	-u      后面接服务名称,查看某项服务的日志
+	
 	
 selinux				(Security-Enhanced Linux) 是美国国家安全局（NSA）对于强制访问控制的实现,是 linux历史上最杰出的新安全子系统。它不是用来防火墙设置的。但它对Linux系统的安全很有用
+	配置文件位于/etc/sysconfig/selinux或/etc/selinux/config
 iptables			iptables用于过滤数据包,属于网络层防火墙./etc/sysconfig/iptables-config可默认关闭
+	-t	后面接table,例如net或filter,若省略此项目,则使用默认的filter
+	-L	列出目前的table规则
+	-n	不进行IP与HOSTNAME的反查,显示信息的速度会快很多
+	-v	列出更多的信息,包括通过该规则的封包总位数,相关的网络接口等
+	-F	清除所有已制定的规则
+	-X	杀掉所有使用者"自定义"的chain(说的是tables)
+	-Z	将所有的chain的计数与流量统计都归零
+	-P	定义预设规则,ACCEPT为可接受,DROP为丢弃,例:iptables -P INPUT DROP
+iptables-save		会列出完整的防火墙规则,只是没有规格化输出
+	-t	后面接table,可以指定输出table的规则,而不是所有的
 firewalld			firewall是centos7里面的新的防火墙命令,它底层还是使用 iptables 对内核命令动态通信包过滤的,简单理解就是firewall是centos7下管理iptables的新命令
+
+iptables里有多个表格,每个表格定义出自己的默认政策与规划,且每个表格的用途都不相同
+	filter(过滤器):主要跟进入Linux本机的封包有关,是预设的table
+		INPUT:主要与想要进入我们Linux本机的封包有关
+		OUTPUT:主要与我们Linux本机所要送出的封包有关
+		FORWARD:与Linux本机比较没有关系,他可以"转递封包"到后端的计算机中
+	nat(地址转换):是Network Address Translation的缩写,主要在进行来源与目的之IP或port的转换,与Linux本机较无关,主要与Linux主机后的局域网络内计算机较有相关
+		PREROUTING:在进行路由判断之前所要进行的规则(DNAT/REDIRECT)
+		POSTROUTING:在进行路由判断之后所要进行的规则(SNAT/MASQUERADE)
+		OUTPUT:与发送出去的封包有关
+	mangle(破坏者):这个表格主要是与特殊的封包的路由旗杆有关,早期仅有PREROUTING及OUTPUT链,不过从kernel 2.4.18之后加入了INPUT及FORWARD链
+					由于这个表格与特殊旗标相关性较高,所以像我们单纯的环境中,较少使用这个表格
 
 getenforce		查看SElinux服务状态
 setenforce 0	临时设置SElinux关闭,常久关闭修改/etc/selinux/config,增加SELINUX=disabled 
@@ -1722,7 +1765,7 @@ pushd  目录   将某个目录放个栈中,实现快速切换,不加任何参�
 +n		n为数字,切换到第几个,popd时表示将第几个弹出
 popd   目录   将某个目录从栈中弹出
 pushd与popd都可以只影响堆栈而不切换目录,加上-n参数即可
-dirs	显示栈中存在的目录
+dirs	先显示当前所在目录,然后显示栈中存在的目录
 -p	以每行一个目录的方式显示栈中目录
 -v	显示序号,不用加-p就会以每行一个目录的方式显示
 -c	清除堆栈
@@ -1961,12 +2004,15 @@ tcpdump		抓包
 		tcpdump ip host 210.27.48.1 and ! 210.27.48.2
 		
 curl
+-X/--request <command>          指定什么命令,有GET,POST
+-k/--insecure                   允许不使用证书到SSL站点
+-H/--header <line>              自定义头信息传递给服务器
+-d/--data <data>                HTTP POST方式传送数据
 -s								不回显统计信息
 -a/--append                        上传文件时，附加到目标文件
 --anyauth                            可以使用“任何”身份验证方法
 --basic                                使用HTTP基本验证
 -B/--use-ascii                      使用ASCII文本传输
--d/--data <data>                  HTTP POST方式传送数据
 --data-ascii <data>            以ascii的方式post数据
 --data-binary <data>          以二进制的方式post数据
 --negotiate                          使用HTTP身份验证
@@ -1999,14 +2045,12 @@ curl
 -g/--globoff                    禁用网址序列和范围使用{}和[]
 -G/--get                        以get的方式来发送数据
 -h/--help                      帮助
--H/--header <line>              自定义头信息传递给服务器
 --ignore-content-length        忽略的HTTP头信息的长度
 -i/--include                    输出时包括protocol头信息
 -I/--head                      只显示文档信息
 -j/--junk-session-cookies      读取文件时忽略session cookie
 --interface <interface>        使用指定网络接口/地址
 --krb4 <level>                  使用指定安全级别的krb4
--k/--insecure                  允许不使用证书到SSL站点
 -K/--config                    指定的配置文件读取
 -l/--list-only                  列出ftp目录下的文件名称
 --limit-rate <rate>            设置传输速度
@@ -2041,7 +2085,6 @@ curl
 --url <URL>                    Spet URL to work with
 -U/--proxy-user <user[:password]>  设置代理用户名和密码
 -V/--version                    显示版本信息
--X/--request <command>          指定什么命令
 -y/--speed-time                放弃限速所要的时间。默认为30
 -Y/--speed-limit                停止传输速度的限制，速度时间'秒
 -z/--time-cond                  传送时间设置
@@ -2063,6 +2106,27 @@ ifconfig 	 对网络接口进行配置和查询
 	修改/etc/sysconfig/network-scripts/ifcfg-ethx	可以永久修改ip地址,配置完成后重启network服务
 	ifconfig 网卡名 up/down		开启/关闭某张网卡,也可以通过命令ifup,ifdown来开启或关闭(ifup只能开启由ifdown关闭的网卡,而不能开启由ifconfig关闭的网卡)
 	
+网卡配置文件ifcfg-xxx信息
+	DEVICE:			网卡名称
+	USERCTL:      	[yes|no]（非root用户是否可以控制该设备）
+	HWADDR:			物理mac地址
+	TYPE：			网络类型(通常是Ethemet,桥接的话是Bond,网桥是Bridge)
+	UUID：			网卡唯一标识
+	ONBOOT：		开机或者重启是否重启网卡
+	NM_CONTROLLED： 是否受network程序管理
+	BOOTPROTO：		IP的配置方法[none|static|bootp|dhcp]（引导时不使用协议|静态分配IP|BOOTP协议|DHCP协议）
+	IPADDR：		设置ip
+	DEFROUTE:		default route,是否把这个eth设置为默认路由
+	GATEWAY：		设置网关
+	NETMASK：		子网掩码
+	PREFIX:			子网掩码,数字,如24
+	NETWORK:		网络地址
+	DNS:			域名解析服务,DNS1,DNS2
+	IPV6INIT:       IPV6是否有效（yes/no）
+	BROADCAST:		广播地址
+	PEERDNS:		是否允许DHCP获得的DNS覆盖本地的DNS
+
+	
 arp			查看arp高速缓存
 -d  	address					删除某条高速缓存
 -s  	address  hw_addr		增加一条高速缓存,新增加的内容是永久的,没有超时值,除非在命令行的末尾加上temp,位于命令行末尾的关键字pub和-s选项一起,可以使用系统起着主机ARP代理的作用,系统将回答与主机名对应的IP地址的ARP请求,并以指定的以太网地址作为应答
@@ -2070,6 +2134,8 @@ arp			查看arp高速缓存
 host		使用域名服务器查询主机名字
 	
 nvidia-smi	查看GPU使用情况
+	dmon    监控,实时输出
+	-i n    指定卡号
 
 svn无法cleanup时,可以进入.svn目录,sqlite3 wc.db select * from work_queue; delete from work_queue; 即可
 
@@ -2126,14 +2192,15 @@ strace 	常用来跟踪进程执行时的系统调用和所接收的信号,在Li
 -u username 		以username 的UID和GID执行被跟踪的命令
 
 route				显示 / 操作IP路由表
-add			添加一条路由
-del			删除一条路由
+add			添加一条路由,如 route add default gw 10.66.91.254 
+del			删除一条路由,如 route del -net 10.12.5.0/24 dev ens33
 netmask		为添加的路由指定网络掩码,如指定0.0.0.0是默认路由
 gw			为添加的路由指定网关
 dev if		为添加的路由指定设备关联
 -net		路由目标为网络
 -host		路由目标为主机
 -C			显示内核的路由缓存
+-n			以数字形式代替主机名形式来显示地址
 
 route命令输出的路由表字段含义如下：
     Destination 目标
@@ -2256,11 +2323,98 @@ watch				可以将命令的输出结果输出到标准输出设备，多用于�
 -d或--differences  	用-d或--differences 选项watch 会高亮显示变化的区域。 而-d=cumulative选项会把变动过的地方(不管最近的那次有没有变动)都高亮显示出来。
 -t 或-no-title  	会关闭watch命令在顶部的时间间隔,命令，当前时间的输出。
 
+run level:
+	0	-halt(系统直接关机)
+	1	-single user mode(单人维护模式,用在系统出问题时的维护)
+	2	-类似下面的3,但无NFS服务
+	3	-完整的含有网络功能的纯文字模式
+	4	-系统保留功能
+	5	-与3类似,但使用X Window
+	6	-reboot(重新开机)
+reunlevel	查看当前的run lenvel;
+
 dmidecode			获取硬件信息,会访问/dev/mem,DMI (Desktop Management Interface, DMI)
 	-t				指定类型输出相关信息
 	-t processor	输出处理器相关信息,也可以是 -t 4
 	-t 2			查看主板信息
 	-t 16			查看内存信息
+	
+lshw	显示所有硬件摘要信息
+	
+lsblk	列出所有可用块设备信息,还能显示他们之间的依赖关系,但不会列出RAM盘的信息,块设备有硬盘,闪存盘,cd-Rom等
+-a, --all 显示所有设备
+-b, --bytes 以bytes方式显示设备大小
+-d, --nodeps 不显示 slaves 或 holders
+-D, --discard print discard capabilities
+-e, --exclude 排除设备 (default: RAM disks)
+-f, --fs 显示文件系统信息。 -h, --help 显示帮助信息
+-i, --ascii use ascii characters only。 -m, --perms 显示权限信息
+-l, --list 使用列表格式显示。 -n, --noheadings 不显示标题 
+-o, --output 输出列。 -P, --pairs 使用key="value"格式显示
+-r, --raw 使用原始格式显示。 -t, --topology 显示拓扑结构信息
+
+lsscsi	查看scsi控制器设备的信息	
+	-s  显示容量大小
+	-c 用全称显示默认的信息。
+	-d 显示设备主，次设备号。
+	-g 显示对应的sg设备名。
+	-H 显示主机控制器列表，-Hl,-Hlv。
+	-l 显示相关属性，-ll,-lll=-L。
+	-v 显示设备属性所在目录。
+	-x 以16进制显示lun号。
+	-p 输出DIF,DIX 保护类型。
+	-P 输出有效的保护模式信息。
+	-i 显示udev相关的属性
+	-w 显示WWN
+
+lscpu	查看cpu相关信息,是从sysfs和/proc/cpuinfo收集cpu体系结构信息，命令的输出比较易读 
+	Architecture: #架构 
+　　CPU(s): #逻辑cpu颗数 
+　　Thread(s) per core: #每个核心线程 
+　　Core(s) per socket: #每个cpu插槽核数/每颗物理cpu核数 
+　　CPU socket(s): #cpu插槽数 
+　　Vendor ID: #cpu厂商ID 
+　　CPU family: #cpu系列 
+　　Model: #型号 
+　　Stepping: #步进 
+　　CPU MHz: #cpu主频 
+　　Virtualization: #cpu支持的虚拟化技术 
+　　L1d cache: #一级缓存（google了下，这具体表示表示cpu的L1数据缓存） 
+　　L1i cache: #一级缓存（具体为L1指令缓存） 
+　　L2 cache: #二级缓存
+查看/cpu/info也可获得cpu相关信息
+	 processor 条目包括这一逻辑处理器的唯一标识符。查看逻辑cpu数量即可使用cat /proc/cpuinfo | grep "process" | sort -u
+     physical id 条目包括每个物理封装的唯一标识符。查看物理cpu数量即可使用cat /proc/cpuinfo | grep "physical id" | sort -u
+     core id 条目保存每个内核的唯一标识符。查看每个物理cpu核id即可使用cat /proc/cpuinfo | grep "core id" | sort -u
+     siblings 条目列出了位于相同物理封装中的逻辑处理器的数量。查看每个物理cpu有多少个逻辑cpu即可使用cat /proc/cpuinfo | grep "siblings" | sort -u
+     cpu cores 条目包含位于相同物理封装中的内核数量。查看每个物理cpu有多少个核即可使用cat /proc/cpuinfo | grep "cpu cores" | sort -u
+     如果处理器为英特尔处理器，则 vendor id 条目中的字符串是 GenuineIntel。
+
+
+lsmod	查看目前核心加载了多少模块
+modprobe	自动处理可载入模块
+	-r 模块名	      移除模块
+	-a或--all 　	  载入全部的模块。
+	-c或--show-conf 　显示所有模块的设置信息。
+	-d或--debug 　	  使用排错模式。
+	-l或--list 　	  显示可用的模块。
+	-r或--remove 　	  模块闲置不用时，即自动卸载模块。
+	-t或--type 　	  指定模块类型。
+	-v或--verbose 　  执行时显示详细的信息。
+	-V或--version 　  显示版本信息。
+	-help 　		  显示帮助。
+	
+lspci				显示当前主机所有PCI总线信息,以及所有已连接的PCI设备信息
+	-n：			以数字方式显示PCI厂商和设备代码；
+	-t：			以树状结构显示PCI设备的层次关系，包括所有的总线、桥、设备以及它们之间的联接；
+	-b：			以总线为中心的视图；
+	-d：			仅显示给定厂商和设备的信息；
+	-s：			仅显示指定总线、插槽上的设备和设备上的功能块信息；
+	-i：			指定PCI编号列表文件，而不使用默认的文件；
+	-m：			以机器可读方式显示PCI设备信息。
+	-v:				使得 lspci 以冗余模式显示所有设备的详细信息
+	
+lsusb				显示当前连接的usb设备
 	
 /etc/resolv.conf里配置了dns名字服务器
 
@@ -2269,6 +2423,20 @@ nslookup domain [dns-server]    用于查询DNS的记录，查看域名解析是
 dig		domain					查询dns跟踪记录
 +trace		查看详细的域名解析过程
 
+smbpasswd			添加或删除samba用户名,修改密码
+	-a		添加用户
+	-c		指定samba配置文件
+	-x		删除用户
+	-d		禁用指定用户
+	-e		激活指定用户
+	-n		将指定的用户的密码置空
+pdbedit 			samba保存用户资料的数据库
+	-L		查看smaba用户
+	-a 		新建samba账户
+	-x		删除samba账户
+	-Lv		列出samba用户列表的详细信息
+	-c “[D]” –u username：暂停该Samba用户的账号。
+	-c “[]” –u username： 恢复该Samba用户的账号。
 smbstatus		    查看samba服务运行状态及客户端人数,只有root才可执行,也可netstat -atpln |grep 445 |grep ESTABLISHED
 
 factor   正整数		分解因数
@@ -2309,8 +2477,11 @@ nmap			网络探测工具和安全/端口扫描器
 	-F			扫描100个最有可能开放的端口
 	-v			获取扫描的信息
 	-sT			采用的是tcp扫描,不写默认是tcp扫描
+	-sU			扫描UDP端口,UDP端口扫描很慢
 	-sS			秘密的扫描,相比上面的-sT,-sT会完成三次握手,容易被防火墙和日志记录,而-sS会在扫描端返回ack后发送rst,但-sS需要root权限
-	-p			指定某个端口进行扫描
+	-sV			打开系统版本检测
+	-sP			ping的方式扫描,在网络中寻找所有在线主机,例 nmap 10.12.4.*
+	-p			指定某个端口进行扫描,扫描全部端口可以指定一个范围, 例 nmap 10.12.4.12 -p 1-65535
 	-D			使用诱饵隐蔽扫描,指定一个或多少ip与自己的真实ip同时访问目的主机
 	-S			源地址欺骗,在使用的时候要注意与-e进行使用，因为除了制定要伪装成为的对象IP外，还要指定返回的IP地址
 	-e 			使用指定的接口
@@ -2378,5 +2549,187 @@ UP/DOWN/PGUP/PGDN/SPACE：上下和翻页。
 a：annotate current symbol，注解当前符号。能够给出汇编语言的注解，给出各条指令的采样率。
 d：过滤掉所有不属于此DSO的符号。非常方便查看同一类别的符号。
 P：将当前信息保存到perf.hist.N中。
+
+cfssl 	是CloudFlare开源的一款PKI/TLS工具。 CFSSL 包含一个命令行工具 和一个用于 签名，验证并且捆绑TLS证书的 HTTP API 服务。 使用Go语言编写。
+	bundle: 创建包含客户端证书的证书包
+	genkey: 生成一个key(私钥)和CSR(证书签名请求)
+	scan: 扫描主机问题	
+	revoke: 吊销证书
+	certinfo: 输出给定证书的证书信息， 跟cfssl-certinfo 工具作用一样	
+	gencrl: 生成新的证书吊销列表	
+	selfsign: 生成一个新的自签名密钥和 签名证书	
+	print-defaults: 打印默认配置，这个默认配置可以用作模板	
+	serve: 启动一个HTTP API服务	
+	gencert: 生成新的key(密钥)和签名证书	
+	-ca：指明ca的证书	
+	-ca-key：指明ca的私钥文件	
+	-config：指明请求证书的json文件	
+	-profile：与-config中的profile对应，是指根据config中的profile段来生成证书的相关信息	
+	ocspdump	
+	ocspsign	
+	info: 获取有关远程签名者的信息	
+	sign: 签名一个客户端证书，通过给定的CA和CA密钥，和主机名
+	ocsprefresh	
+	ocspserve
+	
+CFSSL可以创建一个获取和操作证书的内部认证中心。
+运行认证中心需要一个CA证书和相应的CA私钥。任何知道私钥的人都可以充当CA颁发证书。因此，私钥的保护至关重要。
+创建一个文件ca-csr.json：		
+{
+  "CN": "www.51yunv.com",		#Common Name，浏览器使用该字段验证网站是否合法，一般写的是域名。非常重要。浏览器使用该字段验证网站是否合法
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "CN",				#Country， 国家
+      "ST": "BeiJing",			#State，州，省
+      "L": "BeiJing",			#Locality，地区，城市
+      "O": "51yunv",			#Organization Name，组织名称，公司名称
+      "OU": "ops"				#Organization Unit Name，组织单位名称，公司部门
+    }
+  ]
+}
+生成CA证书和CA私钥和CSR(证书签名请求):
+cfssl gencert -initca ca-csr.json | cfssljson -bare ca  	## 初始化ca
+CSR(Certificate Signing Request)，它是向CA机构申请数字×××书时使用的请求文件。在生成请求文件前，我们需要准备一对对称密钥。私钥信息自己保存，请求中会附上公钥信息以及国家，城市，域名，Email等信息，CSR中还会附上签名信息。当我们准备好CSR文件后就可以提交给CA机构，等待他们给我们签名，签好名后我们会收到crt文件，即证书。
+注意：CSR并不是证书。而是向权威证书颁发机构获得签名证书的申请。
+
+该命令会生成运行CA所必需的文件ca-key.pem（私钥）和ca.pem（证书），还会生成ca.csr（证书签名请求），用于交叉签名或重新签名。
+cfssl certinfo -cert ca.pem			#查看证书信息
+cfssl certinfo -csr ca.csr			#查看证书签名请求信息
+配置证书生成策略，让CA软件知道颁发什么样的证书。这个策略，有一个默认的配置，和一个profile，可以设置多个profile，这里的profile是etcd。
+vim ca-config.json
+{
+  "signing": {
+    "default": {
+      "expiry": "8760h"				#默认策略，指定了证书的有效期是一年(8760h)
+    },
+    "profiles": {
+      "etcd": {						#etcd策略，指定了证书的用途
+        "usages": [
+            "signing",				#signing, 表示该证书可用于签名其它证书；生成的 ca.pem 证书中 CA=TRUE
+            "key encipherment",
+            "server auth",			#表示 client 可以用该 CA 对 server 提供的证书进行验证
+            "client auth"			#表示 server 可以用该 CA 对 client 提供的证书进行验证
+        ],
+        "expiry": "8760h"
+      }
+    }
+  }
+}
+
+openssl command [ command_opts ] [ command_args ]
+	version    用于查看版本信息
+		-a：打印所有信息。
+		-v：仅打印版本信息		
+		-b：打印当前版本构建的日期		
+		-o：库构建时的相关信息		
+		-f：编译参数		
+		-p：平台信息		
+		-d: 列出openssl的安装目录
+	enc        用于加解密	
+		-ciphername：对称算法名称，此命令有两种使用方式：-ciphername方式或者省略enc直接使用ciphername。
+		-in filename：要加密/解密的输入文件，默认为标准输入。		
+		-out filename：要加密/解密的输出文件，默认为标准输出。		
+		-pass arg：输入文件如果有密码保护，指定密码来源。		
+		-e：进行加密操作，默认操作。可以省略		
+		-d：进行解密操作。		
+		-a：使用base64编码对加密结果进行处理。加密后进行base64编码，解密前进行base64解密。		
+		-base64：同-a选项。		
+		-A：默认情况下，base64编码为一个多行的文件。使用此选项，可以让生成的结果为一行。解密时，必须使用同样的选项，否则读取数据时会出错。		
+		-k：指定加密口令，不设置此项时，程序会提示用户输入口令。		
+		-kfile：指定口令存放文件。可以从这个口令存放文件的第一行读取加密口令。		
+		-K key：使用一个16进制的输入口令。如果仅指定-K key而没有指定-k password，必须用-iv选项指定IV。当-K key和-k password都指定时，用-K选项给定的key将会被使用，而使用password来产生初始化向量IV。不建议两者都指定。		
+		-iv IV：手工指定初始化向量(IV)的值。IV值是16进制格式的。如果仅使用-K指定了key而没有使用-k指定password,那么就需要使用-iv手工指定IV值。如果使用-k指定了password，那么IV值会由这个password的值来产生。		
+		-salt：产生一个随机数，并与-k指定的password串联，然后计算其Hash值来防御字典***和rainbow table***。		
+			rainbow table***：用户将密码使用单向函数得到Hash摘要并存入数据库中，验证时，使用同一种单向函数对用户输入口令进行Hash得到摘要信息。将得到的摘要信息和数据中该用户的摘要信息进行比对，一致则通过。考虑到多数人使用的密码为常见的组合，***者可以将所有密码的常见组合进行单向Hash，得到一个摘要组合。然后与数据库中的摘要进行比对即可获得对应的密码。		
+			salt将随机数加入到密码中，然后对一整串进行单向Hash。***者就很难通过上面的方式来得到密码。
+		-S salt：使用16进制的salt。		
+		-nosalt：表示不使用salt。		
+		-z：压缩数据(前提是OpenSSL编译时加入了zip库)。		
+		-md：指定摘要算法。如：MD5  SHA1  SHA256等。		
+		-p：打印出使用的salt、口令以及初始化向量IV。		
+		-P：打印出使用的salt、口令以及IV，不做加密和解密操作，直接退出。		
+		-bufsize number：设置I/O操作的缓冲区大小。因为一个加密的文件可能会很大，每次能够处理的数据是有限的。		
+		-nopad：没有数据填充(主要用于非对称加密操作)。		
+		-debug：打印调试信息。		
+		-none：不对数据进行加密操作。		
+		-engine：指定硬件引擎。
+	ciphers    列出加密套件	
+		-v：详细列出所有加密套件。包括SSL版本(SSLv2、SSLv3以及TLS)、密钥交换算法、身份验证算法、对称算法、摘要算法以及该算法是否允许出口。
+		-ssl2：只列出sslv2使用的加密套件。		
+		-ssl3：只列出sslv3使用的加密套件。		
+		-tls1: 只列出tls使用的加密套件。		
+		cipherlist：列出一个cipher list的详细内容。此项能列出所有符合规则的加密套件，如果不加-v选项，它只会显示各个套件名称。		
+		cipherlist格式： openssl ciphers ‘cipherstring1:cipherstring2.....'
+	genrsa     用于生成私钥
+		-out fiename: 指定输出文件。如果没有设定此选项，将会输出到标准输出。
+		-passout arg: 指定密码来源。		
+		-des|-des3|-idea：用来加密私钥文件的三种对称加密算法。		
+		-F4|-3：指定指数。-f4为0x1001  		
+		-rand file(s)：指定随机种子。		
+		-engine id：硬件引擎。		
+		numbits:  生成的密钥位数。必须是本指令的最后一个参数。默认为512bits。
+	rsa        RSA密钥管理(例如:从私钥中提取公钥)	
+	req        生成证书签名请求(CSR)	
+		-inform PEM|DER——输入的证书请求的格式。 DER选项使用与PKCS＃10兼容的ASN1 DER编码格式。 PEM格式是默认格式：它由DER格式base64编码，带有附加的头部和尾部。
+		-outform PEM|DER——输出的证书或证书请求的格式，默认PEM
+		-in filename——输入的证书请求文件名，如果未指定此选项，则从标准输入。只有未指定选项-new和-newkey）时，才会读取证书请求
+		-out filename——输出证书或证书请求文件名，不指定则默认标准输出
+		-[digest]——指定消息摘要算法（如-md5，-sha1）来对证书请求签名。这将覆盖配置文件中指定的摘要算法。 * 一些公钥算法可以忽略这个选项*。例如，DSA签名始终使用SHA1，GOST R 34.10签名始终使用GOST R 34.11-94（-md_gost94）。
+		-config filename——使用的config文件的名称。本选项如果没有设置，将使用缺省的config文件
+		-key filename—— 指定从中读取私钥的文件。它也读取PEM格式的PKCS＃8私钥
+		-keyform PEM|DER——在-key参数中指定的读入的私钥文件的格式。默认 PEM
+		-passin arg——私钥的口令
+		-keyout filename—— 指定新创建的私钥的输出文件名字。如果未指定此选项，则使用配置文件中的文件名。只能以PEM格式输出
+		-passout arg——新建的私钥口令
+		-rand file(s)——指定随机数种子文件，或者EGD套接字的随机数据的文件，多个文件间用分隔符分开，windows用“;”，OpenVMS用“,“，其他系统用“：”
+		-nodes——如果指定了此选项，创建私钥时则不会对其进行加密
+		-keygen_engine id——生成私钥的引擎
+		-pkeyopt opt：value 设置公钥算法选项选择值。genpkey手册页中的密钥生成选项。
+		-newkey arg——用于生成新的私钥以及证书请求。arg 可以是下列： 
+		rsa：nbits——其中nbits是比特数，指明生成一个RSA密钥的长度。如果省略nbits，如：-newkey rsa，则使用配置文件中指定的默认密钥长度。
+		alg:file——所有其他算法都支持-newkey alg：filename，其中文件可能是由genpkey -genparam命令创建的算法参数文件或于具有适用于alg算法的密钥的X.509证书。
+		param:file —— 用参数文件或证书文件生成一个密钥，算法由参数决定，
+		algname:file—— 使用algname指定的算法和flle指定的参数生成密钥， 算法与参数必须匹配，algname指定代表所使用的算法，file可以省略，但必须用 -pkeyopt parameter指定参数。
+		dsa：filename——使用文件filename中的参数生成DSA密钥。
+		ec：filename——生成EC密钥（可用于ECDSA或ECDH算法），
+		gost2001：filename——生成GOST R 34.10-2001密钥（需要在配置文件中配置ccgost引擎）。如果只指定gost2001，则应通过-pkeyopt paramset：X指定参数集
+		-verify—— 验证证书请求上的签名。
+		-new——本选项产生一个新的证书请求，它会要用户输入创建证书请求的一些必须的信息。至于需要哪些信息，是在config文件里面定义好了的。如果-key没有被设置,，那么就将根据config文件里的信息先产生一对新的RSA密钥值。
+		-multivalue-rdn——当采用-subj arg选项时，允许多个值的rdn，比如arg参数写作：/CN=china/OU=test/O=abc/UID=123456+CN=forxy。如果不使用此选项，则UID值为123456+CN=forxy
+		-asn1-kludge——缺省的req指令输出不带属性的完全符合PKCS10格式的证书请求，但有的CA仅仅接受一种非正常格式的证书请求，这个选项的设置就可以输出那种格式的证书请求。PKCS＃10证书请求中的属性被定义为SET OF属性。 它们不是可选的，因此如果没有属性存在，那么它们应该被编码为空的SET OF。 而非正常格式的证书请求中不包括空的SET OF。 应该注意的是，很少的CA仍然需要使用这个选项。
+		-no-asn1-kludge——不输出特定格式的证书请求。
+		-newhdr——在CSR问的第一行和最后一行中加一个单词”NEW”，有的软件(netscape certificate server)和有的CA就有这样子的怪癖嗜好。如果那些必须要的选项的参数没有在命令行给出，那么就会到config文件里去查看是否有缺省值
+		-extensions section -reqexts section——这俩个选项指定config文件里面的与证书扩展和证书请求扩展有关的俩个section的名字(如果-x509这个选项被设置)。这样你可以在config文件里弄几个不同的与证书扩展有关的section，然后为了不同的目的给证书请求签名的时候指明不同的section来控制签名的行为。。
+		-utf8—— 此选项将字段值解释为UTF8字符串，默认情况下将其解释为ASCII。这意味着字段值（无论是从终端提示还是从配置文件获取）必须是有效的UTF8字符串。
+		-subj arg——用于指定生成的证书请求的用户信息，或者处理证书请求时用指定参数替换。生成证书请求时，如果不指定此选项，程序会提示用户来输入各个用户信息，包括国名、组织等信息，如果采用此选择，则不需要用户输入了。比如：-subj /CN=china/OU=test/O=abc/CN=forxy，注意这里等属性必须大写。
+		-batch——不询问用户任何信息（私钥口令除外），采用此选项生成证书请求时，不询问证书请求当各种信息
+		-verbose—— 打印关于执行操作的额外的详细信息
+		-engine id——引擎
+		-x509—— 此选项输出自签名证书。这通常用于生成测试证书或自签名根证书。添加到证书的扩展项（如果有）在配置文件中指定。除非使用set_serial选项，否则将使用较大的随机数作为序列号。
+		-days n—— 当使用-x509选项时，指定证书的有效期。默认为30天。
+		-set_serial n—— 输出自签名证书时使用的序列号。如果前缀为0x，则可以将其指定为十进制值或十六进制值。可以使用负序列号，但不建议这样做。
+		-text—— 以文本形式打印证书请求
+		-pubkey—— 输出公钥。
+		-noout——选项可防止输出证书请求的编码版本
+		-modulus—— 该选项打印证书请求中公钥的模数值
+		-subject—— 打印证书请求的subject
+		-nameopt——用于确定主题或发行者名称的显示方式。选项参数可以是单个选项或多个选项，以逗号分隔。-nameopt开关可以被多次使用以设置多个选项。参见X509。
+		-reqopt—— 定制与-text一起使用时的输出格式。选项参数可以是单个选项或多个选项，以逗号分隔。 请参阅x509命令中-certopt参数的说明。
+	crl        证书吊销列表(CRL)管理	
+	ca         CA管理(例如对证书进行签名)	
+	dgst       生成信息摘要	
+	rsautl     用于完成RSA签名、验证、加密和解密功能	
+	passwd     生成散列密码	
+	rand       生成伪随机数	
+	speed      用于测试加解密速度                    	
+	s_client   通用的SSL/TLS客户端测试工具	
+	X509       X.509证书管理	
+	verify      X.509证书验证	
+	pkcs7       PKCS#7协议数据管理
+
 
 	

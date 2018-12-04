@@ -5,7 +5,6 @@ set ts=4                            "设置tabstop为4个空格的距离
 set shiftwidth=4                    "缩进时的距离为4
 "set cindent                         "c语言的缩进方式
 "set expandtab                       "将tab转换为等量的空格
-export PS1='[\u@\h \W]\$'
 
 set wildmode=longest,list			"设定命令行模式补全行为
 set history=200						"记录100条命令
