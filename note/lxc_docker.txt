@@ -116,6 +116,8 @@ docker run	镜像名  进程(如:/bin/bash 启动docker容器执行/bin/bash这�
 	--mtu=BYTES						容器网络中的MTU
 	--link=CONTAINER:ALIAS			添加到另一个容器的连接
 	--restart=no/on-failure/always	容器退出时重启容器,如果创建时未指定,可以通过docker update --restart=always xxx来指定
+	例:
+		docker run -d --name nginx -v /home/hells/armDisk/schedulerTest/default.conf:/etc/nginx/conf.d/default.conf -v /home/hells/armDisk/schedulerTest/nginx:/usr/share/nginx/html nginx
 docker start/stop/restart		启动/停止/重启容器,后接容器id
 kill
 docker rm	容器id				删除一个处于终止状态的容器

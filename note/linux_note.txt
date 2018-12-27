@@ -162,7 +162,7 @@ mount	参数  装置名称代号  挂载点
 -a	依照/etc/fstab的内容将所有相关的磁盘都挂上来
 -n	一般来说,当我们挂载档案系统到Linux上头时,Linux会主动将目前的partition与filesystem还有对应的挂载点,都记录到/etc/mtab档案中,不过有些时刻(例如不正常关机导致一些问题,而进入单人维护模式)系统
 -L	取表头名称,可以用来挂载
--t	指定挂载的系统类型(如ext3,ext2),例: mount -o nolock,rw,soft,timeo=30,retry=3,vers=3 -t nfs 10.12.5.107:/home/hells/armDisk /home/panwenjian/remoteDisk  如果挂载不上,可以使用-o vers=3,表示指定使用nfs版本3
+-t	指定挂载的系统类型(如ext3,ext2),例: mount -o nolock,rw,soft,timeo=30,retry=3,vers=3 -t nfs 10.112.69.106:/home/hells/armDisk /home/panwenjian/remoteDisk  如果挂载不上,可以使用-o vers=3,表示指定使用nfs版本3
 mount -t cifs -o username=panwenjian //10.16.137.15/daofengpk1 /home/hells/daofengpk1		挂载windows共享目录
 --bind	将某个目录挂到另一个目录下面
 -o	额外参数
@@ -628,18 +628,21 @@ cut -c num1-num2	取出第num1和num2间的字符
 -b	提取哪个字节
 
 grep -acinv '搜寻字符串' filename
--o	只将匹配到的部分显示出来,而非整一行
--a	将binary档案以text档案的方式搜寻数据
--c	计算找到'搜寻字符串'的次数
--i	忽略大小写的不同,所以大小写视为相同
--n	顺便输出行号
--v	反向选择,亦即显示出没有'搜寻字符串'内容的那一行
--l  只显示匹配的文件名
--L	只显示不匹配文件内容的文件名
--F  将搜寻字符串里的所有内容都当做正常字符来搜索,而非正则表达式
--A	显示后几行		--after-context
--B  显示前几行		--before-context
--C  显示上下几行	--context
+	-q  安静,不向标准输出写任何东西,如果找到任何匹配的内容就立即以0即出,即使检测到了错误
+	-w  只选择含有能组成完整的词的匹配行,判断方法是匹配的字符串必须是一行的开始,或者是在一个不可能是词的组成的字符之后,与此相似,它必须是一行的结束,或者是在一个不可能是词的组成的字符之前,词的组成是字母,数字,下划线
+	-o	只将匹配到的部分显示出来,而非整一行
+	-a	将binary档案以text档案的方式搜寻数据
+	-c	计算找到'搜寻字符串'的次数
+	-i	忽略大小写的不同,所以大小写视为相同
+	-n	顺便输出行号
+	-v	反向选择,亦即显示出没有'搜寻字符串'内容的那一行
+	-l  只显示匹配的文件名
+	-L	只显示不匹配文件内容的文件名
+	-F  将搜寻字符串里的所有内容都当做正常字符来搜索,而非正则表达式
+	-A	显示后几行		--after-context
+	-B  显示前几行		--before-context
+	-C  显示上下几行	--context
+	-R	递归搜索
 grep 指令后不跟任何参数,则表示要使用 ”BREs“ (basic regular expression)
 grep 指令后跟 ”-E" 参数,则表示要使用 “EREs“ (extended regular expression)
 grep 指令后跟 “-P" 参数,则表示要使用 “PREs"  (perl regular expression)	
@@ -977,7 +980,7 @@ su	-lcm	用户名
 	-	使用su -时,表示该使用者想变换身份成为root,且使用root的环境设定参数档
 	-l	后面可以接使用者,可以使用欲换身份者的环境设定档
 	-m	-m与-p是一样的,表示使用目前的环境设定档,而不重新读取新使用者的设定档
-	-c	仅进行一次指令,所以-c后面可以加上指令 
+	-c	仅进行一次指令,所以-c后面可以加上指令,即执行完命令后恢复原来的身份
 
 sudo	参数	command		/etc/sudoers(使用者的账号(前加%的话代表群组) 登入的主机=(可以变换的身份)可以下达的指令) 例: panwenjian ALL = NOPASSWD: ALL
 	-u	后面接使用者账号名称,或者是UID(-u #1000)  
@@ -1116,6 +1119,8 @@ ps有3种不同类型的命令选项：
 			etime	进程运行的时间
 			uid		显示用户id
 			gid		显示组id
+			state	进程状态
+			rtprio  实时优先级,若显示-,则不是实时进程
 		ps -e -o pid,cmd,etime,lstart  | grep EngineServer
 		ps -lA
 		ps -xH			显示所有线程信息
@@ -1244,6 +1249,15 @@ getconf		将系统配置变量值打印到输出屏幕上
 
 uptime	显示系统当前时间,已经开机多久了,以及1,5,15分钟的平均负载,就是top画面的最上面的一行
 
+nsenter 	进入其他进程的命名空间
+	-t,--target  进程id 	                     
+	-m,--mount 	 进入到mount namespace
+	-u,--uts 	 进入到uts namespace	
+	-i,--ipc	 进入到ipc namespace				  
+	-n,--net	 进入到net namespace
+	-p,--pid	 进入到pid namespace
+	-U,--user	 进入到user namespace
+
 ip [ OPTIONS ] OBJECT { COMMAND | help }  用来显示或操纵Linux主机的路由、网络设备、策略路由和隧道，是Linux下较新的功能强大的网络配置工具
 OPTIONS
 	-V：显示指令版本信息；
@@ -1272,6 +1286,7 @@ OBJECT 		所有对象名都可以简写,例:address 可以简写为addr,甚至�
 	添加路由表(删除将add改为del): 	ip route add TARGET via GW  如 ip route add 172.16.0.0/16 via 192.168.29.1
 	显示路由表:					  	ip route show
 	清空路由表:					  	ip route flush [dev IFACE] [via PREFIX] 如 ip route flush dev ens33
+	清空ip地址:						ip addr flush [dev IFACE]
 	显示网络设备运行状态:		  	ip link list
 	查看网卡信息:				  	ip -s link list ens33
 	设置MTU:					  	ip link set ens33 mtu 1400
@@ -1476,6 +1491,7 @@ iconv	编码转换
 -f, --from-code=名称 原始文本编码
 -t, --to-code=名称 输出编码
 -l, --list 列举所有已知的字符集
+-o, 输出到指定文件,别和input同名
 
 xxd   文件名   		以十六进制显示一个文件
 	-p		以 postscript 的 连续 十六进制 转储 输出. 这 也叫做 纯 十六进制 转储
@@ -1655,6 +1671,8 @@ journalctl  服务日志管理
 	
 selinux				(Security-Enhanced Linux) 是美国国家安全局（NSA）对于强制访问控制的实现,是 linux历史上最杰出的新安全子系统。它不是用来防火墙设置的。但它对Linux系统的安全很有用
 	配置文件位于/etc/sysconfig/selinux或/etc/selinux/config
+		SELINUX=enforcing|permissive|disabled 		强制模式,并提供限制存取机制|开启功能,但是提供警告模式代替代替限制机制|关闭
+		SELINUXTYPE=targeted|strict					只对主要的网络服务进行保护|对整个系统进行保护
 iptables			iptables用于过滤数据包,属于网络层防火墙./etc/sysconfig/iptables-config可默认关闭
 	-t	后面接table,例如net或filter,若省略此项目,则使用默认的filter
 	-L	列出目前的table规则
@@ -1911,9 +1929,10 @@ yum list extras						  列出已经安装的但是不包含在资源库的rpm包
 yum search mozilla					  搜索包含mozilla的rpm包
 yum provides realplay				  搜索包含特定文件名的rpm包
 yum makecache						  根据/etc/yum.repos.d/CentOS-Base.repo(centos环境下)将服务器上的包信息缓存到本地
+yum downgrade						  降级
 fastestmirror是yum的一个加速插件，可以修改/etc/yum/pluginconf.d/fastestmirror.conf里的enable为0禁用掉,也可以修改/etc/yum.conf里的plugin置为0
 
-/etc/apt/sources.list
+/etc/apt/sources.list				  若更改了些文件,则先执行apt-get update
 apt-get 	update					  更新本机中的数据库缓存
 apt-cache	search	要查找的名字	  查找包含部分关键字的软件包
 apt-get 	install 名字			  安装某个软件包,卸载软件在名字后加一个-
@@ -1944,7 +1963,7 @@ wget  网络地址						从网络上自动下载文件的自由工具
 	-V			显示版本号后退出
 	-h			显示软件的帮助信息
 	-e			执行一个.wgetrc命令
-	-o			输出到文件
+	-O			输出到文件
 	-d			显示输出信息
 	-q			不显示输出信息
 	-i			从文件中取得url
@@ -2100,6 +2119,7 @@ curl
 		
 	
 ifconfig 	 对网络接口进行配置和查询
+	-a       未启动的网卡也显示出来
 	ifconfig    ethx 		ipaddr 		netmask 		x.x.x.x
 				网卡号		ip地址		固定			掩码地址
 	重启后会失效
@@ -2444,6 +2464,27 @@ shred    文件名		粉碎文件,粉碎后默认是覆盖
 	-u				粉碎后删除
 	
 ssh_pass			若要实现不输入密码登录ssh或telnet,可使用此工具
+
+SSH: Port Forwarding
+1.正向隧道-隧道监听本地port,为普通活动提供安全连接
+	ssh -qTfnN -L port:host:hostport -l user remote_ip
+	ssh -CfNg -L 6300:127.0.0.1:1521 oracle@172.16.1.164
+	本机(运行这条命令的主机)打开6300端口, 通过加密隧道映射到远程主机172.16.1.164的1521端口(使用远程主机oracle用户). 在本机上用netstat -an|grep 6300可看到. 简单说,本机的6300端口就是远程主机172.16.1.164的1521端口. 
+2.反向隧道----隧道监听远程port，突破防火墙提供服务
+	ssh -qTfnN -R port:host:hostport -l user remote_ip
+	ssh -CfNg -R 1521:127.0.0.1:6300 oracle@172.16.1.164
+	作用同上, 只是在远程主机172.16.1.164上打开1521端口, 来映射本机的6300端口. 
+3.socks代理
+	SSH -qTfnN -D port remotehost（用证书验证就直接主机名，没用的还要加上用户名密码）
+-q Quiet mode. 安静模式，忽略一切对话和错误提示。
+-T Disable pseudo-tty allocation. 不占用 shell 了。
+-f Requests ssh to go to background just before command execution. 后台运行，并推荐加上 -n 参数。
+-n Redirects stdin from /dev/null (actually, prevents reading from stdin). -f 推荐的，不加这条参数应该也行。
+-N Do not execute a remote command. 不执行远程命令，专为端口转发度身打造。
+-C 表示压缩数据传输
+-g 表示允许远程主机连接转发端口
+-L 本地转发
+-R 远程转发
 
 nc/ncat				在两台电脑之间建立数据流,能建立一个服务器,传输文件,与朋友聊天,查看端口
 -4 使用IPV4

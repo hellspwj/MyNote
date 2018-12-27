@@ -361,6 +361,13 @@ kubectl是Kubernetes集群的命令行工具，通过kubectl能够对集群本�
 		kubectl get svc		   获取Service暴露的Cluster IP和端口
 		kubectl get namespace  获取命名空间信息
 		kubectl get componentstatus  获取组件状态
+		kubectl get pods	   获取default namespace下所有pods信息
+			-n 			指定namespace
+			-o wide		查看pod位于哪台机器上运行
+		kubectl delete  
+			-f  文件名    支持json或yaml格式,可以删除pod
+		kubectl cordon    对节点进行隔离
+		kubectl uncordon  对节点进行恢复
 		
 etcdctl是etcd的命令行工具
 	etcdctl member list 		显示组成etcd集群的机器ip信息
