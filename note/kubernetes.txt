@@ -20,7 +20,6 @@ kubernetes是一个基于容器的分布式架构解决方案
 		
 Master节点进程
 	kube-apiserver是kubernetes里所有资源的增,删,改,查等操作的唯一接口,也是集群控制的入口进程
-		--etcd-servers=[]					指定etcd服务的URL
 		--insecure-bind-address=127.0.0.1	apiserver绑定主机的非安全地址
 		--insecure-port=8080				apiserver绑定主机的非安全端口号,默认为8080
 		--service-cluster-ip-range=<nil>	kubernetes集群中Service的虚拟IP地址段范围,以CIDR格式表示,例如 169.169.0.0/16,不能与物理机的真实IP段有重合
@@ -106,9 +105,20 @@ Master节点进程
 		--ssh-user=""						如果指定,则通过SSH使用指定的用户名对Node进行访问
 		--storage-backend=""				设置持久化存储类型,可选项为etcd2(默认),etcd3
 		--storage-media-type="application/json"	持久化存储中的保存格式,默认为application/json,某些资源类型只能使用application/json格式进行保存,将忽略这个参数的设置
-		--storage-versions=""				持久化存储的资源版本号,以分组形式标记
+		--storage-versions=""				持久化存储的资源版本号,以分组形式标记,--storage-backend=etcd3默认是etcd2
 		--watch-cache[=true]				设置为true表示将watch进行缓存
 		--watch-cache-size=[]				设置各资源对象watch缓存大小的列表,以逗号分隔,每个资源对象的设置格式为resource#size,当--watch-cache为true时才生效
+		kube-apiserver 1.6 版本开始使用 etcd v3 API 和存储格式
+		--authorization-mode=RBAC 指定在安全端口使用RBAC 授权模式，拒绝未通过授权的请求
+		kube-scheduler、kube-controller-manager 一般和 kube-apiserver 部署在同一台机器上，它们使用非安全端口和 kube-apiserver通信
+		kubelet、kube-proxy、kubectl 部署在其它 Node 节点上，如果通过安全端口访问 kube-apiserver，则必须先通过 TLS 证书认证，再通过 RBAC 授权
+		kube-proxy、kubectl 通过使用证书里指定相关的 User、Group 来达到通过 RBAC 授权的目的
+		如果使用了 kubelet TLS Boostrap 机制，则不能再指定 --kubelet-certificate-authority、--kubelet-client-certificate 和 --kubelet-client-key 选项，否则后续 kube-apiserver 校验 kubelet 证书时出现 ”x509: certificate signed by unknown authority“ 错误
+		--admission-control 值必须包含 ServiceAccount，否则部署集群插件时会失败
+		--bind-address 不能为 127.0.0.1
+		--service-node-port-range=${NODE_PORT_RANGE} 指定 NodePort 的端口范围
+		缺省情况下 kubernetes 对象保存在etcd/registry 路径下，可以通过 --etcd-prefix 参数进行调整
+		kube-apiserver 1.8版本后需要在--authorization-mode参数中添加Node，即：--authorization-mode=Node,RBAC，否则Node 节点无法注册
 	
 	kube-controller-manager是所有资源对象的自动化控制中心,依赖于kube-apiserver
 		--master								指定apiserver的URL地址,设置后不再使用kubeconfig中设置的值
@@ -116,6 +126,10 @@ Master节点进程
 		--root-ca-file							指定kube-apiserver设定的服务端证书文件,将被用于Service Account的token secret中
 		--kubeconfig							指定kubeconfig配置文件路径,在配置文件中包括Master地址信息及必要的认证信息
 		--address=0.0.0.0						监听的主机IP地址,默认为0.0.0.0表示使用全部网络接口
+		--cluster-signing-cert-file=			指定签名的CA机构根证书，用来签名为 TLS BootStrap 创建的证书和私钥
+		-cluster-signing-key-file=				指定签名的CA机构私钥，用来签名为 TLS BootStrap 创建的证书和私钥
+		--service-account-private-key-file=		同上
+		-root-ca-file=							根CA证书文件路径 ，用来对 kube-apiserver 证书进行校验，指定该参数后，才会在Pod 容器的 ServiceAccount 中放置该 CA 证书文件
 		--allocate-node-cidrs=false				设置为true表示使用云服务商为Pod分配的CIDRs,仅用于公有云
 		--cloud-config=""						云服务商的配置文件路径,仅用于公有云
 		--cloud-provider=""						云服务商的名称,仅用于公有云
@@ -193,6 +207,20 @@ Master节点进程
 	
 Node节点进程
 	kubelet负责Pod对应容器的创建,启停等任务,同时与Master节点密切协作,实现集群管理的基本功能,依赖于Docker服务
+	kubelet 启动时向kube-apiserver 发送TLS bootstrapping 请求，需要先将bootstrap token 文件中的kubelet-bootstrap 用户赋予system:node-bootstrapper 角色，然后kubelet 才有权限创建认证请求(certificatesigningrequests)
+		kubectl create clusterrolebinding kubelet-bootstrap --clusterrole=system:node-bootstrapper --user=kubelet-bootstrap
+		另外1.8 版本中还需要为Node 请求创建一个RBAC 授权规则：
+			kubectl create clusterrolebinding kubelet-nodes --clusterrole=system:node --group=system:nodes
+	创建kubelet bootstapping kubeconfig 文件
+	设置集群参数
+		kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/ssl/ca.crt --embed-certs=true --server=${KUBE_APISERVER} --kubeconfig=bootstrap.kubeconfig
+	设置客户端认证参数
+		kubectl config set-credentials kubelet-bootstrap --token=${BOOTSTRAP_TOKEN} --kubeconfig=bootstrap.kubeconfig
+	设置上下文参数
+		kubectl config set-context default --cluster=kubernetes --user=kubelet-bootstrap --kubeconfig=bootstrap.kubeconfig
+	设置默认上下文
+		kubectl config use-context default --kubeconfig=bootstrap.kubeconfig
+		mv bootstrap.kubeconfig /etc/kubernetes/
 		--address=0.0.0.0			绑定的主机IP地址,默认为0.0.0.0表示使用全部网络接口
 		--allow-privileged[=false]	是否允许以特权模式启动容器,默认为false
 		--api-servers=[]			API Server地址列表,以ip:port格式表示,以逗号分隔
@@ -312,6 +340,15 @@ Node节点进程
 		--volume-stats-agg-period=1m0s	kubelet计算所有Pod和volume的磁盘使用情况聚合值的时间间隔,设置为0表示不启用该计算功能
 	
 	kube-proxy实现Service的通信与负载均衡的重要组件,依赖于network服务
+		首先要生成kubeconfig文件
+			设置集群参数
+				kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/ssl/ca.crt --embed-certs=true --server=${KUBE_APISERVER} --kubeconfig=kube-proxy.kubeconfig
+			设置客户端认证参数
+				kubectl config set-credentials kube-proxy --client-certificate=/etc/kubernetes/ssl/kube-proxy.crt --client-key=/etc/kubernetes/ssl/kube-proxy.key --embed-certs=true --kubeconfig=kube-proxy.kubeconfig
+			设置上下文参数
+				kubectl config set-context default --cluster=kubernetes --user=kube-proxy --kubeconfig=kube-proxy.kubeconfig
+			设置默认上下文
+				kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 		--bind-address=0.0.0.0			kube-proxy绑定主机的IP地址,默认为0.0.0.0表示绑定主机所有IP地址
 		--cleanup-iptables[=false]		设置为true表示清除iptables规则后退出
 		--cluster-cidr=""				集群中Pod的CIDR地址范围,用于桥接集群外部流量到内部,用于公有云环境
@@ -337,24 +374,125 @@ Node节点进程
 	
 		
 etcd是一个分布式高性能的,持久化缓存,基于key-value,kubernetes里所有资源对象数据全保存在etcd中
+	--name 							本节点名称
+	--data-dir						指定节点数据存储目录,这些数据包括节点ID,集群ID,集群初始化配置,Snapshot文件
+	–wal-dir 						指定节点的was文件存储目录，若指定了该参数，wal文件会和其他数据文件分开存储
+	--initial-advertise-peer-urls	建议用于节点之间通信的url，节点间将以该值进行通信.告知集群其他节点url,其他节点通过该地址与本节点交互信息,一定要保证其他节点可以访问该地址,静态配置方式下,该参数的值一定要同时在--initial-cluster参数中存在,一般是tcp2380端口用于集群通信
+	--listen-peer-urls				本节点使用,用于监听其他节点发送信息的地址,监听的用于节点之间通信的url，可监听多个，集群内部将通过这些url进行数据交互(如选举，数据同步等)
+	--listen-client-urls			监听的用于客户端通信的url,同样可以监听多个。
+	--advertise-client-urls			建议使用的客户端通信url,该值用于etcd代理或etcd成员与etcd节点通信,本节点使用,用于监听etcd客户端发送信息的地址,就是告知客户端的url,也就是服务的url,tcp2379端口用于监听客户请求
+	--initial-clsuter-token			集群的ID,设置该值后集群将生成唯一id,并为每个节点也生成唯一id,当使用相同配置文件再启动一个集群时，只要该token值不一样，etcd集群就不会相互影响。
+	--initial-cluster				本节点使用,描述集群中所有节点的信息,本节点根据此信息去联系其他节点,也就是集群中所有的initial-advertise-peer-urls 的合集
+	--initial-cluster-state new		用于指示本次是否为新建集群,有2个取值new和existing,如果填为existing,则该节点启动时会尝试与其他节点交互,集群初次建立时,要填new,经尝试最后一个节点填existing也正常，其他节点不能填为existing。集群运行过程中，一个member故障后恢复时填为existing，经尝试填为new也正常。
+	--cert-file ''					客户端证书
+		path to the client server TLS cert file.
+	--key-file ''					客户端秘钥
+		path to the client server TLS key file.
+	--client-cert-auth 'false'		是否开启客户端证书认证
+		enable client cert authentication.
+	--trusted-ca-file ''			根证书
+		path to the client server TLS trusted CA key file.
+	--peer-cert-file ''				集群中其他节点来认证的证书
+		path to the peer server TLS cert file.
+	--peer-key-file ''				集群中其他节点来认证的秘钥
+		path to the peer server TLS key file.
+	--peer-client-cert-auth 'false'	是否开启其他节点证书认证功能
+		enable peer client cert authentication.
+	--peer-trusted-ca-file ''		其他节点认证根证书
+		path to the peer server TLS trusted CA file.
+	ETCD_CERT_FILE="/etc/ssl/etcd/server.pem"
+	ETCD_KEY_FILE="/etc/ssl/etcd/server-key.pem"
+	ETCD_TRUSTED_CA_FILE="/etc/ssl/etcd/ca.pem"
+	ETCD_CLIENT_CERT_AUTH="true"
+	ETCD_PEER_CERT_FILE="/etc/ssl/etcd/member1.pem"
+	ETCD_PEER_KEY_FILE="/etc/ssl/etcd/member1-key.pem"
+	ETCD_PEER_TRUSTED_CA_FILE="/etc/ssl/etcd/ca.pem"
+	ETCD_PEER_CLIENT_CERT_AUTH="true"
+	后续要增加member走"运行中改配扩容"流程，即先add  member，然后启动新etcd。加入后都是正式member，不存在降为proxy的机制
+	--initial- 前缀类参数的使用
+     所有带此前缀的选项在集群启动后就没用了，member故障后再重起不用带，带了也没影响。
+	
+etcdctl是etcd的命令行工具
+	注意,若一台机器上开始部署过etcd,现在ip变了,重新部署时运行etcd会报错,此时应该先删掉原来etcd的数据目录
+	在使用etcdctl(etcd的客户端命令行)之前设置环境变量ETCDCTL_API=3，否则默认的API版本为2
+	Etcd v2 和 v3 本质上是共享同一套 raft 协议代码的两个独立的应用，接口不一样，存储不一样，数据互相隔离。也就是说如果从 Etcd v2 升级到 Etcd v3，原来v2 的数据还是只能用 v2 的接口访问，v3 的接口创建的数据也只能访问通过 v3 的接口访问
+	etcdctl member list 		显示组成etcd集群的机器ip信息
+	etcdctl cluster-health		显示健康状况
+	etcdctl member remove 1609b5a3a078c227  	从集群中删除节点
+	etcdctl member add <name> <peerURL> 		向集群中加入节点
+	
 
 flannel-在多个Node组成的kubernetes集群内,跨主机的容器间网络互通是kubernetes能正常工作的前提,kubernetes本身并不会对跨主机容器网络进行设置,这需要额外的工具,如flannel,open vSwitch,Weave,Calio
 	flannel采用覆盖网络(Overlay Network)模型来完成对网络的打通,flannel使用etcd作为数据库,所以需要预先装好etcd,每台Node都要安装flannel
-	flannel将覆盖docker0网桥,所以如果Docker服务已启动,需要先停止Docker服务
+	flannel工作原理,容器->veth->docker0->flanneld
+	flannel修改了docker启动参数的bip参数,它限制了所在节点容器获得的IP范围,所以如果Docker服务已启动,需要先停止Docker服务
+	Flannel默认有几种工作模式： 
+		udp - 默认 （只能测试，性能较差）
+		vxlan （推荐）
+		host-gw （推荐）
+		aws 
+		gce 
+		alloc 
+	容器网卡通过docker0桥接到flannel0网卡，而每个host对应的flannel0网段为 10.1.x.[1-255]/24，而flannel所组成的一个跨host的网段为10.1.x.x/16，而flannel0则为flanneld 进程虚拟出来的网卡。 
+	docker0的地址是由 /run/flannel/subnet.env 的 FLANNEL_SUBNET 参数决定的 
+	HostA的Container(cache1)和HostB的Container(backend2)如何通信 
+	host A的container1请求host B的container2的的数据时，流程如下： 根据host A的路由规则 "10.1.15.0 0.0.0.0 255.255.255.0 U 0 0 0 docker0“ 数据交给docker0处理。 
+	docker0会收到数据，然后根据路由规则 ”10.1.0.0 0.0.0.0 255.255.0.0 U 0 0 0 flannel0" 数据被交由给flannel0网卡处理。 flanneld会把数据封包然后送给eth0，用udp协议发送到对方host的eth0网卡。 
+	host B的 eth0网卡收到后，根据路由规则 10.1.0.0 0.0.0.0 255.255.0.0 U 0 0 0 flannel0" 则交给flannel0网卡处理。 
+	flanneld会把数据解包，根据路由规则 “10.1.20.0 0.0.0.0 255.255.255.0 U 0 0 0 docker0" 交给docker0处理。 
+	则host B的container 2 将会收到数据。 
+	至此网路通信解释完毕。 
+	需要先在etcd中写入flannel网络配置:例
+		etcdctl put /kube-centos/network/config '{"Network":"172.17.0.0/16","SubnetLen":24,"Backend":{"Type":"vxlan"}}'
+		写入的 Pod 网段(${CLUSTER_CIDR}，172.17.0.0/16) 必须与 kube-controller-manager 的 --cluster-cidr 选项值一致；
+		注意,put是v3的写入方法,本人部署时flanneld要用其他命令
+		etcdctl set /kube-centos/network/config '{"Network":"172.17.0.0/16","SubnetLen":24,"Backend":{"Type":"vxlan"}}'
+
+使用 kubeadm 管理令牌
+你可以使用 kubeadm 工具管理正在运行集群的令牌。它会从 kubeadm 创建的集群(/etc/kubernetes/admin.conf) 自动抓取默认管理员密码。你可以通过参数 --kubeconfig 对下面命令指定一个另外的 kubeconfig 文件抓取密码。
+	kubeadm token list 列举了令牌，同时显示了它们的过期时间和用途。
+	kubeadm token create 创建一个新令牌。
+		--description 设置新令牌的描述。
+		--ttl duration 设置令牌从 “现在” 起到过期时间的差值。 默认是 0 ，也就是不过期。
+		--usages 设置令牌被使用的方式。默认是 signing,authentication。用途在上面已经描述。
+	kubeadm token delete <token id>|<token id>.<token secret> 删除令牌。 令牌可以只用 ID 来确认，也可以用整个令牌的值。如果只用 ID 的情况下，密文不匹配的令牌也会被删除。
 
 kubectl是Kubernetes集群的命令行工具，通过kubectl能够对集群本身进行管理，并能够在集群上进行容器化应用的安装部署
+	先生成证书后,初始化,会在~/.kube下生成config文件
+			kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/ssl/ca.crt --embed-certs=true --server=https://10.112.69.106:6443
+		设置客户端认证参数
+			kubectl config set-credentials admin --client-certificate=/etc/kubernetes/ssl/admin.crt --embed-certs=true --client-key=/etc/kubernetes/ssl/admin.key --token=${BOOTSTRAP_TOKEN}
+		设置上下文参数
+			kubectl config set-context kubernetes --cluster=kubernetes --user=admin
+		设置默认上下文
+			kubectl config use-context kubernetes
+	kubectl默认从~/.kube/config配置文件中获取访问kube-apiserver 地址、证书、用户名等信息，需要正确配置该文件才能正常使用kubectl命令。
 	kubectl [command] [TYPE] [NAME] [flags]
 	comand：指定要对资源执行的操作，例如create、get、describe和delete
+		version  		显示客户端和服务器侧版本信息
+		api-versions	以group/version的格式显示服务器侧所支持的API版本
+		explain			显示资源文档信息,如kubectl explain deployment可以了解deployment的yaml文件该怎么写
+		get 			取得确认对象详细列表
+		describe		取得确认对象的详细信息
+		logs			取得pod中容器的log信息
+		exec			在pod执行一条命令
+		cp				在pod容器中考入或考出文件
+		cluster-info	查看整个集群的大概信息
 	TYPE：指定资源类型，资源类型是大小学敏感的，开发者能够以单数、复数和缩略的形式
 	NAME：指定资源的名称，名称也大小写敏感的。如果省略名称，则会显示所有的资源
 	flags：指定可选的参数。例如，可以使用-s或者–server参数指定Kubernetes API server的地址和端口,--namespace=名字查看某个命名空间下的特定资源,否则,显示的是default下的资源
 	--certificate-authority: 指定CA授权的证书
-	--client-certficate: 客户端证书
+	--client-certificate: 客户端证书
 	--client-key: 客户端密钥
 	--username:	指定HTTP BASE认证的用户名
 	--password: 指定HTTP BASE认证的密码
+	kubectl run NAME --image=image [--env="key=value"] [--port=port] [--replicas=replicas] [--dry-run=bool] [--overrides=inline-json] [--command] -- [COMMAND] [args...]
+			create
+			delete
 	例: kubectl create -f nginx-deployment.yaml 根据配置文件创建一个nginx部署对象
-		kubectl get rc  列出rc对象,查看pos可以kubectl get pods
+		kubectl get rc    列出rc对象,查看pos可以kubectl get pods,1.2版本后要使用kubectl get rs
+		kubectl get csr		查询未授权的CSR请求
+		kubectl certificate approve		接受请求
 		kubectl get nodes	查看集群中有多少个node
 		kubectl describe node nodeName	可以获取某个nodeName的详细信息
 		kubectl get endpoints  获取Pod暴露的ip和端口
@@ -364,14 +502,13 @@ kubectl是Kubernetes集群的命令行工具，通过kubectl能够对集群本�
 		kubectl get pods	   获取default namespace下所有pods信息
 			-n 			指定namespace
 			-o wide		查看pod位于哪台机器上运行
+		kubectl get pods --all-namespaces 获取所有名字空间下的pod信息
 		kubectl delete  
 			-f  文件名    支持json或yaml格式,可以删除pod
 		kubectl cordon    对节点进行隔离
 		kubectl uncordon  对节点进行恢复
-		
-etcdctl是etcd的命令行工具
-	etcdctl member list 		显示组成etcd集群的机器ip信息
-	etcdctl cluster-health		显示健康状况
+		kubectl exec -ti gpu2bin-4159198737-lbc00 -n root bash    可以进入pod查看信息
+		kubectl scale --replicas=3 -f *.yaml		更改pod数量
 	
 label是一个key=value的键值对,其中key与value由用户自己指定,label可以附加到各种资源对象上,例如Node,Pod,Service,RC等,一个资源对象可以写意任意数量的label,同一个label也可以被添加到任意数量的资源上
 	label通常在资源对象定义时确定,也可以在对象创建后动态添加或者删除
@@ -404,6 +541,9 @@ Pod	将每个服务进程包装到相应的Pod中,为了建立Service与Pod的�
 	每个Pod中运行着一个特殊的被称为Pause的容器,其他容器称为业务容器,这些业务容器共享Pause容器的网络栈和Volume挂载卷
 	并不是每个Pod和他里面运行的容器都能被"映射"到一个Service上,只有那些提供服务的(无论是对内还是对外)的一组Pod才会被映射成一个Service
 	Pod的Endpoint(ip+port)会随着Pod的销毁和创建而发生改变
+	在kubernetes中对长时间运行容器的要求是:其主程序需要一直在前台执行,如果我们创建的Docker镜像启动命令是nohup ./start.sh &则在kubelet创建这个容器的Pod运行完该命令,即认为Pod结束
+	对于无法改造为前台的应用,也可以使用开源工具Supervisor辅助进行前台运行的功能,Supervisor提供了一种可以同时启动多个后台应用,并保持Supervisor自身在前台执行的机制
+	yaml文件中的apiVersion必须是 kubectl api-versions的结果
 	
 PV(Persistent Volume)可以理解为kubernetes集群中的某个网络存储中对应的一块存储,它与Volume很类似,但有以下区别
 	PV只能是网络存储,不属于任何Node,但可以在每个Node上访问
