@@ -439,6 +439,67 @@ tar  参数	档案与目录(不能打包超过8G的文件,pax可以)
  
 unrar		解压rar文件格式
 	x		解压缩,x前面不用添加-
+	
+rsync   rsync（remote synchronize）是一个远程数据同步工具，可通过 LAN/WAN 快速同步多台主机之间的文件。也可以使用 rsync 同步本地硬盘中的不同目录。
+		rsync 是用于替代 rcp 的一个工具，rsync 使用所谓的 rsync算法 进行数据同步，这种算法只传送两个文件的不同部分，而不是每次都整份传送，因此速度相当快
+		若使用普通用户身份运行 rsync 命令，同步后的文件的属主将改变为这个普通用户身份。
+		若使用超级用户身份运行 rsync 命令，同步后的文件的属主将保持原来的用户身份。
+本地使用：
+rsync [OPTION...] SRC... [DEST]
+
+通过远程 Shell 使用：
+	拉: rsync [OPTION...] [USER@]HOST:SRC... [DEST]
+	推: rsync [OPTION...] SRC... [USER@]HOST:DEST
+
+访问 rsync 服务器:
+	拉: rsync [OPTION...] [USER@]HOST::SRC... [DEST]
+	推: rsync [OPTION...] SRC... [USER@]HOST::DEST
+	拉: rsync [OPTION...] rsync://[USER@]HOST[:PORT]/SRC... [DEST]
+	推: rsync [OPTION...] SRC... rsync://[USER@]HOST[:PORT]/DEST
+	
+	-a, ––archive	归档模式，表示以递归方式传输文件，并保持所有文件属性，等价于 -rlptgoD (注意不包括 -H)
+	-r, ––recursive	对子目录以递归模式处理
+	-l, ––links	保持符号链接文件
+	-H, ––hard-links	保持硬链接文件
+	-p, ––perms	保持文件权限
+	-t, ––times	保持文件时间信息
+	-g, ––group	保持文件属组信息
+	-o, ––owner	保持文件属主信息 (super-user only)
+	-D	保持设备文件和特殊文件 (super-user only)
+	-z, ––compress	在传输文件时进行压缩处理
+	––exclude=PATTERN	指定排除一个不需要传输的文件匹配模式
+	––exclude-from=FILE	从 FILE 中读取排除规则
+	––include=PATTERN	指定需要传输的文件匹配模式
+	––include-from=FILE	从 FILE 中读取包含规则
+	––copy-unsafe-links	拷贝指向SRC路径目录树以外的链接文件
+	––safe-links	忽略指向SRC路径目录树以外的链接文件（默认）
+	––existing	仅仅更新那些已经存在于接收端的文件，而不备份那些新创建的文件
+	––ignore-existing	忽略那些已经存在于接收端的文件，仅备份那些新创建的文件
+	-b, ––backup	当有变化时，对目标目录中的旧版文件进行备份
+	––backup-dir=DIR	与 -b 结合使用，将备份的文件存到 DIR 目录中
+	––link-dest=DIR	当文件未改变时基于 DIR 创建硬链接文件
+	––delete	删除那些接收端还有而发送端已经不存在的文件
+	––delete-before	接收者在传输之前进行删除操作 (默认)
+	––delete-during	接收者在传输过程中进行删除操作
+	––delete-after	接收者在传输之后进行删除操作
+	––delete-excluded	在接收方同时删除被排除的文件
+	-e, ––rsh=COMMAND	指定替代 rsh 的 shell 程序
+	––ignore-errors	即使出现 I/O 错误也进行删除
+	––partial	保留那些因故没有完全传输的文件，以是加快随后的再次传输
+	––progress	在传输时显示传输过程
+	-P	等价于 ––partial ––progress
+	––delay-updates	将正在更新的文件先保存到一个临时目录（默认为 “.~tmp~”），待传输完毕再更新目标文件
+	-v, ––verbose	详细输出模式
+	-q, ––quiet	精简输出模式
+	-h, ––human-readable	输出文件大小使用易读的单位（如，K，M等）
+	-n, ––dry-run	显示哪些文件将被传输
+	––list-only	仅仅列出文件而不进行复制
+	––rsyncpath=PROGRAM	指定远程服务器上的 rsync 命令所在路径
+	––password-file=FILE	从 FILE 中读取口令，以避免在终端上输入口令，通常在 cron 中连接 rsync 服务器时使用
+	-4, ––ipv4	使用 IPv4
+	-6, ––ipv6	使用 IPv6
+	––version	打印版本信息
+	––help	显示帮助信息
 
 dd	if=输入		of=输出		bs=block_size	 count=number			转换和拷贝文件
 if	也可以是装置
@@ -2174,7 +2235,7 @@ gcc寻找头文件的路径(按照1->2->3的顺序)
 clear	清屏,本质上是让终端向后翻一页,快捷键ctrl+l
 reset	刷新终端屏幕,速度较慢,少用
 
-rpm -ivh  package_name	安装软件
+o -ivh  package_name	安装软件
 	-i	install的意思
 	-v	察看更细部的安装信息画面
 	-h	以安装信息列显示安装进度

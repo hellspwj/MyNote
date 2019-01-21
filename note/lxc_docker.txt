@@ -174,6 +174,8 @@ docker  images				查看本地所有镜像
 	-f  即--filters,根据某个条件过滤显示出来的镜像
 	-q	只显示镜像id
 docker  system 	df			查看本地镜像,容器,数据卷所占用的空间
+docker system prune			命令可以用于清理磁盘，删除关闭的容器、无用的数据卷和网络，以及dangling镜像(即无tag的镜像)
+	-a						清理得更加彻底，可以将没有容器使用Docker镜像都删掉
 docker 	rmi					删除镜像,后接镜像id,并非所有的删除都会删除镜像,有可能只是删除某个标签
 docker  tag	 IMAGE[:TAG]	[REGISTRY_HOST[:REGISTRY_PORT]/]REPOSITORY[:TAG]	给镜像打标记
 docker  build [选项] 上下文件路径	在Dockerfile文件所在目录执行此命令,实际docker build是在服务端进行构建的,因此需要指定上下文路径,docker build会将此路径下的所有内容打包上传到docker服务端

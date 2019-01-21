@@ -262,6 +262,7 @@ Node节点进程
 		--exit-on-lock-contention[=false]	设置为true表示当有文件锁存在时kubelet也可以退出
 		--experimental-flannel-overlay[=false]	实验性功能,用于kubelet启动时自动支持flannel覆盖网络,默认值为false
 		--experimental-nvidia-gpus=0		本节点上NVIDIA GPU的数量,目前仅支持0或1,默认为0
+		--feature-gates=Accelerators=true   1.6版本后支持多颗GPU,加上此参数即可,若还是没显卡,则去/usr/local/cuda/samples/1_Utilities/deviceQuery目录下执行make,然后./deviceQuery,重启kubelet即可
 		--file-check-frequency=20s	在File Source作为Pod源的情况下,kubelet定期重新检查文件变化的时间间隔,文件发生变化后,kubelet重新加载更新的文件内容
 		--global-housekeeping-interval=1m0s	全局housekeeping的时间间隔,默认为1分钟
 		--google-json-key=""		用于谷歌的云平台Service Account进行用于鉴权的JSON key
@@ -276,6 +277,7 @@ Node节点进程
 		--http-check-frequency=20s	HTTP URL Source作为Pod源的情况下,kubelet定期检查URL返回的内容是否发生变化的周期,作用同file-check-frequency参数
 		--image-gc-high-threshold=90	镜像垃圾回收上限,磁盘使用空间达到该百分比时,镜像垃圾回收将持续工作
 		--image-gc-low-threshold=80		镜像垃圾回收下限,磁盘使用空间在达到该百分比之前,镜像垃圾回收将不启用
+		--eviction-hard=memory.available<500Mi,nodefs.available<1Gi,imagefs.available<100Gi		新版本使用
 		--kube-api-burst=10			发送到API Server的每秒请求数量,默认为10
 		--kube-api-content-type="application/vnd.kubernetes.protobuf"	发送到API Server的请求内容类型
 		--kube-api-qps=5			与API Server通信的QPS值,默认为5
@@ -486,10 +488,13 @@ kubectl是Kubernetes集群的命令行工具，通过kubectl能够对集群本�
 	--client-key: 客户端密钥
 	--username:	指定HTTP BASE认证的用户名
 	--password: 指定HTTP BASE认证的密码
+	--show-labels:  显示label
 	kubectl run NAME --image=image [--env="key=value"] [--port=port] [--replicas=replicas] [--dry-run=bool] [--overrides=inline-json] [--command] -- [COMMAND] [args...]
 			create
+			apply 	和create一样,可以创建资源,可以多次执行,可以在更新配置文件后执行,而create只能执行一次
 			delete
 	例: kubectl create -f nginx-deployment.yaml 根据配置文件创建一个nginx部署对象
+		kubectl apply -f nginx-deployment.yaml 	可以应用对此配置文件的更改,也可以部署
 		kubectl get rc    列出rc对象,查看pos可以kubectl get pods,1.2版本后要使用kubectl get rs
 		kubectl get csr		查询未授权的CSR请求
 		kubectl certificate approve		接受请求
@@ -507,6 +512,9 @@ kubectl是Kubernetes集群的命令行工具，通过kubectl能够对集群本�
 			-f  文件名    支持json或yaml格式,可以删除pod
 		kubectl cordon    对节点进行隔离
 		kubectl uncordon  对节点进行恢复
+		kubectl drain 	  对指定节点上的容器进行驱离
+		kubectl label nodes <node-name> <label-key>=<label-value>		对节点添加label
+		kubectl label node k8s-node1 role-								删除label,key名后加一个减号即可
 		kubectl exec -ti gpu2bin-4159198737-lbc00 -n root bash    可以进入pod查看信息
 		kubectl scale --replicas=3 -f *.yaml		更改pod数量
 	
