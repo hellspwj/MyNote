@@ -1557,6 +1557,7 @@ iconv	编码转换
 
 xxd   文件名   		以十六进制显示一个文件
 	-p		以 postscript 的 连续 十六进制 转储 输出. 这 也叫做 纯 十六进制 转储
+	-r 		逆向操作,将十六进制转储成二进制形式
 
 输出控制：
 -c 从输出中忽略无效的字符
@@ -1607,7 +1608,7 @@ ldd(list dynamic dependencies) [-vdr]  filename  	列出动态库依赖关系,�
 
 strip	name	裁减目标文件name的符号表,使得nm就看不到符号表的名字了,但使用readelf -s仍然可以看到
 
-strings		文件名			打印文件中可打印的字符,可用在二进制文件中
+strings		文件名			打印文件中可打印的字符,可用在二进制文件中,这个文件可以是文本文件（test.c）, 可执行文件(test),  动态链接库(test.o), 静态链接库(test.a)
 
 nm  库名	列出file中的所有符号信息
 	-C		限制解码c++符号,用c符号名

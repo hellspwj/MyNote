@@ -11,6 +11,8 @@ $((运算内容))
 let c=$a+$b
 expr 表达式
 
+使用 BASE#NUMBER 这种形式可以表示其它进制,如8#123表示8进制的数字123,即10进制的83
+
 getopt 与 getopts 都是 Bash 中用来获取与分析命令行参数的工具，常用在 Shell 脚本中被用来分析脚本参数。
 
 两者的比较
@@ -82,6 +84,9 @@ test -z string	判定字符串是否为0?若string为空字符串,则为true
 test -n string	判定字符串是否为非0?若string为空字符串,则为false,-n可省略
 test str1 = str2	判定str1是否等于str2,若相等,则回传true
 test str1 != str2	判定str1是否不等于str2,若相等,则回传false
+
+shell中对比字符串只能使用==、<、>、!=、-z、-n
+对比数字使用既能使用-eq、-ne、-gt、-ge、-lt、-le，也能使用==、<、>、!=
 
 多重条件判定  例如test -r filename -a -x filename
 -a		(and)两状况同时成立,例如test -r file -a -x file,则file同时具有r与x权限时,才回传true

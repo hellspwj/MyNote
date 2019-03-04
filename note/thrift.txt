@@ -1,6 +1,9 @@
 thrift接口描述文件(interface description file)
 thrift编译
-thrift --gen 开发语言	thrift接口描述文件
+thrift --gen 开发语言	thrift接口描述文件  例:thrift --gen cpp compare.thrift 将会生成gen-cpp文件夹
+	和数据类型有关的内容，会命名为${thrift_file_name}_types.h/${thrift_file_name}_types.cpp
+	和常量有关的内容，会命名为${thrift_file_name}_constants.h/${thrift_file_name}_constants.cpp
+	针对每一个service会产生一套对应的文件，命名为${service_name}.cpp/${service_name}.h/${service_name}_server.skeleton.cpp
 编译thrift生成的文件时,要-lthrift
 
 第1步： 明确要交互的数据格式（如上例中的UserGradeInfo）和具体的方法（如上例中的Search），定义出thrift接口描述文件（英文叫做Inteface Description File）；
@@ -42,10 +45,35 @@ thrift --gen 开发语言	thrift接口描述文件
 	service Calculator extends shared.SharedService
 	{
 		void ping(),
-		i32 add(1:i32 num1,2:i32 num2),
+		i32 add(1:i32 num1,2:i32 num2),						//需要使用数字对参数进行标号
 		i32 calculate(1:i32 logid,2:i32 w) throws (1:InvalidOperation ouch),
 		oneway void zip()
 	}
+	
+thrift为服务端提供了5种工作模式:TSimpleServer、TNonblockingServer、THsHaServer、TThreadPoolServer、TThreadedSelectorServer
+	TSimpleServer
+		只有一个工作线程，循环监听新请求的到来并完成对请求的处理，它只是在简单的演示时候使用,TSimpleServer的工作模式采用最简单的阻塞IO，实现方法简洁明了，便于理解，但是一次只能接收和处理一个socket连接，效率比较低，主要用于演示Thrift的工作过程，在实际开发过程中很少用到它
+	TNonblockingServer
+		该模式也是单线程工作，但是该模式采用NIO的方式，所有的socket都被注册到selector中，在一个线程中通过seletor循环监控所有的socket，每次selector结束时，处理所有的处于就绪状态的socket，对于有数据到来的socket进行数据读取操作，对于有数据发送的socket则进行数据发送，对于监听socket则产生一个新业务socket并将其注册到selector中
+		相比于TSimpleServer效率提升主要体现在IO多路复用上，TNonblockingServer采用非阻塞IO，同时监控多个socket的状态变化；
+		TNonblockingServer模式在业务处理上还是采用单线程顺序来完成，在业务处理比较复杂、耗时的时候，例如某些接口函数需要读取数据库执行时间较长，此时该模式效率也不高，因为多个调用请求任务依然是顺序一个接一个执行
+	THsHaServer模式（半同步半异步）
+		是TNonblockingServer类的子类，在5.2节中的TNonblockingServer模式中，采用一个线程来完成对所有socket的监听和业务处理，造成了效率的低下，THsHaServer模式的引入则是部分解决了这些问题。THsHaServer模式中，引入一个线程池来专门进行业务处理
+		与TNonblockingServer模式相比，THsHaServer在完成数据读取之后，将业务处理过程交由一个线程池来完成，主线程直接返回进行下一次循环操作，效率大大提升；
+		主线程需要完成对所有socket的监听以及数据读写的工作，当并发请求数较大时，且发送数据量较多时，监听socket上新连接请求不能被及时接受。
+	TThreadPoolServer
+		TThreadPoolServer模式采用阻塞socket方式工作，,主线程负责阻塞式监听“监听socket”中是否有新socket到来，业务处理交由一个线程池来处理
+		线程池模式中，数据读取和业务处理都交由线程池完成，主线程只负责监听新连接，因此在并发量较大时新连接也能够被及时接受。线程池模式比较适合服务器端能预知最多有多少个客户端并发的情况，这时每个请求都能被业务线程池及时处理，性能也非常高
+		线程池模式的处理能力受限于线程池的工作能力，当并发请求数大于线程池中的线程数时，新请求也只能排队等待
+	TThreadedSelectorServer
+		TThreadedSelectorServer模式是目前Thrift提供的最高级的模式，它内部有如果几个部分构成:
+			（1）  一个AcceptThread线程对象，专门用于处理监听socket上的新连接；
+
+			（2）  若干个SelectorThread对象专门用于处理业务socket的网络I/O操作，所有网络数据的读写均是有这些线程来完成；
+			
+			（3）  一个负载均衡器SelectorThreadLoadBalancer对象，主要用于AcceptThread线程接收到一个新socket连接请求时，决定将这个新连接请求分配给哪个SelectorThread线程。
+			
+			（4）  一个ExecutorService类型的工作线程池，在SelectorThread线程中，监听到有业务socket中有调用请求过来，则将请求读取之后，交个ExecutorService线程池中的线程完成此次调用的具体执行；
 	
 引用其他thrift文件
 	include "name.thrift"
