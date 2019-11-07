@@ -86,6 +86,7 @@ docker run	镜像名  进程(如:/bin/bash 启动docker容器执行/bin/bash这�
 	从地址池配置一个ip地址给容器
 	执行用户指定的应用程序
 	执行完毕后容器被终止
+    -e: "key=value" ...，设置新的环境变量key
 	-i：交互式操作,进入镜像,让容器的标准输入保持打开
 	-t：让Docker分配一个伪终端(pseudo-tty)并绑定到容器的标准输入上
 	-d:	让Docker执行命令的结果在后台显示,别显示在宿主机上,如要查看,可以使用docker logs
@@ -168,6 +169,7 @@ docker login		登录
 docker pull	[选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]		从docker镜像仓库获取镜像,这里的仓库名是两段式标签,即用户名/软件名,对于Docker Hub,如果不给出用户名,则默认为library,即官方镜像
 docker push username/ubuntu:17.10		推送镜像
 docker search	关键词					查找镜像
+curl -XGET http://10.112.75.106:5000/v2/_catalog   可以获取私有仓库中的镜像
 
 本地镜像管理
 docker  images				查看本地所有镜像
@@ -180,6 +182,7 @@ docker 	rmi					删除镜像,后接镜像id,并非所有的删除都会删除镜
 docker  tag	 IMAGE[:TAG]	[REGISTRY_HOST[:REGISTRY_PORT]/]REPOSITORY[:TAG]	给镜像打标记
 docker  build [选项] 上下文件路径	在Dockerfile文件所在目录执行此命令,实际docker build是在服务端进行构建的,因此需要指定上下文路径,docker build会将此路径下的所有内容打包上传到docker服务端
 	-f  "路径"		指定Dockerfile路径,包含名称,并不要求一定文件名是Dockerfile
+	-t  ""			指定新镜像的名称
 history
 docker save					在其他已有镜像机器上执行此命令将此容器保存成tar文件镜像,例:docker save ubuntu:14.04 > ubuntu.14.04.tar或docker save alpine | gzip > alpine-latest.tar.gz
 docker load					加载镜像,例:docker load < ubuntu_14.04.tar 或 docker load -i alpine-latest.tar.gz
@@ -198,6 +201,7 @@ Dockerfile		使用docker commit来生成镜像的话会有大量无关内容被�
 	COPY	<源路径> ... <目标路径>  复制上下文路径中的文件,如 COPY ./package.json /app/ 并不是复制运行docker build目录下的package.json,也不是复制Dockerfile目录下的package.json
 			["<源路径1>",..."<目标路径>"]	源路径可以是多个,可以是通配符
 			--from  	可以从其他镜像复制文件
+	LABEL	<key>=<value> <key>=<value> <key>=<value> ...		为镜像指定标签
 	ADD		更高级的复制文件,如果源路径是一个url,则会去下载,如果源文件是一个tar压缩文件,压缩格式为gzip,bzip2,以及xz的情况下则会自动解压缩到目标路径去,因此除了需要自动解压缩的地方,不推荐使用
 	CMD		shell格式: 		CMD <命令>
 			exec格式:  		CMD ["可执行文件","参数1","参数2"...]

@@ -206,6 +206,10 @@ Master节点进程
 	
 	
 Node节点进程
+	API Server会创建一组默认的 ClusterRole和 ClusterRoleBinding对象。 这些默认对象中有许多包含 system:前缀，表明这些资源由Kubernetes基础组件”拥有”。 对这些资源的修改可能导致非功能性集群（non-functional cluster） 。一个例子是 system:node ClusterRole对象。这个角色定义了kubelets的权限。如果这个角色被修改，可能会导致kubelets无法正常工作。
+	kubectl get clusterrolebinding和kubectl get clusterrole可以查看系统中的角色与角色绑定
+	kubectl get clusterrolebindings system:node -o yaml或kubectl describe clusterrolebindings system:node查看system:node角色绑定的详细信息：
+
 	kubelet负责Pod对应容器的创建,启停等任务,同时与Master节点密切协作,实现集群管理的基本功能,依赖于Docker服务
 	kubelet 启动时向kube-apiserver 发送TLS bootstrapping 请求，需要先将bootstrap token 文件中的kubelet-bootstrap 用户赋予system:node-bootstrapper 角色，然后kubelet 才有权限创建认证请求(certificatesigningrequests)
 		kubectl create clusterrolebinding kubelet-bootstrap --clusterrole=system:node-bootstrapper --user=kubelet-bootstrap
@@ -282,7 +286,7 @@ Node节点进程
 		--kube-api-content-type="application/vnd.kubernetes.protobuf"	发送到API Server的请求内容类型
 		--kube-api-qps=5			与API Server通信的QPS值,默认为5
 		--kube-reserved=			kubernetes系统预留的资源配置,以一组ResourceName=ResourceQuantity格式表示,例如cpu=200m,memory=150G,目前仅支持CPU和内存的设置
-		--kubeconfig="/var/lib/kubelet/kubeconfig"		指定kubeconfig配置文件路径,在配置文件中包括Master地址信息及必要的认证信息
+		--kubeconfig="/var/lib/kubelet/kubeconfig"		指定kubeconfig配置文件路径,在配置文件中包括Master地址信息及必要的认证信息,此文件是生成的,不是先配置的
 		--kubelet-cgroups=""		kubelet运行所需的cgroups名称
 		--lock-file=""				kubelet使用的lock文件,Alpha版本
 		--log-cadvisor-usage[=false]设置为true表示将cAdvisor容器的使用情况进行日志记录
@@ -422,6 +426,7 @@ etcdctl是etcd的命令行工具
 	etcdctl cluster-health		显示健康状况
 	etcdctl member remove 1609b5a3a078c227  	从集群中删除节点
 	etcdctl member add <name> <peerURL> 		向集群中加入节点
+	curl 10.112.75.106:2379/v2/keys				可用此命令获取v2版本下的etcd里的所有key
 	
 
 flannel-在多个Node组成的kubernetes集群内,跨主机的容器间网络互通是kubernetes能正常工作的前提,kubernetes本身并不会对跨主机容器网络进行设置,这需要额外的工具,如flannel,open vSwitch,Weave,Calio

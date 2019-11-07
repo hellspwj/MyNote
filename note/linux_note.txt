@@ -161,7 +161,7 @@ mount	参数  装置名称代号  挂载点
 -a	依照/etc/fstab的内容将所有相关的磁盘都挂上来
 -n	一般来说,当我们挂载档案系统到Linux上头时,Linux会主动将目前的partition与filesystem还有对应的挂载点,都记录到/etc/mtab档案中,不过有些时刻(例如不正常关机导致一些问题,而进入单人维护模式)系统
 -L	取表头名称,可以用来挂载
--t	指定挂载的系统类型(如ext3,ext2),例: mount -o nolock,rw,soft,timeo=30,retry=3,vers=3 -t nfs 10.112.69.106:/home/hells/armDisk /home/panwenjian/remoteDisk  如果挂载不上,可以使用-o vers=3,表示指定使用nfs版本3
+-t	指定挂载的系统类型(如ext3,ext2),例: mount -o nolock,rw,soft,timeo=30,retry=3,vers=3 -t nfs 10.112.75.106:/home/hells/armDisk /home/panwenjian/remoteDisk  如果挂载不上,可以使用-o vers=3,表示指定使用nfs版本3
 mount -t cifs -o username=panwenjian //10.16.137.15/daofengpk1 /home/hells/daofengpk1		挂载windows共享目录
 --bind	将某个目录挂到另一个目录下面
 -o	额外参数
@@ -312,6 +312,7 @@ touch	修改档案时间与建置新档
 -m	仅修改mtime
 -t	后面可以接时间,格式为[YYMMDDhhmm]
 touch  {1..5}.sh	可以建立5个文件,1.sh..5.sh
+注：如果touch后面接一个已经存在的文件，则该文件的3个时间（atime/ctime/mtime）都会更新为当前时间。若该文件不存在，则会主动建立一个新的空文件。
 
 umask	目前使用者在建立档案或目录时候的属性默认值,设置的是权限的补码  若想永久有效,必须去修改~/.bashrc或/etc/bashrc
 -S	以r,w,x显示
@@ -502,10 +503,38 @@ rsync [OPTION...] SRC... [DEST]
 	––help	显示帮助信息
 
 dd	if=输入		of=输出		bs=block_size	 count=number			转换和拷贝文件
-if	也可以是装置
-of	也可以是装置
-bs	规划的一个block的大小,如果没有设定时,预设是512bytes
-count  多少个bs的意思
+	if	也可以是装置
+	of	也可以是装置
+	bs	规划的一个block的大小,如果没有设定时,预设是512bytes
+	count  多少个bs的意思
+	ibs=bytes：一次读入bytes个字节，即指定一个块大小为bytes个字节。
+	
+	obs=bytes：一次输出bytes个字节，即指定一个块大小为bytes个字节。
+	
+	bs=bytes：同时设置读入/输出的块大小为bytes个字节。
+	
+	cbs=bytes：一次转换bytes个字节，即指定转换缓冲区大小。
+	
+	skip=blocks：从输入文件开头跳过blocks个块后再开始复制。
+	
+	seek=blocks：从输出文件开头跳过blocks个块后再开始复制。
+	
+	注意：通常只用当输出文件是磁盘或磁带时才有效，即备份到磁盘或磁带时才有效。
+	
+	count=blocks：仅拷贝blocks个块，块大小等于ibs指定的字节数。
+	
+	conv=conversion：用指定的参数转换文件。
+		ascii：转换ebcdic为ascii
+		ebcdic：转换ascii为ebcdic
+		ibm：转换ascii为alternate ebcdic
+		block：把每一行转换为长度为cbs，不足部分用空格填充
+		unblock：使每一行的长度都为cbs，不足部分用空格填充
+		lcase：把大写字符转换为小写字符
+		ucase：把小写字符转换为大写字符
+		swab：交换输入的每对字节
+		noerror：出错时不停止
+		notrunc：不截短输出文件
+		sync：将每个输入块填充到ibs个字节，不足部分用空（NUL）字符补齐。
 
 dos2unix [-kn]	file [newfile]
 unix2dow [-kn]	file [nesfile]
@@ -1136,7 +1165,7 @@ cron
 		wq存储离开
 		0	   12    *		 *		*		mail hells -s "at 12:00" < /home/hells/.bashrc
 		分	   时	 日		 月		周		|<===============指令串=====================>|
-		0-59   0-23	 1-31	 1-12	0-7		*代表任何时刻都接受		,代表分隔时段,例如下达的时间是3:00与6:00,就会是0 3,6 * * * command  -代表一段时间范围		*/n代表每隔n单位间隔的意思
+		0-59   0-23	 1-31	 1-12	0-7		*代表任何时刻都接受		,代表分隔时段,例如下达的时间是3:00与6:00,就会是0 3,6 * * * command  -代表一段时间范围		*/n代表每隔n单位间隔的意思,0和7都代表星期天
 	/etc/crontab 是系统的例行性任务
 		有时候需要重新启动crond这个服务,因为有些系统是把crontab文件计入内存中的
 		/etc/init.d/crond restart
@@ -1389,6 +1418,18 @@ netstat	-tuln	查询目前主机所有已经启动的服务
 	-r	显示内核路由表
 	-C	显示路由缓冲中的路由信息
 	-i	显示所有的网络接口或者是指定的iface
+	--timers	计时功能
+		第一列，一般有一下几种状态；
+			keepalive - #表示是keepalive的时间计时
+			on - #表示是重发（retransmission）的时间计时
+			off - #表示没有时间计时
+			timewait - #表示等待（timewait）时间计时
+			
+		第二列，
+			(576.47/0/0) -> (a/b/c)
+			a - #计时时间值（当第一列为keepalive的时候，a代表keepalive计时时间；当第一列为on的时候，a代表重发（retransmission）的时间计时；当第一列为timewait的时候，a代表等待（timewait）的时间计时）
+			b - #已经产生的重发（retransmission）次数
+			c - #keepalive已经发送的探测（probe）包的次数
 	活动的Internet网络连接 (TCP, UDP, raw)
 	Proto
        套接字使用的协议。
@@ -2043,30 +2084,162 @@ selinux				(Security-Enhanced Linux) 是美国国家安全局（NSA）对于强�
 		SELINUX=enforcing|permissive|disabled 		强制模式,并提供限制存取机制|开启功能,但是提供警告模式代替代替限制机制|关闭
 		SELINUXTYPE=targeted|strict					只对主要的网络服务进行保护|对整个系统进行保护
 iptables			iptables用于过滤数据包,属于网络层防火墙./etc/sysconfig/iptables-config可默认关闭,服务名称是firewalld
-	-t	后面接table,例如net或filter,若省略此项目,则使用默认的filter
-	-L	列出目前的table规则
-	-n	不进行IP与HOSTNAME的反查,显示信息的速度会快很多
-	-v	列出更多的信息,包括通过该规则的封包总位数,相关的网络接口等
-	-F	清除所有已制定的规则
-	-X	杀掉所有使用者"自定义"的chain(说的是tables)
-	-Z	将所有的chain的计数与流量统计都归零
-	-P	定义预设规则,ACCEPT为可接受,DROP为丢弃,例:iptables -P INPUT DROP
-		例:kubernets微服务定义了nodePort,外部却无法访问,可以设置iptables -P FORWARD ACCEPT
+	-A 		追加规则-->iptables -A INPUT
+	-D 		删除规则-->iptables -D INPUT 1(编号)
+	-R 		修改规则-->iptables -R INPUT 1 -s 192.168.12.0 -j DROP 取代现行规则，顺序不变(1是位置),在使用-R修改对应的规则时,即使加了行号,也必须指定相应的匹配条件,如有多个匹配条件,也得都加上
+	-I 		插入规则-->iptables -I INPUT 1 --dport 80 -j ACCEPT 插入一条规则，原本位置上的规则将会往后移动一个顺位
+	-L 		查看规则-->iptables -L INPUT 列出规则链中的所有规则
+	-v		查看更多,更详细的信息
+	-x		-v会显示匹配到的包的个数即大小,会用一个适合显示的单位来表示,-x是显示精确数字
+	--line-numbers 	显示规则的编号
+	-N 		新的规则-->iptables -N allowed 定义新的规则
+	-p  	协议  例：iptables -A INPUT -p tcp,在Centos7中,支持tcp,udp,udplite,icmp,icmpv6,esp,ah,sctp,mh,在Centos6中支持tcp,udp,udplite,icmp,esp,ah,sctp
+	-s		源地址 例：iptables -A INPUT -s 192.168.1.1,可以指定多个ip,用逗号隔开即可,还可以对匹配条件取反,如: ! -s 192.168.1.1,取反操作与多个ip的操作不能同时使用
+	-d		目的地址 例：iptables -A INPUT -d 192.168.12.1
+	-N		创建自定义链,自定义链无法直接使用,必须被默认链引用才能使用
+	-E		修改自定义链名字
+	-m		指定扩展模块,在有-p时,也可省略此选项,因为如果没有使用-m,则iptables会默认使用-m 协议名来代替
+		tcp			tcp扩展模块
+					--sport	源端口 例:iptables -A INPUT -p tcp --sport 22
+					--dport	目的端口 例:iptables -A INPUT -p tcp --dport 22 ,和上面一样可以指定连续的端口,22:80表明22到80的端口,80:表示80以上的端口
+					--tcpflags  SYN,ACK,FIN,RST,URG,PSH SYN 匹配tcp包头中的标记位,第一部分表示要匹配的标志位,第二部分表示必须为1的,第一部分在第二部分中没有的必须为0
+					--syn	专门匹配tcp新建连接的请求报文,和--tcpflags SYN,ACK,FIN,RST,URG,PSH SYN效果是一样的
+		udp			udp扩展模块
+					--sport	源端口 例:iptables -A INPUT -p tcp --sport 22,在up扩展模块中,只能指定连续的端口,不能像tcp扩展一样指定离散的端口
+					--dport	目的端口 例:iptables -A INPUT -p tcp --dport 22 ,和上面一样可以指定连续的端口,22:80表明22到80的端口,80:表示80以上的端口
+		icmp		icmp扩展模块,细分icpm类型
+					--icmp-type 8/0 表示type为8,code为0的报文会被匹配到,即别人对我们发起的请求会被匹配到,我们对其他机器的ping请求则不会匹配到
+		state		根据状态来过滤包
+					--state
+						NEW				连接中的第一个包
+						ESTABLISHED		已建立连接的包
+						RELATED			和某个已建立连接有关系的包
+						INVALID			如果一个包没有办法被识别,或者这个包没有任何状态,那么就是invalid
+						UNTRACKED		表示报文未被追踪,表示无法找到相关的连接
+		multiport	如果需要指定多个离散的端口可以用此扩展模块,此模块只支持tcp和udp协议
+		iprange		可以指定"一段连续的IP地址范围",有2个扩展条件可以用,--src-range和--dst-range,IP段的起始和结束用"横杠"连接,也可以使用!取反
+		string		可以指定要匹配的字符串,如果报文中包含对应的字符串,则符合条件,--algo bm表明使用bm算法去匹配指定字符串,还有kmp算法可用,--string "OOXX"表明匹配字符串OOXX
+		time		根据时间段匹配报文,--timestart 09:00:00 --timestop 18:00:00 --weekdays 6,7 表示周6和周日,还能用缩写表示,如Mon,Tue,Wed,--monthdays 22,23指定每个月的几号,--datestart 2017-12-4
+					--datestop 2017-12-27可以指定具体日期范围,--monthdays和--weekdays可以用!取反,其他选项不行
+		connlimit	可以限制每个ip地址同时连接到server的数量,不用指定ip,默认就是针对每个ip,--connlimit-above 2指定上限,--connlimit-mask 24限制某类网段连接的数量,
+		limit		对报文到达速度进行限制,--limit 10/minute表示每分钟最多放行10个包,可以有/second,/minute,/hour,/day这些选项
+					--limit-burst 5,指定空闲时可以放行的包的数量,默认为5
+					用到了令牌桶算法,--limit可以控制多久产生一块令牌,--limit-burst用于指定桶中最多有多少个令牌
+	-i		指定入口网卡 例:iptables -A INPUT -i eth0
+	-o		指定出口网卡 例:iptables -A FORWARD -o eth0
+	-j 		指定要进行的处理动作
+				常用的ACTION：
+				DROP：丢弃
+				REJECT：明示拒绝
+				ACCEPT：接受
+				SNAT基于原地址的转换
+				source--指定原地址
+					比如我们现在要将所有192.168.10.0网段的IP在经过的时候全都转换成172.16.100.1这个假设出来的外网地址：
+					iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -j SNAT --to-source 172.16.100.1(外网有效ip)
+					这样，只要是来自本地网络的试图通过网卡访问网络的，都会被统统转换成172.16.100.1这个IP.
+				MASQUERADE(动态伪装）--家用带宽获取的外网ip，就是用到了动态伪装
+					iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -j MASQUERADE
+				DNAT目标地址转换
+				destination-指定目标地址
+					iptables -t nat -A PREROUTING -d 192.168.10.18 -p tcp --dport 80 -j DNAT --to-destination 172.16.100.2
+					10.18访问80端口转换到100.2上
+				MASQUERADE：源地址伪装
+				REDIRECT：重定向：主要用于实现端口重定向
+				MARK：打防火墙标记的
+				RETURN：返回 在自定义链执行完毕后使用返回，来返回原规则链。
+				LOG:在/var/log/messages文件中记录日志信息,然后将数据包传递给下一条规则,也就是说除了记录以外不对数据包做任何其他操作,仍然让下一条规则去匹配
+	匹配(match)
+		每个iptables规则都包含一组匹配以及一个目标，iptables匹配指的是数据包必须匹配的条件，只有当
+		数据包满足所有的匹配条件时，iptables才能根据由该规则的目标所指定的动作来处理该数据包
+		匹配都在iptable的命令行中指定
+		source--匹配源ip地址或网络
+		destination (-d)--匹配目标ip地址或网络
+		protocol (-p)--匹配ip值
+		in-interface (-i)--流入接口(例如，eth0)
+		out-interface (-o)--流出接口
+		state--匹配一组连接状态
+		string--匹配应用层数据字节序列
+		comment--在内核内存中为一个规则关联多达256个字节的注释数据
+	目标(target)
+		iptables支持一组目标，用于数据包匹配一条规则时触发一个动作
+		ACCEPT--允许数据包通过
+		DROP--丢弃数据包，不对该数据包做进一步的处理，对接收栈而言，就好像该数据包从来没有被接收一样
+		LOG--将数据包信息记录到syslog
+		REJECT--丢弃数据包，同时发送适当的响应报文(针对TCP连接的TCP重要数据包或针对UDP数据包的ICMP端口不可达消息)
+		RETURN--在调用链中继续处理数据包
+	-t		后面接table,例如net或filter,若省略此项目,则使用默认的filter
+	-n		不进行IP与HOSTNAME的反查,显示信息的速度会快很多
+	-v		列出更多的信息,包括通过该规则的封包总位数,相关的网络接口等
+	-F		清除所有已制定的规则
+	-X		杀掉所有使用者"自定义"的chain(说的是tables)
+	-Z		将所有的chain的计数与流量统计都归零
+	-P		定义预设规则,ACCEPT为可接受,DROP为丢弃,例:iptables -P INPUT DROP
+				例:kubernets微服务定义了nodePort,外部却无法访问,可以设置iptables -P FORWARD ACCEPT
+iptables缺省具有5条规则链
+	prerouting(内到外) 		只可以存放在raw表,mangle表,nat表
+	forward(转发) 			只可以存放在mangle表,filter表
+	postrouting(外到内)  	只可以存放在mangle表,nat表,filter表
+	input(输入)        		只可以存放在mangle表,filter表(Centos7中还有nat表,6及以前没有)
+	output(输出)			只可以存放在raw表,mangle表,nat表,filter表
+链管理命令（这都是立即生效的）
+	-P :设置默认策略的（设定默认门是关着的还是开着的）
+		默认策略一般只有两种
+		iptables -P INPUT (DROP|ACCEPT)
+		默认是关的/默认是开的
+		比如：
+		iptables -P INPUT DROP
+	这就把默认规则给拒绝了。并且没有定义哪个动作，所以关于外界连接的所有规则包括Xshell连接之类的，远程连接都被拒绝了
+	-F: FLASH，清空规则链的(注意每个链的管理权限)
+		iptables -t nat -F PREROUTING
+		iptables -t nat -F 清空nat表的所有链
+		-N:NEW 支持用户新建一个链
+		iptables -N inbound_tcp_web 表示附在tcp表上用于检查web的。
+	-X: 用于删除用户自定义的空链
+		使用方法跟-N相同，但是在删除之前必须要将里面的链给清空昂了
+	-E：用来Rename chain主要是用来给用户自定义的链重命名
+		-E oldname newname
+	-Z：清空链，及链中默认规则的计数器的（有两个计数器，被匹配到多少个数据包，多少个字节）
+		iptables -Z :清空
+规则管理命令
+	-A：追加，在当前链的最后新增一个规则
+	-I num : 插入，把当前规则插入为第几条。
+	-I 3 :插入为第三条
+	-R num：Replays替换/修改第几条规则
+	格式：iptables -R 3 …………
+	-D num：删除，明确指定删除第几条规则
+			
+	3.查看管理命令 “-L”
+		附加子命令
+	-n：以数字的方式显示ip，它会将ip直接显示出来，如果不加-n，则会将ip反向解析成主机名。
+	-v：显示详细信息
+	-vv
+	-vvv :越多越详细
+	-x：在计数器上显示精确值，不做单位换算
+	--line-numbers : 显示规则的行号
+	-t nat：显示所有的关卡的信息
 iptables-save		会列出完整的防火墙规则,只是没有规格化输出
 	-t	后面接table,可以指定输出table的规则,而不是所有的
 firewalld			firewall是centos7里面的新的防火墙命令,它底层还是使用 iptables 对内核命令动态通信包过滤的,简单理解就是firewall是centos7下管理iptables的新命令
 
-iptables里有多个表格,每个表格定义出自己的默认政策与规划,且每个表格的用途都不相同
-	filter(过滤器):主要跟进入Linux本机的封包有关,是预设的table
-		INPUT:主要与想要进入我们Linux本机的封包有关
-		OUTPUT:主要与我们Linux本机所要送出的封包有关
-		FORWARD:与Linux本机比较没有关系,他可以"转递封包"到后端的计算机中
+iptables里有多个表格,每个表格定义出自己的默认政策与规划,且每个表格的用途都不相同,4个表的优先级由高到低：raw-->mangle-->nat-->filter
+	raw(关闭nat表上启用的连接追踪机制)
+		RAW表只使用在PREROUTING链和OUTPUT链上,因为优先级最高，从而可以对收到的数据包在连接跟踪前进行处理。一但用户使用了RAW表,在某个链上,RAW表处理完后,将跳过NAT表和ip_conntrack处理,即不再做地址转换和数据包的链接跟踪处理了.
+	mangle(破坏者):这个表格主要是与特殊的封包的路由旗杆有关,早期仅有PREROUTING及OUTPUT链,不过从kernel 2.4.18之后加入了INPUT及FORWARD链
+					由于这个表格与特殊旗标相关性较高,所以像我们单纯的环境中,较少使用这个表格,拆解报文,做出修改,并重新封装的功能
+		PREROUTING：处理传入连接
+		OUTPUT：处理本地生成的数据包
+		INPUT：处理报文
+		POSTROUTING：处理即将传出数据包
+		FORWARD：处理通过本机转发的数据包
 	nat(地址转换):是Network Address Translation的缩写,主要在进行来源与目的之IP或port的转换,与Linux本机较无关,主要与Linux主机后的局域网络内计算机较有相关
 		PREROUTING:在进行路由判断之前所要进行的规则(DNAT/REDIRECT)
 		POSTROUTING:在进行路由判断之后所要进行的规则(SNAT/MASQUERADE)
 		OUTPUT:与发送出去的封包有关
-	mangle(破坏者):这个表格主要是与特殊的封包的路由旗杆有关,早期仅有PREROUTING及OUTPUT链,不过从kernel 2.4.18之后加入了INPUT及FORWARD链
-					由于这个表格与特殊旗标相关性较高,所以像我们单纯的环境中,较少使用这个表格
+		INPUT:Centos7中有,6及以前没有
+	filter(过滤器):主要跟进入Linux本机的封包有关,是预设的table
+		INPUT：处理流入本地的数据包
+		FORWARD：处理通过系统路由的数据包
+		OUTPUT：处理本地流出的数据包
 
 getenforce		查看SElinux服务状态
 setenforce 0	临时设置SElinux关闭,常久关闭修改/etc/selinux/config,增加SELINUX=disabled 
@@ -2302,6 +2475,118 @@ yum makecache						  根据/etc/yum.repos.d/CentOS-Base.repo(centos环境下)将
 yum downgrade						  降级
 fastestmirror是yum的一个加速插件，可以修改/etc/yum/pluginconf.d/fastestmirror.conf里的enable为0禁用掉,也可以修改/etc/yum.conf里的plugin置为0
 
+pacman命令可分为一级命令和二级命令,一级命令要用大写,二级命令要用小写,一级命令一次只有一个,二级命令则一次可以多个
+-S(sync)  		安装软件
+	--asdeps         作为非单独指定安装的软件包安装  
+	--asexplicit     作为单独指定安装的软件包安装  
+	-c, --clean          从缓存目录中删除旧软件包 (-cc 清除所有)  
+	-d, --nodeps         略过依赖关系检查  
+	-f,  --force          强制安装，覆盖存在冲突的文件  
+	-g, --groups         查看某软件包组所属的所有软件包  
+	-i, --info           查看软件包信息  
+	-l, --list <软件库>    查看在该软件库中的软件包清单  
+	-s, --search <regex表达式> 按照指定字符串查询远端软件库  
+	-u, --sysupgrade     升级所有已安装的软件包 (-uu 可启用降级)  
+	-w, --downloadonly   下载但不安装/升级软件包  
+	-y, --refresh        从服务器下载新的软件包数据库  
+	--needed         不重新安装已经为最新的软件包  
+	--ignore <软件包>   升级时忽略某个软件包 (可多次使用)  
+	--ignoregroup <软件包组>升级时忽略某个软件包组 (可多次使用)  
+	--print          仅打印目标而不执行操作  
+	--print-format <字符串>指定如何打印目标  
+	-q, --quiet          在查询或搜索时显示较少的信息  
+	--config <路径>  指定另外的配置文件  
+	--logfile <路径> 指定另外的日志文件  
+	--noconfirm      不询问确认  
+	--noprogressbar  下载文件时不显示进度条  
+	--noscriptlet    不执行安装小脚本  
+	-v, --verbose        循环执行  
+	-- debug        显示除错信息  
+	-r, --root <路径>    指定另外的安装根目录  
+	-b, --dbpath <路径>  指定另外的数据库位置  
+	--cachedir <目录> 指定另外的软件包缓存位置  
+	--arch <架构>    设定另外的架构  
+-R(remove)		删除软件
+	-c, --cascade        删除软件包及所有的依赖于此的软件包  
+	-d, --nodeps         略过依赖关系检查  
+	-k, --dbonly         只删除数据库记录，不删除文件  
+	-n, --nosave         同时删除配置文件  
+	-s, --recursive      同时删除 (不会破坏其他软件包的) 依赖关系(-ss·也包括单独指定安装的依赖关系)  
+	-u, --unneeded       同时删除不需要的 (且不会破坏其他软件包的) 依赖关系  
+	--print          仅打印目标而不执行操作  
+	--print-format <字符串>指定如何打印目标  
+	--config <路径>  指定另外的配置文件  
+	--logfile <路径> 指定另外的日志文件  
+	--noconfirm      不询问确认  
+	--noprogressbar  下载文件时不显示进度条  
+	--noscriptlet    不执行安装小脚本  
+	-v, --verbose        循环执行  
+	-- debug        显示除错信息  
+	-r, --root <路径>    指定另外的安装根目录  
+	-b, --dbpath <路径>  指定另外的数据库位置  
+	--cachedir <目录> 指定另外的软件包缓存位置  
+	--arch <架构>    设定另外的架构  
+-U(upgrade)		更新软件
+	--asdeps         作为非单独指定安装的软件包安装  
+	--asexplicit     作为单独指定安装的软件包安装  
+	-d, --nodeps         略过依赖关系检查  
+	-f,  --force          强制安装，覆盖存在冲突的文件  
+	-k, --dbonly         添加数据库记录，不安装或保持现存文件  
+	--print          仅打印目标而不执行操作  
+	--print-format <字符串> 指定如何打印目标  
+	--config <路径>  指定另外的配置文件  
+	--logfile <路径> 指定另外的日志文件  
+	--noconfirm      不询问确认  
+	--noprogressbar  下载文件时不显示进度条  
+	--noscriptlet    不执行安装小脚本  
+	-v, --verbose        循环执行  
+	-- debug        显示除错信息  
+	-r, --root <路径>    指定另外的安装根目录  
+	-b, --dbpath <路径>  指定另外的数据库位置  
+	--cachedir <目录> 指定另外的软件包缓存位置  
+	--arch <架构>    设定另外的架构  
+-Q(query)		查询软件
+	-c, --changelog      查看某软件包的更新日志  
+	-d, --deps           列出所有作为依赖关系安装的软件包 [过滤器]  
+	-e, --explicit       列出所有单独指定安装的软件包 [过滤器]  
+	-g, --groups         查看某软件包组所属的所有软件包  
+	-i, --info           查看软件包信息 (-ii 查看备份文件)  
+	-k, --check          检查该软件包拥有的文件是否存在  
+	-l, --list           列出被查询软件包的内容  
+	-m, --foreign        列出没有在同步数据库时找到的已安装软件包 [过滤器]  
+	-o, --owns <文件>     查询哪个软件包拥有  <文件>  
+	-p, --file <软件包> 从某个软件包而不是数据库查询  
+	-s, --search <regex> 搜寻符合指定字符串的已安装本地的软件包  
+	-t, --unrequired     列出所有不被其他软件包要求的软件包 [过滤器]  
+	-u, --upgrades       列出所有可升级的软件包 [过滤器]  
+	-q, --quiet          在查询或搜索时显示较少的信息  
+	--config <路径>  指定另外的配置文件  
+	--logfile <路径> 指定另外的日志文件  
+	--noconfirm      不询问确认  
+	--noprogressbar  下载文件时不显示进度条  
+	--noscriptlet    不执行安装小脚本  
+	-v, --verbose        循环执行  
+	-- debug        显示除错信息  
+	-r, --root <路径>    指定另外的安装根目录  
+	-b, --dbpath <路径>  指定另外的数据库位置  
+	--cachedir <目录> 指定另外的软件包缓存位置  
+	--arch <架构>    设定另外的架构  
+-D(database)	管理数据库选项
+	--asdeps         标记为非单独指定安装的软件包  
+	--asexplicit     标记为单独指定安装的软件包  
+	--config <路径>  指定另外的配置文件  
+	--logfile <路径> 指定另外的日志文件  
+	--noconfirm      不询问确认  
+	--noprogressbar  下载文件时不显示进度条  
+	--noscriptlet    不执行安装小脚本  
+	-v, --verbose        循环执行  
+	-- debug        显示除错信息  
+	-r, --root <路径>    指定另外的安装根目录  
+	-b, --dbpath <路径>  指定另外的数据库位置  
+	--cachedir <目录> 指定另外的软件包缓存位置  
+	--arch <架构>    设定另外的架构  
+-V(version)		查看版本
+
 /etc/apt/sources.list				  若更改了些文件,则先执行apt-get update
 apt-get 	update					  更新本机中的数据库缓存
 apt-cache	search	要查找的名字	  查找包含部分关键字的软件包
@@ -2337,6 +2622,8 @@ wget  网络地址						从网络上自动下载文件的自由工具
 	-d			显示输出信息
 	-q			不显示输出信息
 	-i			从文件中取得url
+	--user=		用户名
+	--password= 密码
 
 ping	参数		主机名或ip地址
 	-d				使用socket的so_debug功能
@@ -2486,6 +2773,29 @@ curl
 --3p-user                      使用用户名和密码，进行第三方传送
 -4/--ipv4                      使用IP4
 -6/--ipv6                      使用IP6
+
+nmcli [ OPTIONS ] OBJECT { COMMAND | help }			地址配置工具,必须先启动服务NetworkManager
+	OBJECT和COMMAND可以用全称也可以用简称，最少可以只用一个字母，建议用头三个字母。OBJECT里面我们平时用的最多的就是connection和device，这里需要简单区分一下connection和device。
+	device叫网络接口，是物理设备
+		device -show and manage network interfaces
+		nmcli device help
+	connection是连接，偏重于逻辑设置
+		connection -start, stop, and manage network connections
+		nmcli connection help
+	多个connection可以应用到同一个device，但同一时间只能启用其中一个connection。这样的好处是针对一个网络接口，我们可以设置多个网络连接，比如静态IP和动态IP，再根据需要up相应connection
+	如:
+		nmcli c s					查看所有连接,包括不活动的
+		nmcli con show –active		查看所有活动的连接
+		nmcli d s					查看所有网络设备
+		nmcli connection add con-name "dhcp" type ethernet ifname eno16777736		添加新的连接,con-name是连接名,type设备类型,ifname接口名
+		nmcli connection add con-name "static" ifname eno16777736 autoconnect no type ethernet ip4 192.168.1.240 gw4 192.168.1.1	使用static静态分配ip
+		nmcli connection del static		删除连接
+		nmcli connection up eno1		开启连接
+		nmcli connection down eno1		关闭连接
+		nmcli connection reload eno1	重新加载连接
+		nmcli connection modify "static" ipv4.dns 202.131.124.4						添加dns到静态连接中
+		nmcli connection modify "static" +ipv4.dns 8.8.8.8							添加更多的dns
+		nmcli connection modify "static" +ipv4.addresses 192.168.200.1/24			添加一个额外的IP地址
 		
 	
 ifconfig 	 对网络接口进行配置和查询
@@ -3170,3 +3480,36 @@ openssl command [ command_opts ] [ command_args ]
 			创建proxy证书
 				openssl req -new -key proxy.key -out proxy.csr -subj "/CN=system:kube-proxy/O=k8s/OU=System"
 				
+
+        // P4
+        sudo nvidia-smi -pm ENABLED -i 1
+        sudo nvidia-smi -acp UNRESTRICTED -i 1
+        sudo nvidia-smi -ac "3003,1113" -i  1 
+-i  后面是哪张显卡
+默认从0开始
+锁频后，性能是4ms
+  
+HIKCNN_Process time_used: 4.086800 avg: 4.086800 max: 4.086800 min: 4.086800 total: 4.086800 iter: 1 
+ 
+drop database identify;
+pg_dump -U postgres identify | gzip > identify.gz
+createdb identify -U postgres
+gunzip -c identify.gz | psql identify -U postgres
+
+转封装模型ID在72位置上
+
+胡双 Hpc2345=
+hushuang Hikc45b6+  
+HI all
+基础运维小组中午对测试环境跳板机和堡垒机做了迁移，测试环境跳板和堡垒机地址均有变化，如下：
+堡垒机 由 10.1.16.100 改为 10.86.100.100
+跳板机 由 10.80.18.1   改为 10.86.100.1 
+下午接到一些同事问询，特公告在此  
+
+4.运维登录 hushuang Hikc45b6+    yanfa/Hik@88075998
+5.服务器登录 ssh root@10.86.10.214 密码 hik12345+
+6.若要登录10.86.9.102 ，则ssh root@10.86.9.102  root/hikc45b6  
+
+查看cuda版本: 		cat /usr/local/cuda/version.txt
+查看cudnn版本:		cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
+查看显卡驱动版本: 	cat /proc/driver/nvidia/version

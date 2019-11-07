@@ -1,0 +1,371 @@
+元素名不区分大小写,<CODE>.<code>甚至<CoDe>都会被浏览器视为code元素开始标签
+
+元素摘要及属性
+文档和元数据元素
+	base		设置相对URL的基础
+		href	指定了解析文档后部分中的相对URL要用到的基准URL
+		target	告诉浏览器该如何打开URL,这个属性的值代表着一个浏览上下文
+	body		表示HTML文档的内容
+		alink
+		background
+		bgcolor
+		link
+		margintop
+		marginbottom
+		marginleft
+		marginright
+		marginwidth
+	DOCTYPE		表示HTML文档的开始,一般是<!DOCTYPE HTML>开头,让浏览器明白处理的是html文档
+	head		表示HTML文档的头部区域,包含文档的元数据,提供有关文档内容和标记信息,还可以包含脚本和对外部资源引用
+	html		表示文档的HTML部分
+		manifest
+	link		定义与外部资源(通常是样式表或网站图标)的关系
+		href		指定link元素指向的资源的URL
+		hreflang	说明所关联资源使用的语言
+		rel			说明文档与所关联资源的关系类型
+			alternate		链接到文档的替代版本,比如另一种语言的译本
+			author			链接到文档的作者
+			help			链接到当前文档的说明文档
+			icon			指定图标资源
+			license			链接到当前文档的相关许可证
+			pingback		指定一个回探(pingback)服务器,从其他网站链接到博客的时候能自动得到通知
+			prefetch		预告获取一个资源
+			stylesheet		载入外部样式表
+		media		说明所关联的内容用于哪种设备,与style中的media一样
+		type		指定所关联资源的MIME类型,如text/css,image/x-icon
+		sizes		指定图标的大小
+	meta		提供关于文档的信息,可以用名/值对定义元数据
+		name		表示元数据类型
+			application name		当前页所属Web应用系统的名称
+			author					当前页的作者
+			description				当前页的说明
+			generator				用来生成HTML的软件名称
+			keywords				一批以逗号分开的字符串,用来描述页面的内容
+			...
+		content		定义元数据的值
+		charset		声明HTML文档内容所用的编码
+		http-equiv	模拟http标头字段,content指明内容
+			refresh 				以秒为单位指定一个时间间隔,在此时间过去之后将从服务器重新载入当前页面,content指定秒数,如果在秒数后面加上一个分号再加上一个URL,那么浏览器会在指定时间之后载入指定的URL
+			default-style			指定页面优先使用的样式表,对应的content属性值应与同一文档中某个style元素或link元素的title属性值相同
+			content-type			这是另一种声明HTML页面所用字符编码的方法
+	noscript	包含浏览器禁用脚本或不支持脚本时显示的内容
+	script 		定义脚本程序,可以是文档内嵌的也可以是外部文件中的
+		type		表示所引用或定义的脚本的类型,对于JavaScript脚本这个属性可以省略
+		src			指定外部脚本文件的URL
+		defer		设定脚本的执行方式,只能与src属性一同使用,告诉浏览器要等页面载入和解析完毕之后才能执行脚本,只能用于外部脚本文件,对文档内嵌脚本不起作用
+		async		只能与src属性一同使用,异步执行脚本,提高性能
+		charset		说明外部脚本文件所用字符编码,只能与src属性一同使用
+	style		定义CSS样式
+		type		只有一种值,即 "text/css"
+		media		表明文档在什么样的情况下使用该元素中定义的样式
+			all				将样式用于所有设备
+			aural			将样式用于语音合成器
+			braille			将样式用于盲文设备
+			handheld		将样式用于手持设备
+			projection		将样式用于投影机
+			print			将样式用于打印预览和打印页面时
+			screen			将样式用于计算机显示器屏幕
+			tty				将样式用于电传打字机之类的等宽设备
+			tv				将样式用于电视机
+		scoped		如果有scoped属性存在,那么其中定义的样式只作用于该元素的父元素及所有兄弟元素
+	title		表示HTML文档的标题
+文本元素
+	a			生成超链接
+		href		配置超链接的目的URL,也可以将另一元素引入视野,使用#ID号即可
+		hreflang	说明所链接资源使用的语言
+		media		说明所链接资源用于哪种设备,见上
+		rel			说明文档与所链接资源的关系类型,见上
+		target		指定用以打开所链接资源的浏览环境
+			_blank		在新窗口或标签页中打开文档
+			_parent		在父窗框组中打开文档
+			_self 		在当前窗口中打开文档(这是默认行业)
+			_top		在顶层窗口打开文档
+			<frame>		在指定窗框中打开文档
+		type		说明所链接资源的MIME类型(比如text/html)
+	abbr		缩略语,里的title属性表示的是该缩写代表的完整词语,没有什么特别样式
+	b			不带强调或着重意味地标记一段文字,它标记的文字会从周围凸现出来,通常是内容加粗
+	bdo			可以用来撇开默认的文字方向设置,必须搭配dir属性来使用
+	bdi			表示一段出于文字方向考虑而与其他内容隔开来的文字,适合用欲显示内容的文字方向未知的情况,浏览器会自动确认文字方向
+	br			表示换行
+	cite  		表示所引用作品的标题(如图书,文章,电影,诗歌),通常会变成斜体且变白
+	code		表示计算机代码片段
+	del			表示从文档中删除的文字,会加删除线
+		cite		指定解释删除相关文字原因的文档的URL
+		datatime	设置修改时间
+	dfn			表示术语定义,没有特别样式
+	em 			表示着重强调的一段文字,通常是斜体
+	i			表示与周边内容秉性不同的一段文字,例如来自另一种语言的词语,通常是斜体,和em作用差不多
+	ins 		表示加入文档的文字,会加下划线
+		cite		指定解释添加相关文字原因的文档的URL
+		datatime	设置修改时间
+	kbd			表示用户输入内容
+	mark		表示一段因为与上下文中另一词语相关而被突出显示的内容,被标记的文字会有阴影
+	q 			表示引自他处的内容
+		cite		可以用来指定来源文章的url
+	rp			与ruby元素结合使用,用来标记供不支持注音符号特性的浏览器显示在注音符号前后的括号
+	rt 			与ruby元素结合使用,标记注音符号
+	ruby 		表示位于表意文字上方或右方的注音符号,为汉语或日语注意等,需要与rt,rp搭配使用
+	s 			表示文字已不再准确,通常是在文字上显示一段删除线
+	samp		表示计算机程序的输出内容
+	small		表示小号字体的内容
+	span		一个没有自己的语义的通用元素,可以用在希望应用一些全局属性却又不想引入额外语义的情况
+	strong		表示重要内容,通常是内容加粗但与b元素不同的是b元素未赋予其包围的文字任何重要性
+	sub			表示下标文字,比如x10
+	sup			表示上标文字,比如x的10次方
+	time		表示时间或日期
+		datetime	
+		pubdate		布尔属性,如果存在,那么time元素表示的是整个HTML文档或离该元素最近的article元素的发布日期
+	u			不带强调或着重意味地标记一段文字,通常是为文字添加下划线
+	var 		表示程序或计算机系统中的变量
+	wbr			表示可安全换行的地方,表示长度超过浏览器窗口的内容适合在此换行,究竟换不换行由浏览器决定,只是一个建议
+用于分组的元素
+	blockquote	表示引自他处的大段内容
+		cite 		可以用来指定来源内容的url
+	dd 			用在dl元素之中,表示定义
+	div 		一个没有任何既定语义的通用元素,是span元素在流元素中的对应物,它的含义是由全局属性提供的,通常用的是class或id属性
+	dl 			表示包含一系列术语和定义的说明表
+	dt 			用在dl元素之中,表示术语
+	figcaption  表示figure元素的标题
+	figure 		表示图片
+	hr			表示主题的改变,会显示为一条横线,即<hr/>
+	li 			用在ul,ol和menu元素中,表示列表项
+		value		仅用于父元素为ol时,可以指定此项序号
+	ol      	表示有序列表
+		start		设定列表首项的编号值,如果不用,默认为1,支持 1,a,A,i,I
+		reversed	若有此属性,那么列表编号采用降序
+		type
+	p			表示段落
+	pre 		表示其格式应被保留的内容,可以改变浏览器处理内容的方式,阻止合并空白字符
+	ul 			表示无序列表,无序列表每个项目前都会显示一个项目符号,这个符号的样式可以用CSS属性list-style-type控制
+用于划分内容的元素
+	address		表示文档或article的联系信息
+	atricle		表示一段独立的内容
+	aside 		表示与周边内容稍有牵涉的内容
+	details 	生成一个区域,用户将其展开可以获得更多细节知识
+	footer 		表示一节的尾部,是header的配套元素,包含该节的总结信息,还可以包含作者介绍,版本信息等
+	h1~h6		表示标题,会加黑加大,h1级别最高
+	header		表示一节的首部,里面可以包含各种适合出现在首部的东西
+	hgroup		将一组标题组织在一起,以便文档大纲只显示其中第一个标题
+	nav			表示有意集中在一起的导航元素
+	section		表示一个重要的概念或主题
+	summary		用在details元素中,表示该元素内容的标题或说明
+表格元素
+	caption		表示表格标题,一个表格只能包含一个caption
+	col 		表示一列
+	colgroup	表示一组列
+		span 		指定colgroup元素负责的列数
+	table		表示用表组织的数据
+		border 		设置表格边框线宽,必须设置为1或者空字符串
+	tbody		表示表格主题
+	td 			表示表格单元格
+		rowspan 	必须是整数,表示跨越的行数
+		colspan		必须是整数,表示跨越的列数
+	tfoot 		表示表脚
+	th 			生成标题行单元格
+		rowspan 	必须是整数,表示跨越的行数
+		colspan		必须是整数,表示跨越的列数
+	thead 		表示标题行
+	tr			表示一行单元格
+表单元素
+	button		生成用以提交表单的按钮
+		type
+			submit		表示按钮用途是提交表单,默认行为
+			reset		表示按钮用途是重置表单
+			button		表示按钮没有具体含义
+	detalist 	定义一组提供给用户的建议值
+	fieldset	表示将表单元素分组,会有线来分隔2组表单
+		disabled		禁用此组表单
+	form 		表示HTML表单
+		name		设置一个标识符,与全局属性id不是一回事,name属性仅用于DOM(文档对象模型)中
+		method 		指明是 get,post(只有这2种可选)
+		action		发往的地址,比如restful地址,如果不指定,则发往加该该HTML的URL
+		enctype 	指定浏览器对发送给服务器数据采用的编码方式
+			application/x-www-form-urlencoded 	默认编码方式,它不能用来将文件上传到服务器,特殊字符会被替换成对应的HTML实体,数据项的名称和值以等号分开,各组数据项间以符号&
+			multipart/form-data					用于将文件上传到服务器,更为冗长,处理起来更复杂
+			text/plain							因浏览器而异,要谨慎使用,因为它对于数据该如何编码没有正式的规范
+		autocomplete 	默认是on,可以是off,表示是否允许浏览器填写表单
+		target		指定用以打开所链接资源的浏览环境
+			_blank		在新窗口或标签页中打开文档
+			_parent		在父窗框组中打开文档
+			_self 		在当前窗口中打开文档(这是默认行业)
+			_top		在顶层窗口打开文档
+			<frame>		在指定窗框中打开文档
+	input 		表示用来收集用户输入数据的控件
+		autocomplete 	默认是on,可以是off,表示是否允许浏览器填写表单
+		autofocus		自动聚焦到这个表单
+		disabled		禁用此表单
+	keygen 		生成一对公钥和私钥
+	label		生成表单元素的说明标签
+	legend 		表示fieldset元素的说明性标签,即每组表单的名称
+	optgroup 	表示一组相关的option元素
+	option 		表示供用户选择的一个选项
+	output 		表示计算结果
+	select 		给用户提供一组固定的选项
+	textarea 	用户可以用它输入多行文字
+嵌入内容
+	area 		表示一个用于客户端分区响应图的区域
+	audio 		表示一个音频资源
+	canvas 		生成一个动态的图形分布
+	embed 		用插件在HTML文档中嵌入内容
+	iframe 		通过创建一个浏览上下文在一个文档中嵌入另一个文档
+	img 		嵌入图像
+	map 		定义客户端分区响应图
+	meter 		嵌入数值在许可值范围背景中的图形表示
+	object 		在HTML文档中嵌入内容,也可用于生成浏览上下文和生成客户端分区响应图
+	param 		表示将通过object元素传递给插件的参数
+	progress 	嵌入目标进展或任务完成情况的图形表示
+	source		表示媒体资源
+	svg 		表示结构化矢量内容
+	track 		表示媒体的附加轨道(例如字幕)
+	video 		表示视频资源
+
+全局属性
+accessKey			可以设定一个或几个用来选择页面上的元素的快捷键,如 accessKey="p"
+class				将元素归类,这样做通常是为了能够找出文档中的某一类元素或为某一类元素应用CSS样式,一个元素可以被归入多个类别,为些在class属性中提供多个用空格分隔的类名即可,如class="class1 class2"
+contenteditable		是HTML5中新增加的属性,其用途是让用户能修改页面上的内容,值可以为true,false,若未设定,则从父元素继承
+contextmenu			为元素设定快捷菜单,这种菜单会在受到触发时(如windows用户鼠标右击时)弹出来
+dir					规定元素中文字的方向,有效值2个,ltr(从左到右),rtl(从右到左)
+draggable			是HTML5支持拖放操作的方式之一,用来表示元素是否可被拖放
+dropzone			是HTML5支持拖放操作的方式之一,与上述draggable属性搭配使用
+hidden				布尔属性,表示相关元素当前毋需关注,浏览器对它的处理方式是隐藏相关元素,例 hidden
+id					用来给元素分配一个唯一的标识符,这种标识符通常用来将样式应用到元素上或在JavaScript程序中用来选择元素,例id="w3clink"
+lang				用于说明元素内容使用的语言,例lang="en"
+spellcheck			表明浏览器是否应该对元素的内容进行拼写检查,这个属性只有用在用户可以编辑的元素上时才有意义,例 spellcheck="true"
+style				用来直接在元素身上定义CSS样式,例 style="background: grey; color:white; padding:10px"
+tabindex			HTML页面上的键盘焦点可以通过Tab键在各元素之间切换,用tabindex属性可以改变默认的转移顺序tableindex="-1",-1的代表不会被选中
+title 				提供了元素的额外信息,浏览器通常用这些东西显示工具提示
+
+元素属性
+元素可以用属性进行配置,如<a href="/apples.html">apples</a>,属性只能用于开始标签或单个标签上,不能用于结束标签,属性具有名称和值2个部分
+一个元素可以应用多个属性,这些属性间以一个或几个空格分隔
+用户可以自定义属性,这种属性必须以data-开头
+
+空HTML元素, <code></code>元素为空,但是有效的HTML代码
+自闭合标签, <code/> apples and oranges.
+虚元素,有些元素只能使用一个标签来表示,在其中放置任务内容都不符合HTML规范,hr就是这样一个元素,虚元素有2种表示方法,一种是只使用开始标签,如<hr>,一种是自闭合标签,如<hr/>
+父元素,子元素,后代元素,兄弟元素,按名字理解即可
+元素分为3种类型
+	元数据元素		用来构建HTML文档的基本结构,以及就如何处理文档向浏览器提供信息和指示
+	流元素			确定一个元素的父元素和子元素范围
+	短语元素		是HTML基本成分,所有短语元素都是流元素,但并非所有流元素都是短语元素
+HTML实体,HTML文档中的某些字符具有特殊含义,是时需要在文档中用到这些字符,此时应该使用HTML实体
+   字符	  实体名称	  实体编号
+	<		&lt;		&#60;
+	>		&gt;		&#62;
+	&		&amp;		&#30;
+	...
+	
+CSS层叠样式表用来规定HTML文档的呈现形式(外观和格式编排)
+CSS样式由一条或多条以分号隔开的样式声明组成,每条声明包含着一个CSS属性和该属性的值,二者以冒号分隔,如 background: grey; color:white;
+background-color	设置元素背景颜色
+border				设定围绕元素的边框
+color 				设置元素的前景颜色
+font-size			设置元素文字的字号
+height				设置元素高度
+width				设置元素宽度
+padding 			设定元素内容与边框之间的间距
+text-decoration		设置元素文字的装饰效果,如下划线
+可在style元素,而非style属性中定义文档内嵌样式,例
+<head>
+<style type="text/css">
+	a {									//a是选择器,它指示浏览器将样式应用到每一个a元素,即超链接
+		background-color:grey;			//声明
+		color:white
+	}
+</style>
+</head>
+如果有一套样式要用于多个HTML文档,与其在每一个文档中重复定义相同的样式,不如另外创建一个单独的样式表文件,这种文件按惯例以.css为文件扩展名,样式表中用不着style元素,只需设计好选择器,然后HTML文档可以用link元素将样式导入其中
+在CSS文件中,可以使用@import "文件名.css" 将其他样式表导入
+@charset "UTF-8"	声明样式表使用的字符编码类型
+样式层叠,即顺序
+1.元素内嵌样式(用style属性定义的)
+2.文档内嵌样式(用style元素定义的)
+3.外部样式(用link元素导入的样式)
+4.用户样式(用户自已配置的样式)
+5.浏览器样式(浏览器应用的默认样式)
+如果给样式属性标记为重要,例 background-color:grey !important; ,不管这种样式定义在什么地方,浏览器都会优先考虑
+如果有两条定义于同一层次的样式都能应用于同一个元素,浏览器会评估两条样式的具体程序,然后选中较为特殊的那条
+1.样式的选择器中的id值的数目
+2.选择器中其他属性和伪类的数目
+3.选择器中元素名和伪元素的数目
+如果浏览器在直接相关的样式中找不到某个属性的值,就会求助于继承机制,使用父元素的这个样式属性值
+并非所有CSS属性均可继承,与元素外观(文字颜色,字体等)相关的样式会被继承,与元素在页面上布局相关的样式不会被继承,在样式中使用inherit这个特别设立的值可以强行实施继承
+
+javaScript和java基本没有关系,可以在HTML中定义脚本
+内嵌脚本
+<script type="text/javascript">
+	document.writeln("Hello");
+</script>
+javascript基本元素是语句,一条语句代表着一条命令,通常以分号结尾,实际可以不用分号,是区分大小写的语言
+函数:
+	function myFunc(name,weather){		//是弱类型的语言,所以定义函数时不必声明参数的类型
+		document.writeln("This is a statement");
+		return "1";
+	}
+	调用函数时提供的参数数目不必与函数定义中的函数数目相同
+变量:
+	var myGlobalVar = "apples";			//必须有var关键字
+javascript定义了一小批基本类型,包括字符串类型(string),数值类型(number)和布尔类型(boolean)
+判断是否相等时会先转换为相同类型,只会用在==,!=,
+===,!==等同运算符和非等同运行符,不会转换为相同类型再比较
+基本类型是值的比较,对象的比较是引用的比较
+对象:
+	var myData = new Object(); 
+	myData.name = "Adam";		//对象多出了name属性,本来是没有的,除了可以.来访问外,还可 myData["name"]来访问
+	var myData = {				//对象字面量
+		name: "Adam",
+		weather: "sunny",
+		printMessages: function(){			//方法
+			document.writeln("This is a statement"+this.name);		//用到了this
+		}
+	};
+	delete myData.printMessages;		//对象的方法和属性可以用delete来删除
+	var hasName = "name" in myData;		//检查对象是否具有某个属性
+枚举
+	for( var prop in myData){			//枚举对象
+		document.writeln("name: "+prop+"value:"myData[prop]);
+	}
+	for( var i=0;i<myArray.length;i++){	//枚举数组
+		document.writeln("Index:",i,myArray[i]);
+	}
+条件分支
+	if(firstValue == secondValue){
+		...
+	}else{
+		...
+	}
+显式转换:
+	(5).tostring(),string(5),tostring(2),tostring(8),tostring(16) 以二进制,八进制,十六进制形式表示数值
+	toFixed(n)	以小数点后有n位数字的形式表示实数
+	toExponential(n)	以指数表示法表示数值,尾数的小数点前后分别有1位和n位数字
+	toPercision(n)		以n位有效数字表示数值,在必要的情况下使用指数表示法
+	Number("1")	转换为数字
+	parseInt(<str>)
+	parseFloat(<str>)
+数组:
+	var myArray = new Array();				//javascript中的数组可以包含不同的类型
+	myArray[0]=100;
+	myArray[1]="Alex";
+	var arr = [100,"Alex"];
+	内置的数组方法:
+		concat(<otherArray>)		//将数组和参数所指数组的内容合并为一个数组,可以指定多个数组
+		join(<separator>)			//将所有数组元素连接为一个字符串,各元素内容用参数指定的字符分隔
+		pop()						//将数组当作栈使用,删除并返回数组的最后一个元素
+		push(<item>)				//将数组当作栈使用,将指定的数据添加到数组最后
+		reverse()					//就地反转数组元素的次序
+		shift()						//类似pop,但操作的是数组的第一个元素
+		slice(<start>,<end>)		//返回一个子数组
+		sort()						//就地对数组元素排序
+		unshift(<item>)				//类似push,但新元素被插到数组开头位置
+处理错误:
+	try...catch,例
+	try{
+		var myArray;
+		for(var i=0;i<myArray.length;i++){
+			document.writeln("Index:",i,myArray[i]);
+		}
+	}catch(e){
+		document.writeln("Error:"+e);
+	}
+javascript中有两个特殊值,undefined和null,在读取未赋值的变量或试图读取对象没有的属性时得到的就是undefined,null表示有此属性,但值是null
+要检测是否是undefined或者null,只要!var就可以了
