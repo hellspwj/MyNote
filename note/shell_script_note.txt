@@ -5,6 +5,10 @@ $IFS（Internal Field Separator）	单词分隔符,可以在脚本中设置此�
 
 一般sh是bash的软链接,但是使用sh和bash会有区别,当bash执行时,发现$0是sh时,就会要求代码执行一定的规范,使之符合POSIX标准
 
+bash中初始化变量等号两边不允许有空格,因为有空格bash会解释成一个命令,如:
+VARIABLE =value bash会尝试运行VARIABLE命令,并且将"=value"作为参数
+VARIABLE= value bash会尝试运行VARIABLE命令,并将"VARIABLE"设为环境变量,其值为空.
+
 数字运算
 declare -i total=$first*$second
 $((运算内容))
@@ -47,6 +51,9 @@ do
         ;;
     esac
 done
+
+echo  $var 		若var里有换行符则不会显示
+echo  "$var"	若var里有换行符则会显示
 
 test	file  测试file是否存在
 -e		该档名是否存在
@@ -189,11 +196,13 @@ set 打开shell脚本里的某些开关
 	+x 取消
 
 在 ${variable}的使用方法中
-${variable##/*/}	#从前面开始对比,两个代表删除最长的一段/*/
-${variable#/*/}	一个代表删除最短的一段/*/
-${variable%%/*/}	%从最后面开始对比
-${variable%/*/}	一个代表删除最短的一段
+${variable##*}	#从前面开始对比,两个代表删除最长的一段*
+${variable#*}	一个代表删除最短的一段*
+${variable%%*}	%从最后面开始对比
+${variable%*}	一个代表删除最短的一段
 ${variable/testing/TEST}	将variable中的testing取代为TEST,一个/代表取代第一个找到的testing,两个//代表所有找到的testing
+ 	注意：在进行#或##匹配时，$string的首字符必须是被删除子串$substring的第一个字符，不然无法匹配删除； 
+	在进行%或者%%匹配时，$string的最后一个字符必须是被删除子串$substring的最后一个字符，不然无法进行删除操作；
 ${variable//testig/TEST}
 ${var/PARTTERN}：查找var所表示的字符串中，第一次被PARTTERN所匹配到的内容并删除
 ${var//PARTTERN}：查找var所表示的字符串中，所有被PARTTERN所匹配到的内容并删除
@@ -214,6 +223,15 @@ var=${str:=expr}	str=expr			str=expr			str不变
 					var=expr			var=expr			var=$str
 var=${str?expr}		expr输出至stderr	var=				var=str
 var=${str:?expr}	expr输出至stderr	expr输出至stderr	var=str
+
+${#string} 
+返回$string的长度
+
+${string:position} 
+在$string中，从$position位置之后开始提取子串
+
+${string:position:length} 
+在$string中，从$position位置之后开始提取$length长度的子串
 
 read [-pt]  variable	读取来自键盘输入的变量
 -p	后面可以接提示字符

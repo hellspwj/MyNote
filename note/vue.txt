@@ -1,0 +1,14 @@
+Vue.js应用创建很简单，通过构造函数Vue就可以创建一个Vue的根实例，并启动Vue应用 
+    var app=new Vue({
+        //选项
+    })
+    变量app就代表了这个Vue实例，几乎所有代码都是一个对象，写入Vue实例的选项内
+    必不可少的一个选项是el,el用于指定一个页面中已存在的DOM元素来挂载Vue的实例，它可以是HTMLElement,也可以是CSS选择器
+    <div> id="app"></div>
+    var app=new Vue({
+        el: document.getElementById('app')      //或者是'#app'
+    })
+    挂载成功后，可以通过app.$el来访问该元素
+
+data选项
+    可以声明应用内需要双向绑定的数据

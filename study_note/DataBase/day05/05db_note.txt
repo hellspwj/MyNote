@@ -30,6 +30,11 @@
 		可以对同一份物理数据做出不同的表现,可以简化查询
 		select * from (select id,first_name name,salary from s_emp);
 
+授权命令
+	Grant  <权限>  on  表名[(列名)]  to  用户 With  grant  option
+
+	或 GRANT <权限> ON <数据对象> FROM <数据库用户>  
+
 分页
 	oracle中的分页技术 rownum
 	id用来分页是受限制的,使用伪列rownum

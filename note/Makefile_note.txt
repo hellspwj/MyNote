@@ -1,584 +1,450 @@
-¿ÉÒÔÔÚmakeµÄÊ±ºò¼ÓÉÏmake CFLAGS="-g -O0"
+å¯ä»¥åœ¨makeçš„æ—¶å€™åŠ ä¸Šmake CFLAGS="-g -O0"
 
-make×î¶àÔÊÐí4¸ö±àÒëÃüÁîÍ¬Ê±Ö´ÐÐ,¿ÉÒÔÊ¹ÓÃmake -j4À´²¢ÐÐ±àÒë
+makeå¯ä»¥æŒ‡å®šå·¥ä½œç›®æ ‡ï¼Œå¦‚æžœæœªæŒ‡å®šä»»ä½•å·¥ä½œç›®æ ‡ï¼Œmakeå°±ä¼šé‡‡ç”¨Makefileæ–‡ä»¶ä¸­çš„ç¬¬ä¸€ä¸ªå·¥ä½œç›®æ ‡ï¼Œç§°ä¸ºé»˜è®¤ç›®æ ‡
 
-Makefile¹æÔò
-target...:prerequisites...
-	command
+makeæœ€å¤šå…è®¸4ä¸ªç¼–è¯‘å‘½ä»¤åŒæ—¶æ‰§è¡Œ,å¯ä»¥ä½¿ç”¨make -j4æ¥å¹¶è¡Œç¼–è¯‘
+
+makefileæ–‡ä»¶ä¸­æ”¯æŒä¸‰ç§é€šé…ç¬¦,ä¹Ÿæ”¯æŒç›®å½•~
+	"*"			0æˆ–å¤šä¸ªä»»æ„å­—ç¬¦
+	"?"			ä»£è¡¨ä»»ä½•å•ä¸€å­—ç¬¦
+	"[...]"		ä»£è¡¨ä¸€ä¸ªå­—ç¬¦é›†ï¼Œå¦‚[a-z]
+
+.PHONY : clean  è¡¨ç¤º,cleanæ˜¯ä¸ªä¼ªç›®æ ‡æ–‡ä»¶,å®ƒç”¨æ¥æŒ‡å®šä¸€ä¸ªå‡æƒ³çš„å·¥ä½œç›®æ ‡,ä¹Ÿå°±æ˜¯è¯´å®ƒåŽé¢çš„å¹¶ä¸æ˜¯ä¸€ä¸ªå®žé™…æ–‡ä»¶,è€Œä¸”è‚¯å®šè¦è§†ä¸ºæœªæ›´æ–°(ä¹Ÿå°±æ˜¯è¯´æ¡ä»¶æ€»æ˜¯æ»¡è¶³,éœ€è¦å¤„ç†)
+	ä½œç”¨:	
+	1.é¿å…å’ŒåŒåæ–‡ä»¶å†²çª,è‹¥æ‰§è¡Œmakeçš„ç›®å½•ä¸­å‡ºçŽ°äº†ç›®æ ‡æ–‡ä»¶,åˆ™ç›®æ ‡æ–‡ä»¶å§‹ç»ˆæ˜¯æœ€æ–°çš„,å‘½ä»¤æ°¸è¿œä¸ä¼šæ‰§è¡Œ,ä¸ºé¿å…è¿™ä¸ªé—®é¢˜,å¯ä½¿ç”¨.PHONY
+	2.phonyç›®æ ‡å¯ä»¥æœ‰ä¾èµ–å…³ç³»,å½“ä¸€ä¸ªç›®å½•ä¸­æœ‰å¤šä¸ªç¨‹åº,å°†å…¶æ”¾åœ¨ä¸€ä¸ªmakefileä¸­ä¼šæ›´æ–¹ä¾¿,å› ä¸ºç¼ºçœä¸Šæ¡£æ˜¯makefileä¸­çš„ç¬¬ä¸€ä¸ªç›®æ ‡,èƒ½å¸¸å°†è¿™ä¸ªphonyç›®æ ‡å«åš"all",å…¶ä¾èµ–æ–‡ä»¶ä¸ºå„ä¸ªç¨‹åº
+	all : prog1 prog2 prog3
+	.PHONY : all
 	...
-	...
+
+ä¸€èˆ¬è§„åˆ™
+	target1 target2 target3...:prerequisite1 prerequisite2...
+		command1
+		command2
+		...
+
+	ä¹Ÿå¯ä»¥
+	target...:prerequisites;command;command
 	
-Ò²¿ÉÒÔ
-target...:prerequisites;command;command
-	
-targetÒ²¾ÍÊÇÒ»¸öÄ¿±êÎÄ¼þ,¿ÉÒÔÊÇObject File,Ò²¿ÉÒÔÊÇÖ´ÐÐÎÄ¼þ,»¹¿ÉÒÔÊÇÒ»¸ö±êÇ©(Label),target¿ÉÒÔÊÇ¶à¸ö
-prerequisites¾ÍÊÇÒªÉú³ÉÄÇ¸ötargetËùÐèÒªµÄÎÄ¼þ»òÊÇÄ¿Â¼
-commandÒ²¾ÍÊÇmakeÐèÒªÖ´ÐÐµÄÃüÁî(ÈÎÒâµÄShellÃüÁî),Èç¹û²»ÔÚÒ»ÐÐÒ»¶¨ÒªÒÔTAB¿ªÍ·,ÔÚcommandÇ°¼ÓÒ»¸ö"-"ºÅ,±íÊ¾ÕâÌõÃüÁîÈç¹û³öÏÖÎÊÌâ,²»Òª¹Ü,¼ÌÐø×öºóÃæµÄÊÂ,Èç¹ûÔÚÒ»ÐÐÔòÓÃ·ÖºÅ×÷·Ö¸ô·û,makeµÄÃüÁîÄ¬ÈÏÊÇ±»/bin/shÖ´ÐÐµÄ
-makefileÀïµÄcommandÃ¿Ò»ÐÐÊÇÒ»¸ö½ø³Ì,²»Í¬ÐÐÖ®¼ä±äÁ¿Öµ²»ÄÜ´«µÝ
+	targetä¹Ÿå°±æ˜¯ä¸€ä¸ªç›®æ ‡æ–‡ä»¶,å¯ä»¥æ˜¯Object File,ä¹Ÿå¯ä»¥æ˜¯æ‰§è¡Œæ–‡ä»¶,è¿˜å¯ä»¥æ˜¯ä¸€ä¸ªæ ‡ç­¾(Label),targetå¯ä»¥æ˜¯å¤šä¸ªï¼Œè¢«ç§°ä¸ºå·¥ä½œç›®æ ‡
+	prerequisiteså°±æ˜¯è¦ç”Ÿæˆé‚£ä¸ªtargetæ‰€éœ€è¦çš„æ–‡ä»¶æˆ–æ˜¯ç›®å½•ï¼Œè¢«ç§°ä¸ºå¿…è¦æ¡ä»¶
+	commandä¹Ÿå°±æ˜¯makeéœ€è¦æ‰§è¡Œçš„å‘½ä»¤(ä»»æ„çš„Shellå‘½ä»¤),å¦‚æžœä¸åœ¨ä¸€è¡Œä¸€å®šè¦ä»¥TABå¼€å¤´,åœ¨commandå‰åŠ ä¸€ä¸ª"-"å·,è¡¨ç¤ºè¿™æ¡å‘½ä»¤å¦‚æžœå‡ºçŽ°é—®é¢˜,ä¸è¦ç®¡,ç»§ç»­åšåŽé¢çš„äº‹,å¦‚æžœåœ¨ä¸€è¡Œåˆ™ç”¨åˆ†å·ä½œåˆ†éš”ç¬¦,makeçš„å‘½ä»¤é»˜è®¤æ˜¯è¢«/bin/shæ‰§è¡Œçš„ï¼Œè¢«ç§°ä¸ºæ‰€è¦æ‰§è¡Œçš„å‘½ä»¤
+	makefileé‡Œçš„commandæ¯ä¸€è¡Œæ˜¯ä¸€ä¸ªè¿›ç¨‹,ä¸åŒè¡Œä¹‹é—´å˜é‡å€¼ä¸èƒ½ä¼ é€’
+	è¿™æ˜¯ä¸€ä¸ªæ–‡ä»¶çš„ä¾èµ–å…³ç³»,ä¹Ÿå°±æ˜¯è¯´,targetè¿™ä¸€ä¸ªæˆ–å¤šä¸ªç›®æ ‡æ–‡ä»¶ä¾èµ–äºŽprerequisitesä¸­çš„æ–‡ä»¶,å…¶ç”Ÿæˆè§„åˆ™å®šä¹‰åœ¨commandä¸­,prerequisitesä¸­å¦‚æžœæœ‰ä¸€ä¸ªä»¥ä¸Šçš„æ–‡ä»¶æ¯”targetæ–‡ä»¶è¦æ–°æˆ–è€…targetä¸å­˜åœ¨çš„è¯,commandæ‰€å®šä¹‰çš„å‘½ä»¤å°±ä¼šè¢«æ‰§è¡Œ
+	å¯ä»¥ä¸å¿…å°†è§„åˆ™ä¸€æ¡è§„åˆ™ä¸€æ¬¡æ€§å®šä¹‰å®Œå…¨ï¼Œæ¯å½“makeçœ‹åˆ°ä¸€ä¸ªå·¥ä½œç›®æ ‡ï¼Œå°±ä¼šå°†è¯¥å·¥ä½œç›®æ ‡ä¸Žå…¶å¿…è¦æ¡ä»¶åŠ å…¥ä¾å­˜å›¾ï¼Œå¦‚æžœmakeæ‰€çœ‹åˆ°çš„å·¥ä½œç›®æ ‡å·²ç»å­˜åœ¨äºŽä¾å­˜å›¾ä¸­ï¼Œåˆ™ä»»ä½•é¢å¤–çš„å¿…è¦æ¡ä»¶éƒ½ä¼šè¢«é™„åŠ åˆ°è¯¥å·¥ä½œç›®æ ‡åœ¨ä¾å­˜å›¾çš„é¡¹ç›®é‡Œ
+	å½“ç¨‹åºåº“ä½œä¸ºå¿…è¦æ¡ä»¶æ—¶,å¯ä»¥ä½¿ç”¨æ ‡å‡†è¯­æ³•å³å®Œæ•´æ–‡ä»¶åæˆ–è€…-lmathæ¥å¼•ç”¨(mathæ˜¯åº“å),ä½†-lè¯­æ³•é‡Œçš„ç¨‹åºåº“åç§°ä¸èƒ½ä¸ºmakefileé‡Œçš„å·¥ä½œç›®æ ‡
 
-ÕâÊÇÒ»¸öÎÄ¼þµÄÒÀÀµ¹ØÏµ,Ò²¾ÍÊÇËµ,targetÕâÒ»¸ö»ò¶à¸öÄ¿±êÎÄ¼þÒÀÀµÓÚprerequisitesÖÐµÄÎÄ¼þ,ÆäÉú³É¹æÔò¶¨ÒåÔÚcommandÖÐ,prerequisitesÖÐÈç¹ûÓÐÒ»¸öÒÔÉÏµÄÎÄ¼þ±ÈtargetÎÄ¼þÒªÐÂ»òÕßtarget²»´æÔÚµÄ»°,commandËù¶¨ÒåµÄÃüÁî¾Í»á±»Ö´ÐÐ
+æ¨¡å¼è§„åˆ™	æ‰€æœ‰å†…ç½®è§„åˆ™éƒ½æ˜¯æ¨¡å¼è§„åˆ™
+	æ¨¡å¼è§„åˆ™ä¸­çš„ç™¾åˆ†æ¯”ç¬¦å·å¤§ä½“ä¸Šä»£è¡¨ä»»æ„å¤šä¸ªå­—ç¬¦ï¼Œå¯ä»¥æ”¾åœ¨æ¨¡å¼ä¸­çš„ä»»ä½•åœ°æ–¹ï¼Œä¸è¿‡åªèƒ½å‡ºçŽ°ä¸€æ¬¡
+	ä¸€ä¸ªæ¨¡å¼å¯ä»¥åŒ…å«ä¸€ä¸ªå‰ç¼€æˆ–ä¸€ä¸ªåŽç¼€ï¼Œæˆ–æ˜¯è¿™2è€…åŒæ—¶å­˜åœ¨
+	æ¨¡å¼è§„åˆ™å·¥ä½œç›®æ ‡å¿…é¡»ä»¥å‰ç¼€å¼€å¤´å¹¶ä¸”ä»¥åŽç¼€ç»“å°¾ï¼ˆå¦‚æžœå®ƒä»¬å­˜åœ¨çš„è¯ï¼‰ï¼Œå¦‚æžœæ‰¾åˆ°ç›¸ç¬¦çš„æ¨¡å¼è§„åˆ™å·¥ä½œç›®æ ‡ï¼Œåˆ™å‰ç¼€ä¸ŽåŽç¼€ä¹‹é—´çš„å­—ç¬¦ä¼šè¢«ä½œä¸ºæ–‡ä»¶åçš„è¯å¹²ï¼ŒæŽ¥ç€makeä¼šå°†è¯å¹²æ›¿æ¢åˆ°å¿…è¦æ¡ä»¶æ¨¡å¼ä¸­æ¥æ£€æŸ¥è¯¥æ¨¡å¼è§„åˆ™çš„å¿…è¦æ¡ä»¶
+	è‡ªåŠ¨æŽ¨å¯¼
+		åªè¦makeçœ‹åˆ°ä¸€ä¸ª.oæ–‡ä»¶,å®ƒå°±ä¼šè‡ªåŠ¨çš„æŠŠ.cæ–‡ä»¶åŠ åœ¨ä¾èµ–å…³ç³»ä¸­,å¦‚æžœmakeæ‰¾åˆ°ä¸€ä¸ªwhatever.o,é‚£ä¹ˆwhatever.c,å°±ä¼šæ˜¯whatever.oçš„ä¾èµ–æ–‡ä»¶.å¹¶ä¸”cc -c whatever.cä¹Ÿä¼šè¢«æŽ¨å¯¼å‡ºæ¥
 
-ÔÚMakefileÖÐÉùÃ÷ÁËÒ»¸ö±äÁ¿,ÔÚºóÐø¾Í¿ÉÒÔÓÃ"$(objects)"µÄ·½Ê½À´Ê¹ÓÃÕâ¸ö±äÁ¿
+é™æ€æ¨¡å¼è§„åˆ™	å¯ä»¥æ›´åŠ å®¹æ˜“åœ°å®šä¹‰å¤šç›®æ ‡çš„è§„åˆ™,è§„åˆ™å­˜åœ¨å¤šä¸ªç›®æ ‡,å¹¶ä¸”ä¸åŒçš„ç›®æ ‡å¯ä»¥æ ¹æ®ç›®æ ‡æ–‡ä»¶çš„åå­—æ¥è‡ªåŠ¨æž„é€ å‡ºä¾èµ–æ–‡ä»¶ï¼Œåªèƒ½åº”ç”¨åœ¨ç‰¹å®šçš„å·¥ä½œç›®æ ‡ä¸Š
+	<targets...>:<target-pattern>:<prereq-patterns...>
+		<commands>
+		...
+	targetså®šä¹‰äº†ä¸€ç³»åˆ—çš„ç›®æ ‡æ–‡ä»¶,å¯ä»¥æœ‰é€šé…ç¬¦,æ˜¯ç›®æ ‡çš„ä¸€ä¸ªé›†åˆ,é€šé…ç¬¦ç”¨%
+	target-patternæ˜¯æŒ‡æ˜Žäº†targetsçš„æ¨¡å¼,ä¹Ÿå°±æ˜¯ç›®æ ‡é›†æ¨¡å¼
+	prereq-patternsæ˜¯ç›®æ ‡çš„ä¾èµ–æ¨¡å¼,å®ƒå¯¹target-patternå½¢æˆçš„æ¨¡å¼å†è¿›è¡Œä¸€æ¬¡ä¾èµ–ç›®æ ‡çš„å®šä¹‰
+	ä¾‹å­:
+		$(OBJECTS): %.o: %.c
+		æ­¤è§„åˆ™ä¸Žä¸€èˆ¬æ¨¡å¼è§„åˆ™çš„åŒºåˆ«å°±æ˜¯å¼€å¤´çš„$(OBJECTS),è¿™å°†ä½¿å¾—è¿™é¡¹è§„åˆ™åªèƒ½ç”¨åœ¨$(OBJECTS)å˜é‡ä¸­æ‰€åˆ—ä¸¾çš„æ–‡ä»¶ä¸Š
+		%.oæ¨¡å¼ä¼šåŒ¹é…$(OBJECTS)ä¸­æ‰€åˆ—ä¸¾çš„æ¯ä¸ªç›®æ ‡æ–‡ä»¶å¹¶ä¸”å–å‡ºå…¶è¯å¹²,ç„¶åŽè¯¥è¯å¹²ä¼šè¢«æ›¿æ¢è¿›%.cæ¨¡å¼,ä»¥äº§ç”Ÿå·¥ä½œç›®æ ‡çš„å¿…è¦æ¡ä»¶
 
-×Ô¶¯ÍÆµ¼
-Ö»Òªmake¿´µ½Ò»¸ö.oÎÄ¼þ,Ëü¾Í»á×Ô¶¯µÄ°Ñ.cÎÄ¼þ¼ÓÔÚÒÀÀµ¹ØÏµÖÐ,Èç¹ûmakeÕÒµ½Ò»¸öwhatever.o,ÄÇÃ´whatever.c,¾Í»áÊÇwhatever.oµÄÒÀÀµÎÄ¼þ.²¢ÇÒcc -c whatever.cÒ²»á±»ÍÆµ¼³öÀ´
+åŽç¼€è§„åˆ™	è¿‡æ—¶çš„æ–¹æ³•
+	åŽç¼€è§„åˆ™çš„å·¥ä½œç›®æ ‡,å¯ä»¥æ˜¯ä¸€ä¸ªæ‰©å±•åæˆ–ä¸¤ä¸ªè¢«è¡”æŽ¥åœ¨ä¸€èµ·çš„æ‰©å±•å
+	.c.o:
+		$(COMPILE.c) $(OUTPUT_OPTION)	$<
+	å’Œä¸‹é¢çš„è§„åˆ™ä¸€æ ·
+	%.o: %.c
+		$(COMPILE.c) $(OUTPUT_OPTION)	$<
+	makeåªä¼šåœ¨åŽç¼€ååœ¨å·²çŸ¥æ‰©å±•åˆ—è¡¨ä¸­æ—¶,æ‰å°†ä¹‹è§†ä¸ºåŽç¼€è§„åˆ™
+	.SUFFIXES: .out .a	#è®¾å®šå·²çŸ¥æ‰©å±•å
+	.SUFFIXES: 			#åˆ é™¤æ‰€æœ‰å·²çŸ¥æ‰©å±•å
 
-.PHONY : clean  ±íÊ¾,cleanÊÇ¸öÎ±Ä¿±êÎÄ¼þ,ËüÓÃÀ´Ö¸¶¨Ò»¸ö¼ÙÏëµÄ¹¤×÷Ä¿±ê,Ò²¾ÍÊÇËµËüºóÃæµÄ²¢²»ÊÇÒ»¸öÊµ¼ÊÎÄ¼þ,¶øÇÒ¿Ï¶¨ÒªÊÓÎªÎ´¸üÐÂ(Ò²¾ÍÊÇËµÌõ¼þ×ÜÊÇÂú×ã,ÐèÒª´¦Àí)
-×÷ÓÃ:	
-1.±ÜÃâºÍÍ¬ÃûÎÄ¼þ³åÍ»,ÈôÖ´ÐÐmakeµÄÄ¿Â¼ÖÐ³öÏÖÁËÄ¿±êÎÄ¼þ,ÔòÄ¿±êÎÄ¼þÊ¼ÖÕÊÇ×îÐÂµÄ,ÃüÁîÓÀÔ¶²»»áÖ´ÐÐ,Îª±ÜÃâÕâ¸öÎÊÌâ,¿ÉÊ¹ÓÃ.PHONY
-2.phonyÄ¿±ê¿ÉÒÔÓÐÒÀÀµ¹ØÏµ,µ±Ò»¸öÄ¿Â¼ÖÐÓÐ¶à¸ö³ÌÐò,½«Æä·ÅÔÚÒ»¸ömakefileÖÐ»á¸ü·½±ã,ÒòÎªÈ±Ê¡ÉÏµµÊÇmakefileÖÐµÄµÚÒ»¸öÄ¿±ê,ÄÜ³£½«Õâ¸öphonyÄ¿±ê½Ð×ö"all",ÆäÒÀÀµÎÄ¼þÎª¸÷¸ö³ÌÐò
-all : prog1 prog2 prog3
-.PHONY : all
-...
+åŒå†’å·è§„åˆ™: 	
+	æ˜¯ä¸€ä¸ªæ¨¡åž‹çš„åŠŸèƒ½,ä¼šæ ¹æ®å¿…è¦æ¡ä»¶çš„æ—¶é—´æˆ³æ˜¯å¦åœ¨å·¥ä½œç›®æ ‡ä¹‹åŽ,ä»¥ä¸åŒçš„å‘½ä»¤æ¥æ›´æ–°åŒä¸€ä¸ªå·¥ä½œç›®æ ‡
+	é€šå¸¸,å½“ä¸€ä¸ªå·¥ä½œç›®æ ‡å¤šæ¬¡å‡ºçŽ°æ—¶,æ‰€æœ‰çš„å¿…è¦æ¡ä»¶ä¼šè¢«è¡”æŽ¥æˆä¸€ä»½åˆ—è¡¨,è€Œä¸”åªè®©ä¸€ä¸ªå‘½ä»¤è„šæœ¬è¿›è¡Œæ›´æ–°çš„åŠ¨ä½œ
+	ç„¶è€Œ,å¯¹åŒå†’å·è§„åˆ™è€Œè¨€,ç›¸åŒçš„å·¥ä½œç›®æ ‡æ¯å‡ºçŽ°ä¸€æ¬¡å°±ä¼šè¢«è§†ä¸ºä¸€ä¸ªç‹¬ç«‹çš„å®žä½“,å¿…é¡»è¿›è¡Œç‹¬ç«‹çš„å¤„ç†
+	è¿™æ„å‘³ç€,å¯¹åŒä¸€ä¸ªå·¥ä½œç›®æ ‡æ¥è¯´,æ‰€æœ‰çš„è§„åˆ™å¿…é¡»æ˜¯åŒä¸€ä¸ªç±»åž‹,ä¹Ÿå°±æ˜¯è¯´,å®ƒä»¬è‹¥éžå…¨éƒ½æ˜¯åŒå†’å·è§„åˆ™,å°±åº”è¯¥æ˜¯å•å†’å·è§„åˆ™
 
-include¹Ø¼ü×Ö¿ÉÒÔ°Ñ±ðµÄMakefile°üº¬½øÀ´,±»°üº¬µÄÎÄ¼þ»áÔ­Ä£Ô­ÑùµÄ·ÅÔÚµ±Ç°ÎÄ¼þµÄ°üº¬Î»ÖÃ
-Óï·¨: include filename        #filename¿ÉÒÔÊÇµ±Ç°²Ù×÷ÏµÍ³shellµÄÎÄ¼þÄ£Ê½(¿ÉÒÔ°üº¬Â·¾¶ºÍÍ¨Åä·û)
-includeÇ°Ãæ¿ÉÒÔÓÐÒ»Ð©¿Õ×Ö·û,µ«ÊÇ¾ø²»ÄÜÊÇTAB¼ü¿ªÊ¼
-makeÃüÁî¿ªÊ¼Ê±,»áÏÈÕÒÑ°include°üº¬µÄÆäËûmakefile,²¢Ìæ»»µ½µ±Ç°Î»ÖÃ,»áÔÚµ±Ç°Ä¿Â¼ÏÂÊ×ÏÈÑ°ÕÒ,Èç¹ûÃ»ÓÐÕÒµ½,»¹»áÔÚÏÂÃæµÄ¼¸¸öÄ¿Â¼ÏÂÕÒ
-1. Èç¹ûmakeÖ´ÐÐÊ±,ÓÐ"-I'»ò"--include-dir"²ÎÊý,ÄÇÃ´make¾Í»áÔÚÕâ¸ö²ÎÊýËùÖ¸¶¨µÄÄ¿Â¼ÏÂÑ°ÕÒ
-2. Èç¹ûÄ¿Â¼/include(Ò»°ãÊÇ:/usr/local»ò/usr/include)´æÔÚµÄ»°,makeÒ²»áÈ¥ÕÒ
-Èç¹ûÎÄ¼þÃ»ÓÐÕÒµ½µÄ»°,make»áÉú³ÉÒ»Ìõ¾¯¸æÐÅÏ¢,µ«²»»áÂíÉÏ³öÏÖÖÂÃü´íÎó,Ëü»á¼ÌÐøÔØÈëÆäËûµÄÎÄ¼þ,Ò»µ©Íê³ÉmakefileµÄ¶ÁÈ¡,make»áÔÙÖØÊÔÕâÐ©Ã»ÓÐÕÒµ½µÄÎÄ¼þ,»òÊÇ²»ÄÜ¶ÁÈ¡µÄÎÄ¼þ,Èç¹û»¹ÊÇ²»ÐÐ,make²Å»á³öÏÖÒ»ÌõÖÂÃüÐÅÏ¢,Èç¹ûÏÂÃæÓÐ¹æÔò¿ÉÒÔ´´½¨includeµÄÎÄ¼þ,»áÏÈµ÷ÓÃ¹æÔò´´½¨ÎÄ¼þ,ÔÙinclude
 
-»·¾³±äÁ¿MAKEFILES
-Èç¹ûµ±Ç°»·¾³ÖÐ¶¨ÒåÁË»·¾³±äÁ¿MAKEFILES,ÄÇÃ´,make»á°ÑÕâ¸ö±äÁ¿ÖÐµÄÖµ×öÒ»¸öÀàËÆÓÚincludeµÄ¶¯×÷,Õâ¸ö±äÁ¿µÄÖµÊÇÆäËüµÄmakefile,ÓÃ¿Õ¸ñ·Ö¸ô,Ö»ÊÇ,ËüºÍinclude²»Í¬µÄÊÇ,´ÓÕâ¸ö»·¾³±äÁ¿ÖÐÒýÈëµÄmakefileµÄ"Ä¿±ê"²»»áÆð×÷ÓÃ,Èç¹û»·¾³±äÁ¿ÖÐ¶¨ÒåµÄÎÄ¼þ·¢ÏÖ´íÎó,makeÒ²²»Àí,²»½¨ÒéÊ¹ÓÃ
+è‡ªåŠ¨åŒ–å˜é‡
+	$@ 		#è¡¨ç¤ºè§„åˆ™ä¸­çš„ç›®æ ‡æ–‡ä»¶é›†ã€‚åœ¨æ¨¡å¼è§„åˆ™ä¸­ï¼Œå¦‚æžœæœ‰å¤šä¸ªç›®æ ‡ï¼Œé‚£ä¹ˆï¼Œ"$@"å°±æ˜¯åŒ¹é…äºŽç›®æ ‡ä¸­æ¨¡å¼å®šä¹‰çš„é›†åˆ
+	$%		#ä»…å½“ç›®æ ‡æ˜¯é™æ€åº“æ–‡ä»¶æ—¶ï¼Œè¡¨ç¤ºè§„åˆ™ä¸­çš„ç›®æ ‡æˆå‘˜åã€‚ä¾‹å¦‚ï¼Œå¦‚æžœä¸€ä¸ªç›®æ ‡æ˜¯"foo.a(bar.o)"ï¼Œé‚£ä¹ˆï¼Œ"$%"å°±æ˜¯"bar.o"ï¼Œ"$@"å°±æ˜¯"foo.a"ã€‚å¦‚æžœç›®æ ‡ä¸æ˜¯é™æ€åº“æ–‡ä»¶ï¼ˆUnixä¸‹æ˜¯[.a]ï¼ŒWindowsä¸‹æ˜¯[.lib]ï¼‰ï¼Œé‚£ä¹ˆï¼Œå…¶å€¼ä¸ºç©ºã€‚
+	$<		#ä¾èµ–ç›®æ ‡ä¸­çš„ç¬¬ä¸€ä¸ªç›®æ ‡åå­—ã€‚å¦‚æžœä¾èµ–ç›®æ ‡æ˜¯ä»¥æ¨¡å¼ï¼ˆå³"%"ï¼‰å®šä¹‰çš„ï¼Œé‚£ä¹ˆ"$<"å°†æ˜¯ç¬¦åˆæ¨¡å¼çš„ä¸€ç³»åˆ—çš„æ–‡ä»¶é›†ã€‚æ³¨æ„ï¼Œå…¶æ˜¯ä¸€ä¸ªä¸€ä¸ªå–å‡ºæ¥çš„ã€‚
+	$?		#æ‰€æœ‰æ¯”ç›®æ ‡æ–°çš„ä¾èµ–ç›®æ ‡çš„é›†åˆã€‚ä»¥ç©ºæ ¼åˆ†éš”
+	$^		#æ‰€æœ‰çš„ä¾èµ–ç›®æ ‡çš„é›†åˆã€‚ä»¥ç©ºæ ¼åˆ†éš”ã€‚å¦‚æžœåœ¨ä¾èµ–ç›®æ ‡ä¸­æœ‰å¤šä¸ªé‡å¤çš„ï¼Œé‚£ä¸ªè¿™ä¸ªå˜é‡ä¼šåŽ»é™¤é‡å¤çš„ä¾èµ–ç›®æ ‡ï¼Œåªä¿ç•™ä¸€ä»½
+	$+		#è¿™ä¸ªå˜é‡å¾ˆåƒ"$^"ï¼Œä¹Ÿæ˜¯æ‰€æœ‰ä¾èµ–ç›®æ ‡çš„é›†åˆã€‚åªæ˜¯å®ƒä¸åŽ»é™¤é‡å¤çš„ä¾èµ–ç›®æ ‡(æ˜¯ä¸ºäº†è§£å†³å¾ªçŽ¯ä¾èµ–è€Œåˆ›å»ºçš„,ä¸ç„¶$^åŽ»æŽ‰é‡å¤çš„åº“çš„è¯å°±ä¸èƒ½è§£å†³ä¾èµ–é—®é¢˜äº†)
+	$*		#è¿™ä¸ªå˜é‡è¡¨ç¤ºç›®æ ‡æ¨¡å¼ä¸­"%"åŠå…¶ä¹‹å‰çš„éƒ¨åˆ†ã€‚å¦‚æžœç›®æ ‡æ˜¯"dir/a.foo.b"ï¼Œå¹¶ä¸”ç›®æ ‡çš„æ¨¡å¼æ˜¯"a.%.b"ï¼Œé‚£ä¹ˆï¼Œ"$*"çš„å€¼å°±æ˜¯"dir /a.foo"
 
-GNUµÄmakeµÄ¹¤×÷µÄÖ´ÐÐ²½Öè:
-1. ÒÀ´Î¶ÁÈ¡±äÁ¿¡°MAKEFILES¡±¶¨ÒåµÄmakefileÎÄ¼þÁÐ±í
-2. ¶ÁÈ¡¹¤×÷Ä¿Â¼ÏÂµÄmakefileÎÄ¼þ£¨È±Ê¡µÄÊÇ¸ù¾ÝÃüÃûµÄ²éÕÒË³Ðò¡°GNUmakefile¡±£¬¡°makefile¡±£¬¡°Makefile¡±£¬Ê×ÏÈÕÒµ½ÄÇ¸ö¾Í¶ÁÈ¡ÄÇ¸ö£©
-3. ÒÀ´Î¶ÁÈ¡¹¤×÷Ä¿Â¼makefileÎÄ¼þÖÐÊ¹ÓÃÖ¸Ê¾·û¡°include¡±°üº¬µÄÎÄ¼þ
-4. ²éÕÒÖØ½¨ËùÓÐÒÑ¶ÁÈ¡µÄmakefileÎÄ¼þµÄ¹æÔò£¨Èç¹û´æÔÚÒ»¸öÄ¿±êÊÇµ±Ç°¶ÁÈ¡µÄÄ³Ò»¸ömakefileÎÄ¼þ£¬ÔòÖ´ÐÐ´Ë¹æÔòÖØ½¨´ËmakefileÎÄ¼þ£¬Íê³ÉÒÔºó´ÓµÚÒ»²½¿ªÊ¼ÖØÐÂÖ´ÐÐ£©
-5. ³õÊ¼»¯±äÁ¿Öµ²¢Õ¹¿ªÄÇÐ©ÐèÒªÁ¢¼´Õ¹¿ªµÄ±äÁ¿ºÍº¯Êý²¢¸ù¾ÝÔ¤ÉèÌõ¼þÈ·¶¨Ö´ÐÐ·ÖÖ§
-6. ¸ù¾Ý¡°ÖÕ¼«Ä¿±ê¡±ÒÔ¼°ÆäËûÄ¿±êµÄÒÀÀµ¹ØÏµ½¨Á¢ÒÀÀµ¹ØÏµÁ´±í
-7. Ö´ÐÐ³ý¡°ÖÕ¼«Ä¿±ê¡±ÒÔÍâµÄËùÓÐµÄÄ¿±êµÄ¹æÔò£¨¹æÔòÖÐÈç¹ûÒÀÀµÎÄ¼þÖÐÈÎÒ»¸öÎÄ¼þµÄÊ±¼ä´Á±ÈÄ¿±êÎÄ¼þÐÂ£¬ÔòÊ¹ÓÃ¹æÔòËù¶¨ÒåµÄÃüÁîÖØ½¨Ä¿±êÎÄ¼þ£©
-8. Ö´ÐÐ¡°ÖÕ¼«Ä¿±ê¡±ËùÔÚµÄ¹æÔò
-Èç¹ûÔÚµÚ1Ìõ¹æÔòÖÐ,¶¨ÒåµÄ±äÁ¿±»Ê¹ÓÃÁË,ÄÇÃ´,make»á°ÑÆäÕ¹¿ªÔÚÊ¹ÓÃµÄÎ»ÖÃ,µ«make²¢Ã»ÓÐÍêÈ«ÂíÉÏÕ¹¿ª,¶øÊÇÊ¹ÓÃµÄÍÏÑÓÕ½Êõ,Èç¹û±äÁ¿³öÏÖÔÚÒÀÀµµÄ¹æÔòÖÐ,ÄÇÃ´½öµ±ÕâÌõÒÀÀµ±»¾ö¶¨ÒªÊ¹ÓÃÁË,±äÁ¿²Å»áÔÚÆäÄÚ²¿Õ¹¿ª
+	åœ¨ä¸Šè¿°æ‰€åˆ—å‡ºæ¥çš„è‡ªåŠ¨é‡å˜é‡ä¸­ã€‚å››ä¸ªå˜é‡ï¼ˆ$@ã€$<ã€$%ã€$*ï¼‰åœ¨æ‰©å±•æ—¶åªä¼šæœ‰ä¸€ä¸ªæ–‡ä»¶ï¼Œè€Œå¦ä¸‰ä¸ªçš„å€¼æ˜¯ä¸€ä¸ªæ–‡ä»¶åˆ—è¡¨ã€‚
+	è¿™ä¸ƒä¸ªè‡ªåŠ¨åŒ–å˜é‡è¿˜å¯ä»¥å–å¾—æ–‡ä»¶çš„ç›®å½•åæˆ–æ˜¯åœ¨å½“å‰ç›®å½•ä¸‹çš„ç¬¦åˆæ¨¡å¼çš„æ–‡ä»¶åï¼Œåªéœ€è¦æ­é…ä¸Š"D"æˆ–"F"å­—æ ·ã€‚å¦‚$(@D)
+	è¿™æ˜¯GNU makeä¸­è€ç‰ˆæœ¬çš„ç‰¹æ€§ï¼Œåœ¨æ–°ç‰ˆæœ¬ä¸­ï¼Œæˆ‘ä»¬ä½¿ç”¨å‡½æ•°"dir"æˆ–"notdir"å°±å¯ä»¥åšåˆ°äº†ã€‚"D"çš„å«ä¹‰å°±æ˜¯Directoryï¼Œå°±æ˜¯ç›®å½•ï¼Œ"F"çš„å«ä¹‰å°±æ˜¯Fileï¼Œå°±æ˜¯æ–‡ä»¶ã€‚
 
-makeÖ§³ÖÈýÖÖÍ¨Åä·û"*","?","[...]",Ò²Ö§³ÖÄ¿Â¼~
+å˜é‡
+	å˜é‡åç§°åŒºåˆ†å¤§å°å†™
+	åœ¨Makefileä¸­å£°æ˜Žäº†ä¸€ä¸ªå˜é‡,åœ¨åŽç»­å°±å¯ä»¥ç”¨"$(objects)"æˆ–è€…"${objects}çš„æ–¹å¼æ¥ä½¿ç”¨è¿™ä¸ªå˜é‡ï¼Œä¹Ÿå¯ä»¥æ˜¯$a,å¿…é¡»æ˜¯å•å­—ç¬¦å˜é‡
+	ä¸€ä¸ªå˜é‡çš„å€¼ç”±èµ‹å€¼ç¬¦å·å³è¾¹å·²åˆ é™¤å‰å¯¼ç©ºæ ¼æ‰€æ‰€æœ‰å­—ç»„æˆ.è·Ÿåœ¨æ‰€æœ‰å­—ä¹‹åŽçš„ç©ºæ ¼åˆ™ä¸ä¼šè¢«åˆ é™¤
+	å˜é‡æœ‰2ç§ç±»åž‹
+	ç®€å•æ‰©å±•çš„å˜é‡
+		ä¾‹ MAKE_DEPEND := $(CC) -M,ä¸€æ—¦makeä»ŽMakefileè¯»è¿›è¯¥å˜é‡çš„å®šä¹‰è¯­å¥,å°±ä¼šç«‹å³å±•å¼€,å¦‚æžœæ­¤æ—¶CCå°šæœªå®šä¹‰,åˆ™ä¼šå˜æˆ <space>-M
+	é€’å½’æ‰©å±•çš„å˜é‡
+		ä¾‹ MAKE_DEPEND  = $(CC) -M,makeåªä¼šè¯»è¿›èµ‹å€¼è¿ç®—ç¬¦å³è¾¹çš„éƒ¨åˆ†,å¹¶å°†ä¹‹å­˜å‚¨ä¸ºè¯¥å˜é‡çš„å€¼,ä½†ä¸ä¼šè¿›è¡Œæ‰©å±•çš„åŠ¨ä½œ,æ‰©å±•çš„åŠ¨ä½œä¼šè¢«å»¶è¿Ÿåˆ°è¯¥å˜é‡è¢«ä½¿ç”¨çš„æ—¶å€™æ‰è¿›è¡Œ,å¯èƒ½ä¼šå¯¼è‡´å˜é‡çš„å€¼å˜å¾—æ··ä¹±
+	MAKELEVELå˜é‡,å¦‚æžœmakeæœ‰ä¸€ä¸ªåµŒå¥—æ‰§è¡Œçš„åŠ¨ä½œ,é‚£ä¹ˆ,è¿™ä¸ªå˜é‡è®°å½•äº†å½“å‰Makefileçš„è°ƒç”¨å±‚æ•°
+	?=æ“ä½œç¬¦,foo?=bar,å«ä¹‰æ˜¯å¦‚æžœfooæ²¡æœ‰è¢«å®šä¹‰è¿‡,é‚£ä¹ˆfoo=bar,å¦‚æžœfooå®šä¹‰è¿‡äº†,åˆ™è¿™æ¡è¯­å¥ä»€ä¹ˆä¹Ÿä¸åš
+	+=å¯ä»¥ç»™å˜é‡è¿½åŠ å€¼,å¦‚æžœå˜é‡ä¹‹å‰æ²¡å®šä¹‰è¿‡,é‚£ä¹ˆ"+="ä¼šè‡ªåŠ¨å˜æˆ"=",å¦‚æžœå‰é¢å˜é‡æœ‰å®šä¹‰,é‚£ä¹ˆ"+="ä¼šç»§æ‰¿äºŽå‰æ¬¡æ“ä½œçš„èµ‹å€¼ç¬¦,å¦‚æžœå‰ä¸€æ¬¡æ˜¯":=",é‚£ä¹ˆ"+="ä¼šä»¥":="ä½œä¸ºå…¶èµ‹å€¼ç¬¦,å¦‚æžœæ˜¯=,ç”±äºŽå‰æ¬¡çš„èµ‹å€¼ç¬¦æ˜¯"=â€ï¼Œæ‰€ä»¥"+=â€ä¹Ÿä¼šä»¥"=â€æ¥åšä¸ºèµ‹å€¼ï¼Œé‚£ä¹ˆå²‚ä¸ä¼šå‘ç”Ÿå˜é‡çš„é€’è¡¥å½’å®šä¹‰ï¼Œè¿™æ˜¯å¾ˆä¸å¥½çš„ï¼Œæ‰€ä»¥makeä¼šè‡ªåŠ¨ä¸ºæˆ‘ä»¬è§£å†³è¿™ä¸ªé—®é¢˜ï¼Œæˆ‘ä»¬ä¸å¿…æ‹…å¿ƒè¿™ä¸ªé—®é¢˜
 
-ÎÄ¼þËÑÑ°
-MakefileÎÄ¼þÖÐµÄÌØÊâ±äÁ¿"VPATH",Èç¹ûÃ»ÓÐÖ¸¶¨Õâ¸ö±äÁ¿,makeÖ»»áÔÚµ±Ç°µÄÄ¿Â¼ÖÐÑ°ÕÒÒÀÀµÎÄ¼þºÍÄ¿±êÎÄ¼þ,Èç¹û¶¨ÒåÁËÕâ¸ö±äÁ¿,ÄÇÃ´,make¾Í»áÔÚµ±Ç°Ä¿Â¼ÕÒ²»µ½µÄÇé¿öÏÂ,¾Í»áµ½±äÁ¿"VPATH"ÖÐÖ¸¶¨µÄÄ¿Â¼ÏÂÑ°ÕÒÎÄ¼þÁË,Õâ¸ö±äÁ¿ÖÐÂ·¾¶ÒÔ":"·Ö¸ô,µ±Ç°Ä¿Â¼ÓÀÔ¶ÊÇ×î¸ßÓÅÏÈËÑË÷µÄµØ·½
-ÁíÒ»¸öÉèÖÃËÑË÷Â·¾¶µÄ·½·¨ÊÇÊ¹ÓÃmakeµÄ"vpath"¹Ø¼ü×Ö(È«Ð¡Ð´),Õâ²»ÊÇ±äÁ¿,ÕâÊÇmakeµÄÒ»¸ö¹Ø¼ü×Ö,ËüºÍ±äÁ¿"VPATH"ºÜÀàËÆ,µ«ÊÇ¸üÁé»î,Ëü¿ÉÒÔÖ¸¶¨²»Í¬µÄÎÄ¼þÔÚ²»Í¬µÄËÑË÷Ä¿Â¼ÖÐ,Ê¹ÓÃ·½·¨ÓÐÈýÖÖ
-1.  vpath <pattern> <directories>   Îª·ûºÏÄ£Ê½<pattern>µÄÎÄ¼þÖ¸¶¨ËÑË÷Ä¿Â¼<directories>
-2.	vpath <pattern>					Çå³ý·ûºÏÄ£Ê½<pattern>µÄÎÄ¼þµÄËÑË÷Ä¿Â¼
-3.	vpath							Çå³ýËùÓÐÒÑ±»ÉèÖÃºÃÁËµÄÎÄ¼þËÑË÷Ä¿Â¼
-vpathÊ¹ÓÃ·½·¨ÖÐµÄ<pattern>ÐèÒª°üº¬"%"×Ö·û,"%"µÄÒâË¼ÊÇÆ¥ÅäÁã»òÈô¸É×Ö·û
+å·¥ä½œç›®æ ‡ä¸Žæ¨¡å¼çš„ä¸“å±žå˜é‡
+	target...: varible = value
+	target...: varible := value
+	target...: varible += value
+	target...: varible ?= value
+	ä¾‹:
+		gui.o: CPPFLAGS += -DUSE_NEW_MALLOC=1
+		gui.o: gui.h
+		åªåœ¨ç¼–è¯‘gui.oæ—¶åŠ ä¸Šç¼–è¯‘é€‰é¡¹-DUSE_NEW_MALLOC=1
+	è¿™ç±»å˜é‡çš„èµ‹å€¼åŠ¨ä½œä¼šå»¶åŽåˆ°å¼€å§‹å¤„ç†å·¥ä½œç›®æ ‡çš„æ—¶å€™è¿›è¡Œ,æ‰€ä»¥èµ‹å€¼è¿ç®—å³è¾¹éƒ¨åˆ†çš„å€¼,å¯ç”±å¦ä¸€ä¸ªå·¥ä½œç›®æ ‡çš„ä¸“å±žå˜é‡æ¥è®¾å®š,åŒæ ·åœ°,æ­¤å˜é‡åªåœ¨å¿…è¦æ¡ä»¶çš„å¤„ç†æœŸé—´,æ‰ä¼šå‘ç”Ÿä½œç”¨
 
-¾²Ì¬Ä£Ê½¿ÉÒÔÀí¼ÓÈÝÒ×µØ¶¨Òå¶àÄ¿±êµÄ¹æÔò,¹æÔò´æÔÚ¶à¸öÄ¿±ê,²¢ÇÒ²»Í¬µÄÄ¿±ê¿ÉÒÔ¸ù¾ÝÄ¿±êÎÄ¼þµÄÃû×ÖÀ´×Ô¶¯¹¹Ôì³öÒÀÀµÎÄ¼þ
-<targets...>:<target-pattern>:<prereq-patterns...>
-	<commands>
-	...
-targets¶¨ÒåÁËÒ»ÏµÁÐµÄÄ¿±êÎÄ¼þ,¿ÉÒÔÓÐÍ¨Åä·û,ÊÇÄ¿±êµÄÒ»¸ö¼¯ºÏ,Í¨Åä·ûÓÃ%
-target-patternÊÇÖ¸Ã÷ÁËtargetsµÄÄ£Ê½,Ò²¾ÍÊÇÄ¿±ê¼¯Ä£Ê½
-prereq-patternsÊÇÄ¿±êµÄÒÀÀµÄ£Ê½,Ëü¶Ôtarget-patternÐÎ³ÉµÄÄ£Ê½ÔÙ½øÐÐÒ»´ÎÒÀÀµÄ¿±êµÄ¶¨Òå
-Àý×Ó:
-objects = foo.o bar.o
-    all: $(objects)
-    $(objects): %.o: %.c
-            $(CC) -c $(CFLAGS) $< -o $@
+ç«‹å³å’Œå»¶åŽæ‰©å±•çš„è§„åˆ™
+	å®šä¹‰		ä½•æ—¶æ‰©å±•a	ä½•æ—¶æ‰©å±•b
+	a=b 		ç«‹å³		å»¶åŽ
+	a?=b 		ç«‹å³		å»¶åŽ
+	a:=b 		ç«‹å³ 		ç«‹å³
+	a+=b 		ç«‹å³ 		å»¶åŽæˆ–ç«‹å³
+	define a	ç«‹å³  		å»¶åŽ
+	b...
+	b...
+	endef
 
-Ò»°ãÎÄ¼þÒÀÀµÐÔÒª×Ô¼ºÉú³É.dÎÄ¼þ
+å®šä¹‰å‘½ä»¤åŒ…
+	å¦‚æžœmakefileä¸­å‡ºçŽ°ä¸€äº›ç›¸åŒå‘½ä»¤åºåˆ—,é‚£ä¹ˆå¯ä»¥ä¸ºè¿™äº›ç›¸åŒçš„å‘½ä»¤åºåˆ—å®šä¹‰ä¸€ä¸ªå˜é‡,ä»¥defineå¼€å§‹,ä»¥endefç»“æŸ,å‘½ä»¤åŒ…é‡Œå‘½ä»¤å¿…é¡»ä»¥TABå¼€å¤´,å¦åˆ™å°±æ˜¯æ™®é€šçš„è¡Œäº†,å¦‚
+	define run-yacc
+		yacc $(firstword $^)
+		mv y.tab.c $@
+	endef
+	run-yaccæ˜¯è¿™ä¸ªå‘½ä»¤åŒ…çš„åå­—,åœ¨å…¶ä»–åœ°æ–¹ä½¿ç”¨æ—¶ä½¿ç”¨ $(run-yacc) å³å¯
+	å¯ä»¥ç»™å®ä¼ é€’å‚æ•°,åœ¨å†…éƒ¨ç”¨$1,$2å¼•ç”¨,å¦‚æžœæ²¡æœ‰ç»™awkè„šæœ¬åŠ ä¸Šå¼•å·,åˆ™éœ€è¦ä½¿ç”¨$$1,$$2æ¥å¼•ç”¨,å› ä¸º$1ä¼šè¢«makeè§†ä¸ºè‡ªå·±çš„å˜é‡
 
-ÔÚÃüÁîÇ°¼Ó@±íÊ¾makeÊ±²»»á½«Õâ¸öÃüÁîÏÔÊ¾³öÀ´
-ÀýÈç
-@echo ÕýÔÚ±àÒëxxxÄ£¿é
-²»¼Ó@Ê±
-echo ÕýÔÚ±àÒëxxxÄ£¿é
-ÕýÔÚ±àÒëxxxÄ£¿é
-¼Ó@Ê±
-ÕýÔÚ±àÒëxxxÄ£¿é
+åœ¨å‘½ä»¤å‰åŠ @è¡¨ç¤ºmakeæ—¶ä¸ä¼šå°†è¿™ä¸ªå‘½ä»¤æ˜¾ç¤ºå‡ºæ¥
+	ä¾‹å¦‚
+	@echo æ­£åœ¨ç¼–è¯‘xxxæ¨¡å—
+	ä¸åŠ @æ—¶
+	echo æ­£åœ¨ç¼–è¯‘xxxæ¨¡å—
+	æ­£åœ¨ç¼–è¯‘xxxæ¨¡å—
+	åŠ @æ—¶
+	æ­£åœ¨ç¼–è¯‘xxxæ¨¡å—
 
-Èç¹ûÒªÈÃÉÏÒ»ÌõÃüÁîµÄ½á¹ûÓ¦ÓÃÔÚÏÂÒ»ÌõÃüÁîÀïÍ·,Ó¦¸ÃÊ¹ÓÃ·ÖºÅ·Ö¸ôÕâÁ½ÌõÃüÁî,Àý
+include		å¯ä»¥æŠŠåˆ«çš„MakefileåŒ…å«è¿›æ¥,è¢«åŒ…å«çš„æ–‡ä»¶ä¼šåŽŸæ¨¡åŽŸæ ·çš„æ”¾åœ¨å½“å‰æ–‡ä»¶çš„åŒ…å«ä½ç½®
+	è¯­æ³•: include filename        #filenameå¯ä»¥æ˜¯å½“å‰æ“ä½œç³»ç»Ÿshellçš„æ–‡ä»¶æ¨¡å¼(å¯ä»¥åŒ…å«è·¯å¾„å’Œé€šé…ç¬¦)
+	includeå‰é¢å¯ä»¥æœ‰ä¸€äº›ç©ºå­—ç¬¦,ä½†æ˜¯ç»ä¸èƒ½æ˜¯TABé”®å¼€å§‹
+	makeå‘½ä»¤å¼€å§‹æ—¶,ä¼šå…ˆæ‰¾å¯»includeåŒ…å«çš„å…¶ä»–makefile,å¹¶æ›¿æ¢åˆ°å½“å‰ä½ç½®,ä¼šåœ¨å½“å‰ç›®å½•ä¸‹é¦–å…ˆå¯»æ‰¾,å¦‚æžœæ²¡æœ‰æ‰¾åˆ°,è¿˜ä¼šåœ¨ä¸‹é¢çš„å‡ ä¸ªç›®å½•ä¸‹æ‰¾
+	1. å¦‚æžœmakeæ‰§è¡Œæ—¶,æœ‰"-I'æˆ–"--include-dir"å‚æ•°,é‚£ä¹ˆmakeå°±ä¼šåœ¨è¿™ä¸ªå‚æ•°æ‰€æŒ‡å®šçš„ç›®å½•ä¸‹å¯»æ‰¾
+	2. å¦‚æžœç›®å½•/include(ä¸€èˆ¬æ˜¯:/usr/localæˆ–/usr/include)å­˜åœ¨çš„è¯,makeä¹Ÿä¼šåŽ»æ‰¾
+	å¦‚æžœæ–‡ä»¶æ²¡æœ‰æ‰¾åˆ°çš„è¯,makeä¼šç”Ÿæˆä¸€æ¡è­¦å‘Šä¿¡æ¯,ä½†ä¸ä¼šé©¬ä¸Šå‡ºçŽ°è‡´å‘½é”™è¯¯,å®ƒä¼šç»§ç»­è½½å…¥å…¶ä»–çš„æ–‡ä»¶,ä¸€æ—¦å®Œæˆmakefileçš„è¯»å–,makeä¼šå†é‡è¯•è¿™äº›æ²¡æœ‰æ‰¾åˆ°çš„æ–‡ä»¶,æˆ–æ˜¯ä¸èƒ½è¯»å–çš„æ–‡ä»¶,å¦‚æžœè¿˜æ˜¯ä¸è¡Œ,makeæ‰ä¼šå‡ºçŽ°ä¸€æ¡è‡´å‘½ä¿¡æ¯,å¦‚æžœä¸‹é¢æœ‰è§„åˆ™å¯ä»¥åˆ›å»ºincludeçš„æ–‡ä»¶,ä¼šå…ˆè°ƒç”¨è§„åˆ™åˆ›å»ºæ–‡ä»¶,å†include
+	å¦‚æžœmakeæ²¡æœ‰æ‰¾åˆ°å¼•å…¥æ–‡ä»¶,è€Œä¸”æ²¡æœ‰æ‰¾åˆ°å¯ç”¨æ¥åˆ›å»ºè¯¥å¼•å…¥æ–‡ä»¶çš„è§„åˆ™,makeå°†ä¼šæ±‡æŠ¥é”™è¯¯ä¿¡æ¯å¹¶ç»“æŸæ‰§è¡Œ.å¦‚æžœæƒ³è®©makeå¿½ç•¥æ— æ³•åŠ è½½çš„å¼•å…¥æ–‡ä»¶,å¯ä»¥ä¸ºincludeå‰åŠ ä¸Šä¸€ä¸ªç ´æŠ˜å·
+	å³ -include
+
+çŽ¯å¢ƒå˜é‡MAKEFILES
+å¦‚æžœå½“å‰çŽ¯å¢ƒä¸­å®šä¹‰äº†çŽ¯å¢ƒå˜é‡MAKEFILES,é‚£ä¹ˆ,makeä¼šæŠŠè¿™ä¸ªå˜é‡ä¸­çš„å€¼åšä¸€ä¸ªç±»ä¼¼äºŽincludeçš„åŠ¨ä½œ,è¿™ä¸ªå˜é‡çš„å€¼æ˜¯å…¶å®ƒçš„makefile,ç”¨ç©ºæ ¼åˆ†éš”,åªæ˜¯,å®ƒå’Œincludeä¸åŒçš„æ˜¯,ä»Žè¿™ä¸ªçŽ¯å¢ƒå˜é‡ä¸­å¼•å…¥çš„makefileçš„"ç›®æ ‡"ä¸ä¼šèµ·ä½œç”¨,å¦‚æžœçŽ¯å¢ƒå˜é‡ä¸­å®šä¹‰çš„æ–‡ä»¶å‘çŽ°é”™è¯¯,makeä¹Ÿä¸ç†,ä¸å»ºè®®ä½¿ç”¨
+
+GNUçš„makeçš„å·¥ä½œçš„æ‰§è¡Œæ­¥éª¤:
+	1. ä¾æ¬¡è¯»å–å˜é‡â€œMAKEFILESâ€å®šä¹‰çš„makefileæ–‡ä»¶åˆ—è¡¨
+	2. è¯»å–å·¥ä½œç›®å½•ä¸‹çš„makefileæ–‡ä»¶ï¼ˆç¼ºçœçš„æ˜¯æ ¹æ®å‘½åçš„æŸ¥æ‰¾é¡ºåºâ€œGNUmakefileâ€ï¼Œâ€œmakefileâ€ï¼Œâ€œMakefileâ€ï¼Œé¦–å…ˆæ‰¾åˆ°é‚£ä¸ªå°±è¯»å–é‚£ä¸ªï¼‰
+	3. ä¾æ¬¡è¯»å–å·¥ä½œç›®å½•makefileæ–‡ä»¶ä¸­ä½¿ç”¨æŒ‡ç¤ºç¬¦â€œincludeâ€åŒ…å«çš„æ–‡ä»¶
+	4. æŸ¥æ‰¾é‡å»ºæ‰€æœ‰å·²è¯»å–çš„makefileæ–‡ä»¶çš„è§„åˆ™ï¼ˆå¦‚æžœå­˜åœ¨ä¸€ä¸ªç›®æ ‡æ˜¯å½“å‰è¯»å–çš„æŸä¸€ä¸ªmakefileæ–‡ä»¶ï¼Œåˆ™æ‰§è¡Œæ­¤è§„åˆ™é‡å»ºæ­¤makefileæ–‡ä»¶ï¼Œå®Œæˆä»¥åŽä»Žç¬¬ä¸€æ­¥å¼€å§‹é‡æ–°æ‰§è¡Œï¼‰
+	5. åˆå§‹åŒ–å˜é‡å€¼å¹¶å±•å¼€é‚£äº›éœ€è¦ç«‹å³å±•å¼€çš„å˜é‡å’Œå‡½æ•°å¹¶æ ¹æ®é¢„è®¾æ¡ä»¶ç¡®å®šæ‰§è¡Œåˆ†æ”¯
+	6. æ ¹æ®â€œç»ˆæžç›®æ ‡â€ä»¥åŠå…¶ä»–ç›®æ ‡çš„ä¾èµ–å…³ç³»å»ºç«‹ä¾èµ–å…³ç³»é“¾è¡¨
+	7. æ‰§è¡Œé™¤â€œç»ˆæžç›®æ ‡â€ä»¥å¤–çš„æ‰€æœ‰çš„ç›®æ ‡çš„è§„åˆ™ï¼ˆè§„åˆ™ä¸­å¦‚æžœä¾èµ–æ–‡ä»¶ä¸­ä»»ä¸€ä¸ªæ–‡ä»¶çš„æ—¶é—´æˆ³æ¯”ç›®æ ‡æ–‡ä»¶æ–°ï¼Œåˆ™ä½¿ç”¨è§„åˆ™æ‰€å®šä¹‰çš„å‘½ä»¤é‡å»ºç›®æ ‡æ–‡ä»¶ï¼‰
+	8. æ‰§è¡Œâ€œç»ˆæžç›®æ ‡â€æ‰€åœ¨çš„è§„åˆ™
+	å¦‚æžœåœ¨ç¬¬1æ¡è§„åˆ™ä¸­,å®šä¹‰çš„å˜é‡è¢«ä½¿ç”¨äº†,é‚£ä¹ˆ,makeä¼šæŠŠå…¶å±•å¼€åœ¨ä½¿ç”¨çš„ä½ç½®,ä½†makeå¹¶æ²¡æœ‰å®Œå…¨é©¬ä¸Šå±•å¼€,è€Œæ˜¯ä½¿ç”¨çš„æ‹–å»¶æˆ˜æœ¯,å¦‚æžœå˜é‡å‡ºçŽ°åœ¨ä¾èµ–çš„è§„åˆ™ä¸­,é‚£ä¹ˆä»…å½“è¿™æ¡ä¾èµ–è¢«å†³å®šè¦ä½¿ç”¨äº†,å˜é‡æ‰ä¼šåœ¨å…¶å†…éƒ¨å±•å¼€
+
+æ–‡ä»¶æœå¯»
+	Makefileæ–‡ä»¶ä¸­çš„ç‰¹æ®Šå˜é‡"VPATH",å¦‚æžœæ²¡æœ‰æŒ‡å®šè¿™ä¸ªå˜é‡,makeåªä¼šåœ¨å½“å‰çš„ç›®å½•ä¸­å¯»æ‰¾ä¾èµ–æ–‡ä»¶å’Œç›®æ ‡æ–‡ä»¶,å¦‚æžœå®šä¹‰äº†è¿™ä¸ªå˜é‡,é‚£ä¹ˆ,makeå°±ä¼šåœ¨å½“å‰ç›®å½•æ‰¾ä¸åˆ°çš„æƒ…å†µä¸‹,å°±ä¼šåˆ°å˜é‡"VPATH"ä¸­æŒ‡å®šçš„ç›®å½•ä¸‹å¯»æ‰¾æ–‡ä»¶äº†,è¿™ä¸ªå˜é‡ä¸­è·¯å¾„ä»¥":"åˆ†éš”,å½“å‰ç›®å½•æ°¸è¿œæ˜¯æœ€é«˜ä¼˜å…ˆæœç´¢çš„åœ°æ–¹
+	å¦ä¸€ä¸ªè®¾ç½®æœç´¢è·¯å¾„çš„æ–¹æ³•æ˜¯ä½¿ç”¨makeçš„"vpath"å…³é”®å­—(å…¨å°å†™),è¿™ä¸æ˜¯å˜é‡,è¿™æ˜¯makeçš„ä¸€ä¸ªå…³é”®å­—,å®ƒå’Œå˜é‡"VPATH"å¾ˆç±»ä¼¼,ä½†æ˜¯æ›´çµæ´»,å®ƒå¯ä»¥æŒ‡å®šä¸åŒçš„æ–‡ä»¶åœ¨ä¸åŒçš„æœç´¢ç›®å½•ä¸­,ä½¿ç”¨æ–¹æ³•æœ‰ä¸‰ç§
+	1.  vpath <pattern> <directories>   ä¸ºç¬¦åˆæ¨¡å¼<pattern>çš„æ–‡ä»¶æŒ‡å®šæœç´¢ç›®å½•<directories>	ä¾‹:vpath %.c src vpath %.h include
+	2.	vpath <pattern>					æ¸…é™¤ç¬¦åˆæ¨¡å¼<pattern>çš„æ–‡ä»¶çš„æœç´¢ç›®å½•
+	3.	vpath							æ¸…é™¤æ‰€æœ‰å·²è¢«è®¾ç½®å¥½äº†çš„æ–‡ä»¶æœç´¢ç›®å½•
+	vpathä½¿ç”¨æ–¹æ³•ä¸­çš„<pattern>éœ€è¦åŒ…å«"%"å­—ç¬¦,"%"çš„æ„æ€æ˜¯åŒ¹é…é›¶æˆ–è‹¥å¹²å­—ç¬¦
+
+å¦‚æžœè¦è®©ä¸Šä¸€æ¡å‘½ä»¤çš„ç»“æžœåº”ç”¨åœ¨ä¸‹ä¸€æ¡å‘½ä»¤é‡Œå¤´,åº”è¯¥ä½¿ç”¨åˆ†å·åˆ†éš”è¿™ä¸¤æ¡å‘½ä»¤,ä¾‹
 exec:
 	cd /home/hchen
 	pwd
 exec:
 	cd /home/hchen;pwd
-µÚ¶þÌõ²ÅÊÇÕýÈ·µÄ
+ç¬¬äºŒæ¡æ‰æ˜¯æ­£ç¡®çš„
 
-×Ü¿Ømakefile
-Èç¹ûÎÒÃÇÓÐÒ»¸ö×ÓÄ¿Â¼½Ðsubdir,Õâ¸öÄ¿Â¼ÏÂÓÐ¸öMakefileÎÄ¼þ,ÄÇ×Ü¿Ømakefile¿ÉÒÔÕâÑùÐ´
-subsystem:
-	cd subdir && $(MAKE)
-ÆäµÈ¼ÛÓÚ:
-subsystem:
-	$(MAKE) -C subdir
-×Ü¿ØMakefileµÄ±äÁ¿¿ÉÒÔ´«µÝµ½ÏÂ¼¶µÄMakefileÖÐ(Èç¹ûÏÔÊ¾µÄÉùÃ÷),µ«ÊÇ²»»á¸²¸ÇÏÂ²ãËù¶¨ÒåµÄ±äÁ¿,³ý·ÇÖ¸¶¨ÁË-e²ÎÊý,ÓÐÁ½¸ö±äÁ¿,Ò»¸öÊÇSHELL,Ò»¸öÊÇMAKEFLAGS,Õâ2¸ö±äÁ¿²»¹ÜÊÇ·ñexport,×ÜÊÇ»á´«µÝµ½ÏÂ²ãmakefileÖÐ
-Èç¹ûÒª´«µÝ±äÁ¿µ½ÏÂ¼¶makefile,ÄÇÃ´¿ÉÒÔÕâÑùÉùÃ÷
-export<variable...>
-Èç¹û²»ÏëÈÃÄ³Ð©±äÁ¿´«µÝµ½ÏÂ¼¶makefile,
-unexport<variable...>
-Èç¹ûÒª´«µÝËùÓÐ±äÁ¿,ÄÇÃ´
-export
+æ€»æŽ§makefile
+	å¦‚æžœæˆ‘ä»¬æœ‰ä¸€ä¸ªå­ç›®å½•å«subdir,è¿™ä¸ªç›®å½•ä¸‹æœ‰ä¸ªMakefileæ–‡ä»¶,é‚£æ€»æŽ§makefileå¯ä»¥è¿™æ ·å†™
+	subsystem:
+		cd subdir && $(MAKE)
+	å…¶ç­‰ä»·äºŽ:
+	subsystem:
+		$(MAKE) -C subdir
+	æ€»æŽ§Makefileçš„å˜é‡å¯ä»¥ä¼ é€’åˆ°ä¸‹çº§çš„Makefileä¸­(å¦‚æžœæ˜¾ç¤ºçš„å£°æ˜Ž),ä½†æ˜¯ä¸ä¼šè¦†ç›–ä¸‹å±‚æ‰€å®šä¹‰çš„å˜é‡,é™¤éžæŒ‡å®šäº†-eå‚æ•°,æœ‰ä¸¤ä¸ªå˜é‡,ä¸€ä¸ªæ˜¯SHELL,ä¸€ä¸ªæ˜¯MAKEFLAGS,è¿™2ä¸ªå˜é‡ä¸ç®¡æ˜¯å¦export,æ€»æ˜¯ä¼šä¼ é€’åˆ°ä¸‹å±‚makefileä¸­
+	å¦‚æžœè¦ä¼ é€’å˜é‡åˆ°ä¸‹çº§makefile,é‚£ä¹ˆå¯ä»¥è¿™æ ·å£°æ˜Ž
+	export<variable...>
+	å¦‚æžœä¸æƒ³è®©æŸäº›å˜é‡ä¼ é€’åˆ°ä¸‹çº§makefile,
+	unexport<variable...>
+	å¦‚æžœè¦ä¼ é€’æ‰€æœ‰å˜é‡,é‚£ä¹ˆ
+	export
 
-¶¨ÒåÃüÁî°ü
-Èç¹ûmakefileÖÐ³öÏÖÒ»Ð©ÏàÍ¬ÃüÁîÐòÁÐ,ÄÇÃ´¿ÉÒÔÎªÕâÐ©ÏàÍ¬µÄÃüÁîÐòÁÐ¶¨ÒåÒ»¸ö±äÁ¿,ÒÔdefine¿ªÊ¼,ÒÔendef½áÊø,ÃüÁî°üÀïÃüÁî±ØÐëÒÔTAB¿ªÍ·,·ñÔò¾ÍÊÇÆÕÍ¨µÄÐÐÁË,Èç
-define run-yacc
-	yacc $(firstword $^)
-	mv y.tab.c $@
-endef
-run-yaccÊÇÕâ¸öÃüÁî°üµÄÃû×Ö
-
-±äÁ¿µÄÖµ¿ÉÒÔÔÚ¶¨ÒåµÄ±äÁ¿ºóÃæ¶¨Òå
-ºÃµÄµØ·½ÔÚÓÚ±äÁ¿µÄÕæÊµÖµ¿ÉÒÔµ½ºóÃæ¶¨Òå
-»µµÄµØ·½ÔÚÓÚµÝ¹é¶¨Òå,Èç
-CFLAGS = $(CFLAGS) -O
-»ò
-A = $(B)
-B = $(A)
-
-:=²Ù×÷·û,Ê¹ÓÃÕâ¸ö·ûºÅÇ°ÃæµÄ±äÁ¿²»ÄÜÊ¹ÓÃºóÃæµÄ±äÁ¿
-MAKELEVEL±äÁ¿,Èç¹ûmakeÓÐÒ»¸öÇ¶Ì×Ö´ÐÐµÄ¶¯×÷,ÄÇÃ´,Õâ¸ö±äÁ¿¼ÇÂ¼ÁËµ±Ç°MakefileµÄµ÷ÓÃ²ãÊý
-?=²Ù×÷·û,foo?=bar,º¬ÒåÊÇÈç¹ûfooÃ»ÓÐ±»¶¨Òå¹ý,ÄÇÃ´foo=bar,Èç¹ûfoo¶¨Òå¹ýÁË,ÔòÕâÌõÓï¾äÊ²Ã´Ò²²»×ö
-+=¿ÉÒÔ¸ø±äÁ¿×·¼ÓÖµ,Èç¹û±äÁ¿Ö®Ç°Ã»¶¨Òå¹ý,ÄÇÃ´"+="»á×Ô¶¯±ä³É"=",Èç¹ûÇ°Ãæ±äÁ¿ÓÐ¶¨Òå,ÄÇÃ´"+="»á¼Ì³ÐÓÚÇ°´Î²Ù×÷µÄ¸³Öµ·û,Èç¹ûÇ°Ò»´ÎÊÇ":=",ÄÇÃ´"+="»áÒÔ":="×÷ÎªÆä¸³Öµ·û,Èç¹ûÊÇ=,ÓÉÓÚÇ°´ÎµÄ¸³Öµ·ûÊÇ"=¡±£¬ËùÒÔ"+=¡±Ò²»áÒÔ"=¡±À´×öÎª¸³Öµ£¬ÄÇÃ´Æñ²»»á·¢Éú±äÁ¿µÄµÝ²¹¹é¶¨Òå£¬ÕâÊÇºÜ²»ºÃµÄ£¬ËùÒÔmake»á×Ô¶¯ÎªÎÒÃÇ½â¾öÕâ¸öÎÊÌâ£¬ÎÒÃÇ²»±Øµ£ÐÄÕâ¸öÎÊÌâ
-
-$(var:a=b)»òÊÇ${var:a=b},ÒâË¼ÊÇ,°Ñ±äÁ¿varÖÐËùÓÐÒÔa×Ö´®½áÎ²µÄaÌæ»»³Éb,ÕâÀïµÄ½áÎ²ÊÇ¿Õ¸ñ»òÕßÊÇ½áÊø·û
-$(foo:%.o=%.c)	¾²Ì¬Ä£Ê½Ìæ»»
+$(var:a=b)æˆ–æ˜¯${var:a=b},æ„æ€æ˜¯,æŠŠå˜é‡varä¸­æ‰€æœ‰ä»¥aå­—ä¸²ç»“å°¾çš„aæ›¿æ¢æˆb,è¿™é‡Œçš„ç»“å°¾æ˜¯ç©ºæ ¼æˆ–è€…æ˜¯ç»“æŸç¬¦
+$(foo:%.o=%.c)	é™æ€æ¨¡å¼æ›¿æ¢
 
 x=y
 y=z
-a:=$($(x))  #°Ñ±äÁ¿µÄÖµÔÙµ±³É±äÁ¿Öµ
+a:=$($(x))  #æŠŠå˜é‡çš„å€¼å†å½“æˆå˜é‡å€¼
 
-Èç¹ûÓÐ±äÁ¿ÊÇÍ¨¹ýmakeµÄÃüÁîÐÐ²ÎÊýÉèÖÃµÄ,ÄÇÃ´MakefileÖÐ¶ÔÕâ¸ö±äÁ¿µÄ¸³Öµ»á±»ºöÂÔ,Èç¹ûÏëÔÚMakefileÖÐÉèÖÃÕâÀà²ÎÊýµÄÖµ,ÄÇÃ´¿ÉÒÔÊ¹ÓÃ"override"Ö¸Ê¾·û,Óï·¨:
+å¦‚æžœæœ‰å˜é‡æ˜¯é€šè¿‡makeçš„å‘½ä»¤è¡Œå‚æ•°è®¾ç½®çš„,é‚£ä¹ˆMakefileä¸­å¯¹è¿™ä¸ªå˜é‡çš„èµ‹å€¼ä¼šè¢«å¿½ç•¥,å¦‚æžœæƒ³åœ¨Makefileä¸­è®¾ç½®è¿™ç±»å‚æ•°çš„å€¼,é‚£ä¹ˆå¯ä»¥ä½¿ç”¨"override"æŒ‡ç¤ºç¬¦,è¯­æ³•:
 override <variable> = <value>
 override <variable>:= <value>
 override <variable>+=<more text>
-¶ÔÓÚ¶àÐÐµÄ±äÁ¿¶¨Òå,Ê¹ÓÃdefineÖ¸Ê¾·û,ÔÚdefineÖ¸Ê¾·ûÇ°,Ò²¿ÉÒÔÊ¹ÓÃoverrideÖ¸Ê¾·û
+å¯¹äºŽå¤šè¡Œçš„å˜é‡å®šä¹‰,ä½¿ç”¨defineæŒ‡ç¤ºç¬¦,åœ¨defineæŒ‡ç¤ºç¬¦å‰,ä¹Ÿå¯ä»¥ä½¿ç”¨overrideæŒ‡ç¤ºç¬¦
 override define foo
 bar
 enddef
 
-Ä¿±ê±äÁ¿
-<target...>:<variable-assignment>				#variable-assignment¿ÉÒÔÊÇÇ°ÃæÌáµ½¹ýµÄ¸÷ÖÖ¸³Öµ±í´ïÊ½,Èç"=",":=","?=","+="
+ç›®æ ‡å˜é‡
+<target...>:<variable-assignment>				#variable-assignmentå¯ä»¥æ˜¯å‰é¢æåˆ°è¿‡çš„å„ç§èµ‹å€¼è¡¨è¾¾å¼,å¦‚"=",":=","?=","+="
 <target...>: overide<variable-assignment>
 
-Ä£Ê½±äÁ¿
-Àý %.o : CFLAGS= -O
+æ¨¡å¼å˜é‡
+ä¾‹ %.o : CFLAGS= -O
 
-Ìõ¼þ±í´ïÊ½Óï·¨
-<conditional-directive>
-<text-if-true>
-endif
-ÒÔ¼°
-<conditional-directive>
-<text-if-true>
-else
-<text-if-false>
-endif
-ÆäÖÐ,<conditional-directive>±íÊ¾Ìõ¼þ¹Ø¼ü×Ö,ÓÐ4¸ö
-ifeq(<arg1>,<arg2>)
-ifeq '<arg1>' '<arg2>'
-ifeq "<arg1>" "<arg2>"
-ifeq "<arg1>" '<arg2>'
-ifeq '<arg1>' "<arg2>"
+æ¡ä»¶è¡¨è¾¾å¼è¯­æ³•
+	<conditional-directive>
+	<text-if-true>
+	endif
+	ä»¥åŠ
+	<conditional-directive>
+	<text-if-true>
+	else
+	<text-if-false>
+	endif
+	å…¶ä¸­,<conditional-directive>è¡¨ç¤ºæ¡ä»¶å…³é”®å­—,æœ‰4ä¸ª
+	ifeq(<arg1>,<arg2>)
+	ifeq '<arg1>' '<arg2>'
+	ifeq "<arg1>" "<arg2>"
+	ifeq "<arg1>" '<arg2>'
+	ifeq '<arg1>' "<arg2>"
 
-ifneq...
-ifdef...
-ifndef...
-makeÊÇÔÚ¶ÁÈ¡MakefileÊ±¾Í¼ÆËã±í´ïÊ½µÄÖµ,²¢¸ù¾ÝÌõ¼þ±í´ïÊ½µÄÖµÀ´Ñ¡ÔñÓï¾ä,ËùÒÔ,×îºÃ²»Òª°Ñ×Ô¶¯»¯±äÁ¿(Èç"$@"µÈ)·ÅÈëÌõ¼þ±í´ïÊ½ÖÐ,ÒòÎª×Ô¶¯»¯±äÁ¿ÊÇÔÚÔËÐÐÊ±²ÅÓÐµÄ
+	ifneq...
+	ifdef...
+	ifndef...
+	makeæ˜¯åœ¨è¯»å–Makefileæ—¶å°±è®¡ç®—è¡¨è¾¾å¼çš„å€¼,å¹¶æ ¹æ®æ¡ä»¶è¡¨è¾¾å¼çš„å€¼æ¥é€‰æ‹©è¯­å¥,æ‰€ä»¥,æœ€å¥½ä¸è¦æŠŠè‡ªåŠ¨åŒ–å˜é‡(å¦‚"$@"ç­‰)æ”¾å…¥æ¡ä»¶è¡¨è¾¾å¼ä¸­,å› ä¸ºè‡ªåŠ¨åŒ–å˜é‡æ˜¯åœ¨è¿è¡Œæ—¶æ‰æœ‰çš„
 
-º¯Êýµ÷ÓÃ
-Óï·¨: $(<function> <arguments>)»òÊÇ${<function> <arguments>}
-²ÎÊý¼äÒÔ¶ººÅ·Ö¸ô,º¯ÊýÃûÓë²ÎÊý¼äÒÔ¿Õ¸ñ·Ö¸ô
+å‡½æ•°è°ƒç”¨
+	è¯­æ³•: $(<function> <arguments>)æˆ–æ˜¯${<function> <arguments>}
+	å‚æ•°é—´ä»¥é€—å·åˆ†éš”,å‡½æ•°åä¸Žå‚æ•°é—´ä»¥ç©ºæ ¼åˆ†éš”
 
-×Ö·û´®´¦Àíº¯Êý
-$(subst <from>,<to>,<text>)		#×Ö·û´®Ìæ»»º¯Êý,°Ñ×Ö·û´®<text>ÖÐµÄ<from>Ìæ»»³É<to>,·µ»Ø±»Ìæ»»¹ýºóµÄ×Ö·û´®
-$(patsubst <pattern>,<replacement>,<text>)	#Ä£Ê½×Ö·û´®Ìæ»»º¯Êý,²éÕÒ<text>ÖÐµÄµ¥´ÊÊÇ·ñ·ûºÏ<pattern>,Èç¹ûÆ¥ÅäµÄ»°,ÔòÒÔ<replacement>Ìæ»»,·µ»Ø±»Ìæ»»¹ýºóµÄ×Ö·û´®
-$(strip <string>)				#È¥¿Õ¸ñº¯Êý,È¥µô<string>×Ö´®ÖÐ¿ªÍ·ºÍ½áÎ²µÄ¿Õ×Ö·û,·µ»Ø±»È¥µô¿Õ¸ñµÄ×Ö·û´®
-$(findstring <find>,<in>)		#²éÕÒ×Ö·û´®º¯Êý,ÔÚ×Ö·û´®<in>ÖÐ²éÕÒ<find>,Èç¹ûÕÒµ½,·µ»Ø<find>,·ñÔò·µ»Ø¿Õ×Ö·û´®
-$(filter <pattern>,<text>)		#ÒÔ<pattern>Ä£Ê½¹ýÂË<text>ÖÐµÄµ¥´Ê,±£Áô·ûºÏÄ£Ê½<pattern>µÄµ¥´Ê,·µ»Ø·ûºÏÄ£Ê½µÄ×Ö´®
-$(filter-out <pattern>,<text>)	#·´¹ýÂËº¯Êý,ºÍÉÏ¸öº¯ÊýÏà·´
-$(sort <list>)					#ÅÅÐòº¯Êý,¸ø×Ö·û´®listÖÐµÄµ¥´ÊÅÅÐò(Éý³ä),·µ»ØÅÅÐòºóµÄ×Ö·û´®
-$(word <n>,<text>)				#È¡µ¥´Êº¯Êý,È¡<text>ÖÐµÄµÚ<n>¸öµ¥´Ê,·µ»ØµÚ<n>¸öµ¥´Ê,Èôn±Èµ¥´Ê¸öÊý´ó,Ôò·µ»Ø¿Õ
-$(wordlist <s>,<e>,<text>)		#È¡µ¥´Ê´®º¯Êý,´Ó×Ö·û´®<text>ÖÐÈ¡´Ó<s>¿ªÊ¼µ½<e>µÄµ¥´Ê´®,<s>ºÍ<e>ÊÇÒ»¸öÊý×Ö,·µ»Ø×Ö·û´®<text>ÖÐ´Ó<s>µ½<e>µÄµ¥´Ê×Ö´®,Èç¹û<s>±È<text>ÖÐµÄµ¥´ÊÊýÒª´ó£¬ÄÇÃ´·µ»Ø¿Õ×Ö·û´®,Èç¹û<e>´óÓÚ<text>µÄµ¥´ÊÊý£¬ÄÇÃ´·µ»Ø´Ó<s>¿ªÊ¼£¬µ½<text>½áÊøµÄµ¥´Ê´®
-$(words <text>)					#µ¥´Ê¸öÊýÍ³¼Æº¯Êý,·µ»Ø<text>ÖÐµÄµ¥´ÊÊý
-$(firstword <text> )			#Ê×µ¥´Êº¯Êý,È¡×Ö·û´®<text>ÖÐµÄµÚÒ»¸öµ¥´Ê,·µ»Ø×Ö·û´®<text>µÄµÚÒ»¸öµ¥´Ê
+å­—ç¬¦ä¸²å¤„ç†å‡½æ•°
+	$(subst <from>,<to>,<text>)		#å­—ç¬¦ä¸²æ›¿æ¢å‡½æ•°,æŠŠå­—ç¬¦ä¸²<text>ä¸­çš„<from>æ›¿æ¢æˆ<to>,è¿”å›žè¢«æ›¿æ¢è¿‡åŽçš„å­—ç¬¦ä¸²
+	$(patsubst <pattern>,<replacement>,<text>)	#æ¨¡å¼å­—ç¬¦ä¸²æ›¿æ¢å‡½æ•°,æŸ¥æ‰¾<text>ä¸­çš„å•è¯æ˜¯å¦ç¬¦åˆ<pattern>,å¦‚æžœåŒ¹é…çš„è¯,åˆ™ä»¥<replacement>æ›¿æ¢,è¿”å›žè¢«æ›¿æ¢è¿‡åŽçš„å­—ç¬¦ä¸²
+	$(strip <string>)				#åŽ»ç©ºæ ¼å‡½æ•°,åŽ»æŽ‰<string>å­—ä¸²ä¸­å¼€å¤´å’Œç»“å°¾çš„ç©ºå­—ç¬¦,è¿”å›žè¢«åŽ»æŽ‰ç©ºæ ¼çš„å­—ç¬¦ä¸²
+	$(findstring <find>,<in>)		#æŸ¥æ‰¾å­—ç¬¦ä¸²å‡½æ•°,åœ¨å­—ç¬¦ä¸²<in>ä¸­æŸ¥æ‰¾<find>,å¦‚æžœæ‰¾åˆ°,è¿”å›ž<find>,å¦åˆ™è¿”å›žç©ºå­—ç¬¦ä¸²
+	$(filter <pattern>,<text>)		#ä»¥<pattern>æ¨¡å¼è¿‡æ»¤<text>ä¸­çš„å•è¯,ä¿ç•™ç¬¦åˆæ¨¡å¼<pattern>çš„å•è¯,è¿”å›žç¬¦åˆæ¨¡å¼çš„å­—ä¸²
+	$(filter-out <pattern>,<text>)	#åè¿‡æ»¤å‡½æ•°,å’Œä¸Šä¸ªå‡½æ•°ç›¸å
+	$(sort <list>)					#æŽ’åºå‡½æ•°,ç»™å­—ç¬¦ä¸²listä¸­çš„å•è¯æŽ’åº(å‡å……)å¹¶ç§»é™¤é‡å¤çš„ç›®æ ‡,è¿”å›žæŽ’åºåŽçš„å­—ç¬¦ä¸²
+	$(word <n>,<text>)				#å–å•è¯å‡½æ•°,å–<text>ä¸­çš„ç¬¬<n>ä¸ªå•è¯,è¿”å›žç¬¬<n>ä¸ªå•è¯,è‹¥næ¯”å•è¯ä¸ªæ•°å¤§,åˆ™è¿”å›žç©º
+	$(wordlist <s>,<e>,<text>)		#å–å•è¯ä¸²å‡½æ•°,ä»Žå­—ç¬¦ä¸²<text>ä¸­å–ä»Ž<s>å¼€å§‹åˆ°<e>çš„å•è¯ä¸²,<s>å’Œ<e>æ˜¯ä¸€ä¸ªæ•°å­—,è¿”å›žå­—ç¬¦ä¸²<text>ä¸­ä»Ž<s>åˆ°<e>çš„å•è¯å­—ä¸²,å¦‚æžœ<s>æ¯”<text>ä¸­çš„å•è¯æ•°è¦å¤§ï¼Œé‚£ä¹ˆè¿”å›žç©ºå­—ç¬¦ä¸²,å¦‚æžœ<e>å¤§äºŽ<text>çš„å•è¯æ•°ï¼Œé‚£ä¹ˆè¿”å›žä»Ž<s>å¼€å§‹ï¼Œåˆ°<text>ç»“æŸçš„å•è¯ä¸²
+	$(words <text>)					#å•è¯ä¸ªæ•°ç»Ÿè®¡å‡½æ•°,è¿”å›ž<text>ä¸­çš„å•è¯æ•°
+	$(firstword <text> )			#é¦–å•è¯å‡½æ•°,å–å­—ç¬¦ä¸²<text>ä¸­çš„ç¬¬ä¸€ä¸ªå•è¯,è¿”å›žå­—ç¬¦ä¸²<text>çš„ç¬¬ä¸€ä¸ªå•è¯
 
-ÎÄ¼þÃû²Ù×÷º¯Êý
-$(dir <names...> )				#È¡Ä¿Â¼º¯Êý,´ÓÎÄ¼þÃûÐòÁÐ<names>ÖÐÈ¡³öÄ¿Â¼²¿·Ö,Ä¿Â¼²¿·ÖÊÇÖ¸×îºóÒ»¸ö·´Ð±¸Ü£¨"/¡±£©Ö®Ç°µÄ²¿·Ö,Èç¹ûÃ»ÓÐ·´Ð±¸Ü£¬ÄÇÃ´·µ»Ø"./¡±
-$(notdir <names...> )			#È¡ÎÄ¼þº¯Êý,´ÓÎÄ¼þÃûÐòÁÐ<names>ÖÐÈ¡³ö·ÇÄ¿Â¼²¿·Ö,·ÇÄ¿Â¼²¿·ÖÊÇÖ¸×îºóÒ»¸ö·´Ð±¸Ü£¨"/¡±£©Ö®ºóµÄ²¿·Ö,·µ»ØÎÄ¼þÃûÐòÁÐ<names>µÄ·ÇÄ¿Â¼²¿·Ö
-$(suffix <names...> )			#È¡ºó×ºº¯Êý,´ÓÎÄ¼þÃûÐòÁÐ<names>ÖÐÈ¡³ö¸÷¸öÎÄ¼þÃûµÄºó×º,·µ»ØÎÄ¼þÃûÐòÁÐ<names>µÄºó×ºÐòÁÐ£¬Èç¹ûÎÄ¼þÃ»ÓÐºó×º£¬Ôò·µ»Ø¿Õ×Ö´®
-$(basename <names...> )			#È¡Ç°×ºº¯Êý,´ÓÎÄ¼þÃûÐòÁÐ<names>ÖÐÈ¡³ö¸÷¸öÎÄ¼þÃûµÄÇ°×º²¿·Ö,·µ»ØÎÄ¼þÃûÐòÁÐ<names>µÄÇ°×ºÐòÁÐ£¬Èç¹ûÎÄ¼þÃ»ÓÐÇ°×º£¬Ôò·µ»Ø¿Õ×Ö´®
-$(addsuffix <suffix>,<names...> )	#¼Óºó×ºº¯Êý,°Ñºó×º<suffix>¼Óµ½<names>ÖÐµÄÃ¿¸öµ¥´ÊºóÃæ,·µ»Ø¼Ó¹ýºó×ºµÄÎÄ¼þÃûÐòÁÐ
-$(addprefix <prefix>,<names...> )	#¼ÓÇ°×ºº¯Êý,°ÑÇ°×º<prefix>¼Óµ½<names>ÖÐµÄÃ¿¸öµ¥´ÊÇ°Ãæ,·µ»Ø¼Ó¹ýÇ°×ºµÄÎÄ¼þÃûÐòÁÐ
-$(join <list1>,<list2> )		#Á¬½Óº¯Êý,°Ñ<list2>ÖÐµÄµ¥´Ê¶ÔÓ¦µØ¼Óµ½<list1>µÄµ¥´ÊºóÃæ,Èç¹û<list1>µÄµ¥´Ê¸öÊýÒª±È<list2>µÄ¶à,ÄÇÃ´,<list1>ÖÐµÄ¶à³öÀ´µÄµ¥´Ê½«±£³ÖÔ­Ñù¡£Èç¹û<list2>µÄµ¥´Ê¸öÊýÒª±È<list1>¶à,ÄÇÃ´,<list2>¶à³öÀ´µÄµ¥´Ê½«±»¸´ÖÆµ½<list1>ÖÐ
+æ–‡ä»¶åæ“ä½œå‡½æ•°
+	$(dir <names...> )				#å–ç›®å½•å‡½æ•°,ä»Žæ–‡ä»¶ååºåˆ—<names>ä¸­å–å‡ºç›®å½•éƒ¨åˆ†,ç›®å½•éƒ¨åˆ†æ˜¯æŒ‡æœ€åŽä¸€ä¸ªåæ–œæ ï¼ˆ"/â€ï¼‰ä¹‹å‰çš„éƒ¨åˆ†,å¦‚æžœæ²¡æœ‰åæ–œæ ï¼Œé‚£ä¹ˆè¿”å›ž"./â€
+	$(notdir <names...> )			#å–æ–‡ä»¶å‡½æ•°,ä»Žæ–‡ä»¶ååºåˆ—<names>ä¸­å–å‡ºéžç›®å½•éƒ¨åˆ†,éžç›®å½•éƒ¨åˆ†æ˜¯æŒ‡æœ€åŽä¸€ä¸ªåæ–œæ ï¼ˆ"/â€ï¼‰ä¹‹åŽçš„éƒ¨åˆ†,è¿”å›žæ–‡ä»¶ååºåˆ—<names>çš„éžç›®å½•éƒ¨åˆ†
+	$(suffix <names...> )			#å–åŽç¼€å‡½æ•°,ä»Žæ–‡ä»¶ååºåˆ—<names>ä¸­å–å‡ºå„ä¸ªæ–‡ä»¶åçš„åŽç¼€,è¿”å›žæ–‡ä»¶ååºåˆ—<names>çš„åŽç¼€åºåˆ—ï¼Œå¦‚æžœæ–‡ä»¶æ²¡æœ‰åŽç¼€ï¼Œåˆ™è¿”å›žç©ºå­—ä¸²
+	$(basename <names...> )			#å–å‰ç¼€å‡½æ•°,ä»Žæ–‡ä»¶ååºåˆ—<names>ä¸­å–å‡ºå„ä¸ªæ–‡ä»¶åçš„å‰ç¼€éƒ¨åˆ†,è¿”å›žæ–‡ä»¶ååºåˆ—<names>çš„å‰ç¼€åºåˆ—ï¼Œå¦‚æžœæ–‡ä»¶æ²¡æœ‰å‰ç¼€ï¼Œåˆ™è¿”å›žç©ºå­—ä¸²
+	$(addsuffix <suffix>,<names...> )	#åŠ åŽç¼€å‡½æ•°,æŠŠåŽç¼€<suffix>åŠ åˆ°<names>ä¸­çš„æ¯ä¸ªå•è¯åŽé¢,è¿”å›žåŠ è¿‡åŽç¼€çš„æ–‡ä»¶ååºåˆ—
+	$(addprefix <prefix>,<names...> )	#åŠ å‰ç¼€å‡½æ•°,æŠŠå‰ç¼€<prefix>åŠ åˆ°<names>ä¸­çš„æ¯ä¸ªå•è¯å‰é¢,è¿”å›žåŠ è¿‡å‰ç¼€çš„æ–‡ä»¶ååºåˆ—
+	$(join <list1>,<list2> )		#è¿žæŽ¥å‡½æ•°,æŠŠ<list2>ä¸­çš„å•è¯å¯¹åº”åœ°åŠ åˆ°<list1>çš„å•è¯åŽé¢,å¦‚æžœ<list1>çš„å•è¯ä¸ªæ•°è¦æ¯”<list2>çš„å¤š,é‚£ä¹ˆ,<list1>ä¸­çš„å¤šå‡ºæ¥çš„å•è¯å°†ä¿æŒåŽŸæ ·ã€‚å¦‚æžœ<list2>çš„å•è¯ä¸ªæ•°è¦æ¯”<list1>å¤š,é‚£ä¹ˆ,<list2>å¤šå‡ºæ¥çš„å•è¯å°†è¢«å¤åˆ¶åˆ°<list1>ä¸­
+	$(wildcard PATTERN...)			#å®ƒè¢«å±•å¼€ä¸ºå·²ç»å­˜åœ¨çš„ã€ä½¿ç”¨ç©ºæ ¼åˆ†å¼€çš„ã€åŒ¹é…æ­¤æ¨¡å¼çš„æ‰€æœ‰æ–‡ä»¶åˆ—è¡¨
 
-foreach º¯Êý
-$(foreach <var>,<list>,<text> )		#°Ñ²ÎÊý<list>ÖÐµÄµ¥´ÊÖðÒ»È¡³ö·Åµ½²ÎÊý<var>ËùÖ¸¶¨µÄ±äÁ¿ÖÐ,È»ºóÔÙÖ´ÐÐ<text>Ëù°üº¬µÄ±í´ïÊ½,Ã¿Ò»´Î<text>»á·µ»ØÒ»¸ö×Ö·û´®,Ñ­»·¹ý³ÌÖÐ£¬<text>µÄËù·µ»ØµÄÃ¿¸ö×Ö·û´®»áÒÔ¿Õ¸ñ·Ö¸ô,×îºóµ±Õû¸öÑ­»·½áÊøÊ±,<text>Ëù·µ»ØµÄÃ¿¸ö×Ö·û´®Ëù×é³ÉµÄÕû¸ö×Ö·û´®£¨ÒÔ¿Õ¸ñ·Ö¸ô£©½«»áÊÇforeachº¯ÊýµÄ·µ»ØÖµ
+foreach å‡½æ•°
+	$(foreach <var>,<list>,<text> )		#æŠŠå‚æ•°<list>ä¸­çš„å•è¯é€ä¸€å–å‡ºæ”¾åˆ°å‚æ•°<var>æ‰€æŒ‡å®šçš„å˜é‡ä¸­,ç„¶åŽå†æ‰§è¡Œ<text>æ‰€åŒ…å«çš„è¡¨è¾¾å¼,æ¯ä¸€æ¬¡<text>ä¼šè¿”å›žä¸€ä¸ªå­—ç¬¦ä¸²,å¾ªçŽ¯è¿‡ç¨‹ä¸­ï¼Œ<text>çš„æ‰€è¿”å›žçš„æ¯ä¸ªå­—ç¬¦ä¸²ä¼šä»¥ç©ºæ ¼åˆ†éš”,æœ€åŽå½“æ•´ä¸ªå¾ªçŽ¯ç»“æŸæ—¶,<text>æ‰€è¿”å›žçš„æ¯ä¸ªå­—ç¬¦ä¸²æ‰€ç»„æˆçš„æ•´ä¸ªå­—ç¬¦ä¸²ï¼ˆä»¥ç©ºæ ¼åˆ†éš”ï¼‰å°†ä¼šæ˜¯foreachå‡½æ•°çš„è¿”å›žå€¼
 
-ifº¯Êý
-$(if <condition>,<then-part> ) »ò $(if <condition>,<then-part>,<else-part> )
-#<condition>²ÎÊýÊÇifµÄ±í´ïÊ½,Èç¹ûÆä·µ»ØµÄÎª·Ç¿Õ×Ö·û´®,ÄÇÃ´Õâ¸ö±í´ïÊ½¾ÍÏàµ±ÓÚ·µ»ØÕæ,ÓÚÊÇ,<then-part>»á±»¼ÆËã,·ñÔò<else-part> »á±»¼ÆËã,Èç¹û<condition>ÎªÕæ£¨·Ç¿Õ×Ö·û´®£©,ÄÇ¸ö<then- part>»áÊÇÕû¸öº¯ÊýµÄ·µ»ØÖµ,Èç¹û<condition>Îª¼Ù£¨¿Õ×Ö·û´®£©,ÄÇÃ´<else-part>»áÊÇÕû¸öº¯ÊýµÄ·µ»ØÖµ,´ËÊ±Èç¹û<else-part>Ã»ÓÐ±»¶¨Òå,ÄÇÃ´,Õû¸öº¯Êý·µ»Ø¿Õ×Ö´®
+ifå‡½æ•°
+	$(if <condition>,<then-part> ) æˆ– $(if <condition>,<then-part>,<else-part> )
+	#<condition>å‚æ•°æ˜¯ifçš„è¡¨è¾¾å¼,å¦‚æžœå…¶è¿”å›žçš„ä¸ºéžç©ºå­—ç¬¦ä¸²,é‚£ä¹ˆè¿™ä¸ªè¡¨è¾¾å¼å°±ç›¸å½“äºŽè¿”å›žçœŸ,äºŽæ˜¯,<then-part>ä¼šè¢«è®¡ç®—,å¦åˆ™<else-part> ä¼šè¢«è®¡ç®—,å¦‚æžœ<condition>ä¸ºçœŸï¼ˆéžç©ºå­—ç¬¦ä¸²ï¼‰,é‚£ä¸ª<then- part>ä¼šæ˜¯æ•´ä¸ªå‡½æ•°çš„è¿”å›žå€¼,å¦‚æžœ<condition>ä¸ºå‡ï¼ˆç©ºå­—ç¬¦ä¸²ï¼‰,é‚£ä¹ˆ<else-part>ä¼šæ˜¯æ•´ä¸ªå‡½æ•°çš„è¿”å›žå€¼,æ­¤æ—¶å¦‚æžœ<else-part>æ²¡æœ‰è¢«å®šä¹‰,é‚£ä¹ˆ,æ•´ä¸ªå‡½æ•°è¿”å›žç©ºå­—ä¸²
 
-callº¯Êý
-callº¯ÊýÊÇÎ¨Ò»Ò»¸ö¿ÉÒÔÓÃÀ´´´½¨ÐÂµÄ²ÎÊý»¯µÄº¯Êý¡£Äã¿ÉÒÔÐ´Ò»¸ö·Ç³£¸´ÔÓµÄ±í´ïÊ½£¬Õâ¸ö±í´ïÊ½ÖÐ£¬Äã¿ÉÒÔ¶¨ÒåÐí¶à²ÎÊý£¬È»ºóÄã¿ÉÒÔÓÃcallº¯ÊýÀ´ÏòÕâ¸ö±í´ïÊ½´«µÝ²ÎÊý¡£ÆäÓï·¨ÊÇ£º
-$(call <expression>,<parm1>,<parm2>,<parm3>...)
-#µ± makeÖ´ÐÐÕâ¸öº¯ÊýÊ±£¬<expression>²ÎÊýÖÐµÄ±äÁ¿£¬Èç$(1)£¬$(2)£¬$(3)µÈ£¬»á±»²ÎÊý<parm1>£¬<parm2>£¬<parm3>ÒÀ´ÎÈ¡´ú¡£¶ø<expression>µÄ·µ»ØÖµ¾ÍÊÇ callº¯ÊýµÄ·µ»ØÖµ
+callå‡½æ•°
+	callå‡½æ•°æ˜¯å”¯ä¸€ä¸€ä¸ªå¯ä»¥ç”¨æ¥åˆ›å»ºæ–°çš„å‚æ•°åŒ–çš„å‡½æ•°ã€‚ä½ å¯ä»¥å†™ä¸€ä¸ªéžå¸¸å¤æ‚çš„è¡¨è¾¾å¼ï¼Œè¿™ä¸ªè¡¨è¾¾å¼ä¸­ï¼Œä½ å¯ä»¥å®šä¹‰è®¸å¤šå‚æ•°ï¼Œç„¶åŽä½ å¯ä»¥ç”¨callå‡½æ•°æ¥å‘è¿™ä¸ªè¡¨è¾¾å¼ä¼ é€’å‚æ•°ã€‚å…¶è¯­æ³•æ˜¯ï¼š
+	$(call <expression>,<parm1>,<parm2>,<parm3>...)
+	#å½“ makeæ‰§è¡Œè¿™ä¸ªå‡½æ•°æ—¶ï¼Œ<expression>å‚æ•°ä¸­çš„å˜é‡ï¼Œå¦‚$(1)ï¼Œ$(2)ï¼Œ$(3)ç­‰ï¼Œä¼šè¢«å‚æ•°<parm1>ï¼Œ<parm2>ï¼Œ<parm3>ä¾æ¬¡å–ä»£ã€‚è€Œ<expression>çš„è¿”å›žå€¼å°±æ˜¯ callå‡½æ•°çš„è¿”å›žå€¼
 
-originº¯Êý
-$(origin <variable> )		#×¢Òâ£¬<variable>ÊÇ±äÁ¿µÄÃû×Ö£¬²»Ó¦¸ÃÊÇÒýÓÃ,·µ»ØÖµÓÐundefined,default,environment,file,command line,override,automatic
+originå‡½æ•°
+	$(origin <variable> )		#æ³¨æ„ï¼Œ<variable>æ˜¯å˜é‡çš„åå­—ï¼Œä¸åº”è¯¥æ˜¯å¼•ç”¨,è¿”å›žå€¼æœ‰undefined,default,environment,file,command line,override,automatic
 
-shellº¯Êý
-shell º¯ÊýÒ²²»ÏñÆäËüµÄº¯Êý¡£¹ËÃûË¼Òå£¬ËüµÄ²ÎÊýÓ¦¸Ã¾ÍÊÇ²Ù×÷ÏµÍ³ShellµÄÃüÁî¡£ËüºÍ·´ÒýºÅ"`¡±ÊÇÏàÍ¬µÄ¹¦ÄÜ¡£Õâ¾ÍÊÇËµ£¬shellº¯Êý°ÑÖ´ÐÐ²Ù×÷ÏµÍ³ÃüÁîºóµÄÊä³ö×÷Îªº¯Êý
-·µ»Ø¡£ÓÚÊÇ£¬ÎÒÃÇ¿ÉÒÔÓÃ²Ù×÷ÏµÍ³ÃüÁîÒÔ¼°×Ö·û´®´¦ÀíÃüÁîawk£¬sedµÈµÈÃüÁîÀ´Éú³ÉÒ»¸ö±äÁ¿£¬Èç£º
-contents := $(shell cat foo)
+shellå‡½æ•°
+	shell å‡½æ•°ä¹Ÿä¸åƒå…¶å®ƒçš„å‡½æ•°ã€‚é¡¾åæ€ä¹‰ï¼Œå®ƒçš„å‚æ•°åº”è¯¥å°±æ˜¯æ“ä½œç³»ç»ŸShellçš„å‘½ä»¤ã€‚å®ƒå’Œåå¼•å·"`â€æ˜¯ç›¸åŒçš„åŠŸèƒ½ã€‚è¿™å°±æ˜¯è¯´ï¼Œshellå‡½æ•°æŠŠæ‰§è¡Œæ“ä½œç³»ç»Ÿå‘½ä»¤åŽçš„è¾“å‡ºä½œä¸ºå‡½æ•°
+	è¿”å›žã€‚äºŽæ˜¯ï¼Œæˆ‘ä»¬å¯ä»¥ç”¨æ“ä½œç³»ç»Ÿå‘½ä»¤ä»¥åŠå­—ç¬¦ä¸²å¤„ç†å‘½ä»¤awkï¼Œsedç­‰ç­‰å‘½ä»¤æ¥ç”Ÿæˆä¸€ä¸ªå˜é‡ï¼Œå¦‚ï¼š
+	contents := $(shell cat foo)
+	è¿™ä¸ªå‡½æ•°ä¼šæ–°ç”Ÿæˆä¸€ä¸ªShellç¨‹åºæ¥æ‰§è¡Œå‘½ä»¤,æ‰€ä»¥è¦æ³¨æ„å…¶è¿è¡Œæ€§èƒ½ï¼Œå¦‚æžœMakefileä¸­æœ‰ä¸€äº›æ¯”è¾ƒå¤æ‚çš„è§„åˆ™ï¼Œå¹¶å¤§é‡ä½¿ç”¨äº†è¿™ä¸ªå‡½æ•°ï¼Œé‚£ä¹ˆå¯¹äºŽç³»ç»Ÿæ€§èƒ½æ˜¯æœ‰å®³çš„
 
-Õâ¸öº¯Êý»áÐÂÉú³ÉÒ»¸öShell³ÌÐòÀ´Ö´ÐÐÃüÁî,ËùÒÔÒª×¢ÒâÆäÔËÐÐÐÔÄÜ£¬Èç¹ûMakefileÖÐÓÐÒ»Ð©±È½Ï¸´ÔÓµÄ¹æÔò£¬²¢´óÁ¿Ê¹ÓÃÁËÕâ¸öº¯Êý£¬ÄÇÃ´¶ÔÓÚÏµÍ³ÐÔÄÜÊÇÓÐº¦µÄ
-Õâ¸öº¯Êý»áÐÂÉú³ÉÒ»¸öShell³ÌÐòÀ´Ö´ÐÐÃüÁî,ËùÒÔÒª×¢ÒâÆäÔËÐÐÐÔÄÜ£¬Èç¹ûMakefileÖÐÓÐÒ»Ð©±È½Ï¸´ÔÓµÄ¹æÔò£¬²¢´óÁ¿Ê¹ÓÃÁËÕâ¸öº¯Êý£¬ÄÇÃ´¶ÔÓÚÏµÍ³ÐÔÄÜÊÇÓÐº¦µÄ
+æŽ§åˆ¶makeè¿è¡Œçš„å‡½æ•°
+	$(error <text ...> )		#äº§ç”Ÿä¸€ä¸ªè‡´å‘½çš„é”™è¯¯ï¼Œ<text...>æ˜¯é”™è¯¯ä¿¡æ¯ã€‚æ³¨æ„ï¼Œerrorå‡½æ•°ä¸ä¼šåœ¨ä¸€è¢«ä½¿ç”¨å°±ä¼šäº§ç”Ÿé”™è¯¯ä¿¡æ¯ï¼Œæ‰€ä»¥å¦‚æžœä½ æŠŠå…¶å®šä¹‰åœ¨æŸä¸ªå˜é‡ä¸­ï¼Œå¹¶åœ¨åŽç»­çš„è„šæœ¬ä¸­ä½¿ç”¨è¿™ä¸ªå˜é‡ï¼Œé‚£ä¹ˆä¹Ÿæ˜¯å¯ä»¥çš„
+	$(warning <text ...> )		#è¿™ä¸ªå‡½æ•°å¾ˆåƒerrorå‡½æ•°ï¼Œåªæ˜¯å®ƒå¹¶ä¸ä¼šè®©makeé€€å‡ºï¼Œåªæ˜¯è¾“å‡ºä¸€æ®µè­¦å‘Šä¿¡æ¯ï¼Œè€Œmakeç»§ç»­æ‰§è¡Œ
 
-¿ØÖÆmakeÔËÐÐµÄº¯Êý
-$(error <text ...> )		#²úÉúÒ»¸öÖÂÃüµÄ´íÎó£¬<text...>ÊÇ´íÎóÐÅÏ¢¡£×¢Òâ£¬errorº¯Êý²»»áÔÚÒ»±»Ê¹ÓÃ¾Í»á²úÉú´íÎóÐÅÏ¢£¬ËùÒÔÈç¹ûÄã°ÑÆä¶¨ÒåÔÚÄ³¸ö±äÁ¿ÖÐ£¬²¢ÔÚºóÐøµÄ½Å±¾ÖÐÊ¹ÓÃÕâ¸ö±äÁ¿£¬ÄÇÃ´Ò²ÊÇ¿ÉÒÔµÄ
-$(warning <text ...> )		#Õâ¸öº¯ÊýºÜÏñerrorº¯Êý£¬Ö»ÊÇËü²¢²»»áÈÃmakeÍË³ö£¬Ö»ÊÇÊä³öÒ»¶Î¾¯¸æÐÅÏ¢£¬¶ømake¼ÌÐøÖ´ÐÐ
+evalå‡½æ•°
+	ç”¨é€”æ˜¯å°†æ–‡æœ¬ç›´æŽ¥æ”¾å…¥makeè§£æžå™¨
+	ä¾‹: $(eval sources := foo.c bar.c) 
+	é¦–å…ˆmakeä¼šæ‰«æevalä¸­çš„å‚æ•°ä¸­æ˜¯å¦æœ‰å˜é‡ä»¥ä¾¿è¿›è¡Œæ‰©å±•çš„åŠ¨ä½œ,ç„¶åŽmakeä¼šè§£æžæ–‡æœ¬ä»¥åŠè¿›è¡Œæ±‚å€¼çš„åŠ¨ä½œ,å°±å¥½åƒå®ƒæ˜¯æ¥è‡ªè¾“å…¥çš„æ–‡ä»¶ä¸€æ ·
 
-makeµÄÍË³öÂë
-0 ¡ª¡ª ±íÊ¾³É¹¦Ö´ÐÐ¡£
-1 ¡ª¡ª Èç¹ûmakeÔËÐÐÊ±³öÏÖÈÎºÎ´íÎó£¬Æä·µ»Ø1¡£
-2 ¡ª¡ª Èç¹ûÄãÊ¹ÓÃÁËmakeµÄ"-q¡±Ñ¡Ïî£¬²¢ÇÒmakeÊ¹µÃÒ»Ð©Ä¿±ê²»ÐèÒª¸üÐÂ£¬ÄÇÃ´·µ»Ø2¡£
+makeçš„é€€å‡ºç 
+0 â€”â€” è¡¨ç¤ºæˆåŠŸæ‰§è¡Œã€‚
+1 â€”â€” å¦‚æžœmakeè¿è¡Œæ—¶å‡ºçŽ°ä»»ä½•é”™è¯¯ï¼Œå…¶è¿”å›ž1ã€‚
+2 â€”â€” å¦‚æžœä½ ä½¿ç”¨äº†makeçš„"-qâ€é€‰é¡¹ï¼Œå¹¶ä¸”makeä½¿å¾—ä¸€äº›ç›®æ ‡ä¸éœ€è¦æ›´æ–°ï¼Œé‚£ä¹ˆè¿”å›ž2ã€‚
 
-makeÖÐÓÐ¸ö»·¾³±äÁ¿½ÐMAKECMDGOALS,Õâ¸ö±äÁ¿ÖÐ»á´æ·ÅÄãËùÖ¸¶¨µÄÖÕ¼«Ä¿±êµÄÁÐ±í,Èç¹ûÔÚÃüÁîÐÐÉÏ£¬ÄãÃ»ÓÐÖ¸¶¨Ä¿±ê£¬ÄÇÃ´£¬Õâ¸ö±äÁ¿ÊÇ¿ÕÖµ
+makeä¸­æœ‰ä¸ªçŽ¯å¢ƒå˜é‡å«MAKECMDGOALS,è¿™ä¸ªå˜é‡ä¸­ä¼šå­˜æ”¾ä½ æ‰€æŒ‡å®šçš„ç»ˆæžç›®æ ‡çš„åˆ—è¡¨,å¦‚æžœåœ¨å‘½ä»¤è¡Œä¸Šï¼Œä½ æ²¡æœ‰æŒ‡å®šç›®æ ‡ï¼Œé‚£ä¹ˆï¼Œè¿™ä¸ªå˜é‡æ˜¯ç©ºå€¼
 
-¼ì²é¹æÔò
-"-n"
-"--just-print"
-"--dry-run"
-"--recon"
-²»Ö´ÐÐ²ÎÊý£¬ÕâÐ©²ÎÊýÖ»ÊÇ´òÓ¡ÃüÁî£¬²»¹ÜÄ¿±êÊÇ·ñ¸üÐÂ£¬°Ñ¹æÔòºÍÁ¬´ø¹æÔòÏÂµÄÃüÁî´òÓ¡³öÀ´£¬µ«²»Ö´ÐÐ
+makeçš„å‚æ•°
+	æ£€æŸ¥è§„åˆ™
+	"-n"
+	"--just-print"
+	"--dry-run"
+	"--recon"
+	ä¸æ‰§è¡Œå‚æ•°ï¼Œè¿™äº›å‚æ•°åªæ˜¯æ‰“å°å‘½ä»¤ï¼Œä¸ç®¡ç›®æ ‡æ˜¯å¦æ›´æ–°ï¼ŒæŠŠè§„åˆ™å’Œè¿žå¸¦è§„åˆ™ä¸‹çš„å‘½ä»¤æ‰“å°å‡ºæ¥ï¼Œä½†ä¸æ‰§è¡Œ
 
-¡°-t¡±
-¡°--touch¡±
-Õâ¸ö²ÎÊýµÄÒâË¼¾ÍÊÇ°ÑÄ¿±êÎÄ¼þµÄÊ±¼ä¸üÐÂ£¬µ«²»¸ü¸ÄÄ¿±êÎÄ¼þ¡£Ò²¾ÍÊÇËµ£¬make¼Ù×°±àÒëÄ¿±ê£¬µ«²»ÊÇÕæÕýµÄ±àÒëÄ¿±ê£¬Ö»ÊÇ°ÑÄ¿±ê±ä³ÉÒÑ±àÒë¹ýµÄ×´Ì¬
+	â€œ-tâ€
+	â€œ--touchâ€
+	è¿™ä¸ªå‚æ•°çš„æ„æ€å°±æ˜¯æŠŠç›®æ ‡æ–‡ä»¶çš„æ—¶é—´æ›´æ–°ï¼Œä½†ä¸æ›´æ”¹ç›®æ ‡æ–‡ä»¶ã€‚ä¹Ÿå°±æ˜¯è¯´ï¼Œmakeå‡è£…ç¼–è¯‘ç›®æ ‡ï¼Œä½†ä¸æ˜¯çœŸæ­£çš„ç¼–è¯‘ç›®æ ‡ï¼Œåªæ˜¯æŠŠç›®æ ‡å˜æˆå·²ç¼–è¯‘è¿‡çš„çŠ¶æ€
 
-¡°-q¡±
-¡°--question¡±
-Õâ¸ö²ÎÊýµÄÐÐÎªÊÇÕÒÄ¿±êµÄÒâË¼£¬Ò²¾ÍÊÇËµ£¬Èç¹ûÄ¿±ê´æÔÚ£¬ÄÇÃ´ÆäÊ²Ã´Ò²²»»áÊä³ö£¬µ±È»Ò²²»»áÖ´ÐÐ±àÒë£¬Èç¹ûÄ¿±ê²»´æÔÚ£¬Æä»á´òÓ¡³öÒ»Ìõ³ö´íÐÅÏ¢¡£
+	â€œ-qâ€
+	â€œ--questionâ€
+	è¿™ä¸ªå‚æ•°çš„è¡Œä¸ºæ˜¯æ‰¾ç›®æ ‡çš„æ„æ€ï¼Œä¹Ÿå°±æ˜¯è¯´ï¼Œå¦‚æžœç›®æ ‡å­˜åœ¨ï¼Œé‚£ä¹ˆå…¶ä»€ä¹ˆä¹Ÿä¸ä¼šè¾“å‡ºï¼Œå½“ç„¶ä¹Ÿä¸ä¼šæ‰§è¡Œç¼–è¯‘ï¼Œå¦‚æžœç›®æ ‡ä¸å­˜åœ¨ï¼Œå…¶ä¼šæ‰“å°å‡ºä¸€æ¡å‡ºé”™ä¿¡æ¯ã€‚
 
-¡°-W <file>¡±
-¡°--what-if=<file>¡±
-¡°--assume-new=<file>¡±
-¡°--new-file=<file>¡±
-Õâ¸ö²ÎÊýÐèÒªÖ¸¶¨Ò»¸öÎÄ¼þ¡£Ò»°ãÊÇÊÇÔ´ÎÄ¼þ£¨»òÒÀÀµÎÄ¼þ£©£¬Make»á¸ù¾Ý¹æÔòÍÆµ¼À´ÔËÐÐÒÀÀµÓÚÕâ¸öÎÄ¼þµÄÃüÁî£¬Ò»°ãÀ´Ëµ£¬¿ÉÒÔºÍ¡°-n¡±²ÎÊýÒ»Í¬Ê¹ÓÃ£¬À´²é¿´Õâ¸öÒÀÀµÎÄ¼þ
-Ëù·¢ÉúµÄ¹æÔòÃüÁî
+	â€œ-W <file>â€
+	â€œ--what-if=<file>â€
+	â€œ--assume-new=<file>â€
+	â€œ--new-file=<file>â€
+	è¿™ä¸ªå‚æ•°éœ€è¦æŒ‡å®šä¸€ä¸ªæ–‡ä»¶ã€‚ä¸€èˆ¬æ˜¯æ˜¯æºæ–‡ä»¶ï¼ˆæˆ–ä¾èµ–æ–‡ä»¶ï¼‰ï¼ŒMakeä¼šæ ¹æ®è§„åˆ™æŽ¨å¯¼æ¥è¿è¡Œä¾èµ–äºŽè¿™ä¸ªæ–‡ä»¶çš„å‘½ä»¤ï¼Œä¸€èˆ¬æ¥è¯´ï¼Œå¯ä»¥å’Œâ€œ-nâ€å‚æ•°ä¸€åŒä½¿ç”¨ï¼Œæ¥æŸ¥çœ‹è¿™ä¸ªä¾èµ–æ–‡ä»¶
+	æ‰€å‘ç”Ÿçš„è§„åˆ™å‘½ä»¤
 
-makeµÄ²ÎÊý
+	ä¸‹é¢åˆ—ä¸¾äº†æ‰€æœ‰GNU make 3.80ç‰ˆçš„å‚æ•°å®šä¹‰ã€‚å…¶å®ƒç‰ˆæœ¬å’Œäº§å•†çš„makeå¤§åŒå°å¼‚ï¼Œä¸è¿‡å…¶å®ƒäº§å•†çš„makeçš„å…·ä½“å‚æ•°è¿˜æ˜¯è¯·å‚è€ƒå„è‡ªçš„äº§å“æ–‡æ¡£ã€‚
 
-ÏÂÃæÁÐ¾ÙÁËËùÓÐGNU make 3.80°æµÄ²ÎÊý¶¨Òå¡£ÆäËü°æ±¾ºÍ²úÉÌµÄmake´óÍ¬Ð¡Òì£¬²»¹ýÆäËü²úÉÌµÄmakeµÄ¾ßÌå²ÎÊý»¹ÊÇÇë²Î¿¼¸÷×ÔµÄ²úÆ·ÎÄµµ¡£
+	â€œ-bâ€
+	â€œ-mâ€
+	è¿™ä¸¤ä¸ªå‚æ•°çš„ä½œç”¨æ˜¯å¿½ç•¥å’Œå…¶å®ƒç‰ˆæœ¬makeçš„å…¼å®¹æ€§ã€‚
 
-¡°-b¡±
-¡°-m¡±
-ÕâÁ½¸ö²ÎÊýµÄ×÷ÓÃÊÇºöÂÔºÍÆäËü°æ±¾makeµÄ¼æÈÝÐÔ¡£
+	â€œ-Bâ€
+	â€œ--always-makeâ€
+	è®¤ä¸ºæ‰€æœ‰çš„ç›®æ ‡éƒ½éœ€è¦æ›´æ–°ï¼ˆé‡ç¼–è¯‘ï¼‰ã€‚
 
-¡°-B¡±
-¡°--always-make¡±
-ÈÏÎªËùÓÐµÄÄ¿±ê¶¼ÐèÒª¸üÐÂ£¨ÖØ±àÒë£©¡£
+	â€œ-C <dir>â€
+	â€œ--directory=<dir>â€
+	æŒ‡å®šè¯»å–makefileçš„ç›®å½•ã€‚å¦‚æžœæœ‰å¤šä¸ªâ€œ-Câ€å‚æ•°ï¼Œmakeçš„è§£é‡Šæ˜¯åŽé¢çš„è·¯å¾„ä»¥å‰é¢çš„ä½œä¸ºç›¸å¯¹è·¯å¾„ï¼Œå¹¶ä»¥æœ€åŽçš„ç›®å½•ä½œä¸ºè¢«æŒ‡å®šç›®å½•ã€‚å¦‚ï¼šâ€œmake â€“C ~hchen/test â€“C progâ€
+	ç­‰ä»·äºŽâ€œmake â€“C ~hchen/test/progâ€ã€‚
 
-¡°-C <dir>¡±
-¡°--directory=<dir>¡±
-Ö¸¶¨¶ÁÈ¡makefileµÄÄ¿Â¼¡£Èç¹ûÓÐ¶à¸ö¡°-C¡±²ÎÊý£¬makeµÄ½âÊÍÊÇºóÃæµÄÂ·¾¶ÒÔÇ°ÃæµÄ×÷ÎªÏà¶ÔÂ·¾¶£¬²¢ÒÔ×îºóµÄÄ¿Â¼×÷Îª±»Ö¸¶¨Ä¿Â¼¡£Èç£º¡°make ¨CC ~hchen/test ¨CC prog¡±
-µÈ¼ÛÓÚ¡°make ¨CC ~hchen/test/prog¡±¡£
+	â€œâ€”debug[=<options>]â€
+	è¾“å‡ºmakeçš„è°ƒè¯•ä¿¡æ¯ã€‚å®ƒæœ‰å‡ ç§ä¸åŒçš„çº§åˆ«å¯ä¾›é€‰æ‹©ï¼Œå¦‚æžœæ²¡æœ‰å‚æ•°ï¼Œé‚£å°±æ˜¯è¾“å‡ºæœ€ç®€å•çš„è°ƒè¯•ä¿¡æ¯ã€‚ä¸‹é¢æ˜¯<options>çš„å–å€¼ï¼š
+	a â€”â€” ä¹Ÿå°±æ˜¯allï¼Œè¾“å‡ºæ‰€æœ‰çš„è°ƒè¯•ä¿¡æ¯ã€‚ï¼ˆä¼šéžå¸¸çš„å¤šï¼‰
+	b â€”â€” ä¹Ÿå°±æ˜¯basicï¼Œåªè¾“å‡ºç®€å•çš„è°ƒè¯•ä¿¡æ¯ã€‚å³è¾“å‡ºä¸éœ€è¦é‡ç¼–è¯‘çš„ç›®æ ‡ã€‚
+	v â€”â€” ä¹Ÿå°±æ˜¯verboseï¼Œåœ¨bé€‰é¡¹çš„çº§åˆ«ä¹‹ä¸Šã€‚è¾“å‡ºçš„ä¿¡æ¯åŒ…æ‹¬å“ªä¸ªmakefileè¢«è§£æžï¼Œä¸éœ€è¦è¢«é‡ç¼–è¯‘çš„ä¾èµ–æ–‡ä»¶ï¼ˆæˆ–æ˜¯ä¾èµ–ç›®æ ‡ï¼‰ç­‰ã€‚
+	i â€”â€” ä¹Ÿå°±æ˜¯implicitï¼Œè¾“å‡ºæ‰€ä»¥çš„éšå«è§„åˆ™ã€‚
+	j â€”â€” ä¹Ÿå°±æ˜¯jobsï¼Œè¾“å‡ºæ‰§è¡Œè§„åˆ™ä¸­å‘½ä»¤çš„è¯¦ç»†ä¿¡æ¯ï¼Œå¦‚å‘½ä»¤çš„PIDã€è¿”å›žç ç­‰ã€‚
+	m â€”â€” ä¹Ÿå°±æ˜¯makefileï¼Œè¾“å‡ºmakeè¯»å–makefileï¼Œæ›´æ–°makefileï¼Œæ‰§è¡Œmakefileçš„ä¿¡æ¯ã€‚
 
-¡°¡ªdebug[=<options>]¡±
-Êä³ömakeµÄµ÷ÊÔÐÅÏ¢¡£ËüÓÐ¼¸ÖÖ²»Í¬µÄ¼¶±ð¿É¹©Ñ¡Ôñ£¬Èç¹ûÃ»ÓÐ²ÎÊý£¬ÄÇ¾ÍÊÇÊä³ö×î¼òµ¥µÄµ÷ÊÔÐÅÏ¢¡£ÏÂÃæÊÇ<options>µÄÈ¡Öµ£º
-a ¡ª¡ª Ò²¾ÍÊÇall£¬Êä³öËùÓÐµÄµ÷ÊÔÐÅÏ¢¡££¨»á·Ç³£µÄ¶à£©
-b ¡ª¡ª Ò²¾ÍÊÇbasic£¬Ö»Êä³ö¼òµ¥µÄµ÷ÊÔÐÅÏ¢¡£¼´Êä³ö²»ÐèÒªÖØ±àÒëµÄÄ¿±ê¡£
-v ¡ª¡ª Ò²¾ÍÊÇverbose£¬ÔÚbÑ¡ÏîµÄ¼¶±ðÖ®ÉÏ¡£Êä³öµÄÐÅÏ¢°üÀ¨ÄÄ¸ömakefile±»½âÎö£¬²»ÐèÒª±»ÖØ±àÒëµÄÒÀÀµÎÄ¼þ£¨»òÊÇÒÀÀµÄ¿±ê£©µÈ¡£
-i ¡ª¡ª Ò²¾ÍÊÇimplicit£¬Êä³öËùÒÔµÄÒþº¬¹æÔò¡£
-j ¡ª¡ª Ò²¾ÍÊÇjobs£¬Êä³öÖ´ÐÐ¹æÔòÖÐÃüÁîµÄÏêÏ¸ÐÅÏ¢£¬ÈçÃüÁîµÄPID¡¢·µ»ØÂëµÈ¡£
-m ¡ª¡ª Ò²¾ÍÊÇmakefile£¬Êä³ömake¶ÁÈ¡makefile£¬¸üÐÂmakefile£¬Ö´ÐÐmakefileµÄÐÅÏ¢¡£
+	â€œ-dâ€
+	ç›¸å½“äºŽâ€œ--debug=aâ€ã€‚
 
-¡°-d¡±
-Ïàµ±ÓÚ¡°--debug=a¡±¡£
+	â€œ-eâ€
+	â€œ--environment-overridesâ€
+	æŒ‡æ˜ŽçŽ¯å¢ƒå˜é‡çš„å€¼è¦†ç›–makefileä¸­å®šä¹‰çš„å˜é‡çš„å€¼ã€‚
 
-¡°-e¡±
-¡°--environment-overrides¡±
-Ö¸Ã÷»·¾³±äÁ¿µÄÖµ¸²¸ÇmakefileÖÐ¶¨ÒåµÄ±äÁ¿µÄÖµ¡£
+	â€œ-f=<file>â€
+	â€œ--file=<file>â€
+	â€œ--makefile=<file>â€
+	æŒ‡å®šéœ€è¦æ‰§è¡Œçš„makefileã€‚
 
-¡°-f=<file>¡±
-¡°--file=<file>¡±
-¡°--makefile=<file>¡±
-Ö¸¶¨ÐèÒªÖ´ÐÐµÄmakefile¡£
+	â€œ-hâ€
+	â€œ--helpâ€
+	æ˜¾ç¤ºå¸®åŠ©ä¿¡æ¯ã€‚
 
-¡°-h¡±
-¡°--help¡±
-ÏÔÊ¾°ïÖúÐÅÏ¢¡£
+	â€œ-iâ€
+	â€œ--ignore-errorsâ€
+	åœ¨æ‰§è¡Œæ—¶å¿½ç•¥æ‰€æœ‰çš„é”™è¯¯ã€‚
 
-¡°-i¡±
-¡°--ignore-errors¡±
-ÔÚÖ´ÐÐÊ±ºöÂÔËùÓÐµÄ´íÎó¡£
+	â€œ-I <dir>â€
+	â€œ--include-dir=<dir>â€
+	æŒ‡å®šä¸€ä¸ªè¢«åŒ…å«makefileçš„æœç´¢ç›®æ ‡ã€‚å¯ä»¥ä½¿ç”¨å¤šä¸ªâ€œ-Iâ€å‚æ•°æ¥æŒ‡å®šå¤šä¸ªç›®å½•ã€‚
 
-¡°-I <dir>¡±
-¡°--include-dir=<dir>¡±
-Ö¸¶¨Ò»¸ö±»°üº¬makefileµÄËÑË÷Ä¿±ê¡£¿ÉÒÔÊ¹ÓÃ¶à¸ö¡°-I¡±²ÎÊýÀ´Ö¸¶¨¶à¸öÄ¿Â¼¡£
+	â€œ-j [<jobsnum>]â€
+	â€œ--jobs[=<jobsnum>]â€
+	æŒ‡åŒæ—¶è¿è¡Œå‘½ä»¤çš„ä¸ªæ•°ã€‚å¦‚æžœæ²¡æœ‰è¿™ä¸ªå‚æ•°ï¼Œmakeè¿è¡Œå‘½ä»¤æ—¶èƒ½è¿è¡Œå¤šå°‘å°±è¿è¡Œå¤šå°‘ã€‚å¦‚æžœæœ‰ä¸€ä¸ªä»¥ä¸Šçš„â€œ-jâ€å‚æ•°ï¼Œé‚£ä¹ˆä»…æœ€åŽä¸€ä¸ªâ€œ-jâ€æ‰æ˜¯æœ‰æ•ˆçš„ã€‚ï¼ˆæ³¨æ„è¿™ä¸ªå‚æ•°åœ¨MS-DOSä¸­æ˜¯æ— ç”¨çš„ï¼‰
 
-¡°-j [<jobsnum>]¡±
-¡°--jobs[=<jobsnum>]¡±
-Ö¸Í¬Ê±ÔËÐÐÃüÁîµÄ¸öÊý¡£Èç¹ûÃ»ÓÐÕâ¸ö²ÎÊý£¬makeÔËÐÐÃüÁîÊ±ÄÜÔËÐÐ¶àÉÙ¾ÍÔËÐÐ¶àÉÙ¡£Èç¹ûÓÐÒ»¸öÒÔÉÏµÄ¡°-j¡±²ÎÊý£¬ÄÇÃ´½ö×îºóÒ»¸ö¡°-j¡±²ÅÊÇÓÐÐ§µÄ¡££¨×¢ÒâÕâ¸ö²ÎÊýÔÚMS-DOSÖÐÊÇÎÞÓÃµÄ£©
+	â€œ-kâ€
+	â€œ--keep-goingâ€
+	å‡ºé”™ä¹Ÿä¸åœæ­¢è¿è¡Œã€‚å¦‚æžœç”Ÿæˆä¸€ä¸ªç›®æ ‡å¤±è´¥äº†ï¼Œé‚£ä¹ˆä¾èµ–äºŽå…¶ä¸Šçš„ç›®æ ‡å°±ä¸ä¼šè¢«æ‰§è¡Œäº†ã€‚
 
-¡°-k¡±
-¡°--keep-going¡±
-³ö´íÒ²²»Í£Ö¹ÔËÐÐ¡£Èç¹ûÉú³ÉÒ»¸öÄ¿±êÊ§°ÜÁË£¬ÄÇÃ´ÒÀÀµÓÚÆäÉÏµÄÄ¿±ê¾Í²»»á±»Ö´ÐÐÁË¡£
+	â€œ-l <load>â€
+	â€œ--load-average[=<load]â€
+	â€œâ€”max-load[=<load>]â€
+	æŒ‡å®šmakeè¿è¡Œå‘½ä»¤çš„è´Ÿè½½ã€‚
 
-¡°-l <load>¡±
-¡°--load-average[=<load]¡±
-¡°¡ªmax-load[=<load>]¡±
-Ö¸¶¨makeÔËÐÐÃüÁîµÄ¸ºÔØ¡£
+	â€œ-nâ€
+	â€œ--just-printâ€
+	â€œ--dry-runâ€
+	â€œ--reconâ€
+	ä»…è¾“å‡ºæ‰§è¡Œè¿‡ç¨‹ä¸­çš„å‘½ä»¤åºåˆ—ï¼Œä½†å¹¶ä¸æ‰§è¡Œã€‚
 
-¡°-n¡±
-¡°--just-print¡±
-¡°--dry-run¡±
-¡°--recon¡±
-½öÊä³öÖ´ÐÐ¹ý³ÌÖÐµÄÃüÁîÐòÁÐ£¬µ«²¢²»Ö´ÐÐ¡£
+	â€œ-o <file>â€
+	â€œ--old-file=<file>â€
+	â€œ--assume-old=<file>â€
+	ä¸é‡æ–°ç”Ÿæˆçš„æŒ‡å®šçš„<file>ï¼Œå³ä½¿è¿™ä¸ªç›®æ ‡çš„ä¾èµ–æ–‡ä»¶æ–°äºŽå®ƒã€‚
 
-¡°-o <file>¡±
-¡°--old-file=<file>¡±
-¡°--assume-old=<file>¡±
-²»ÖØÐÂÉú³ÉµÄÖ¸¶¨µÄ<file>£¬¼´Ê¹Õâ¸öÄ¿±êµÄÒÀÀµÎÄ¼þÐÂÓÚËü¡£
+	â€œ-pâ€
+	â€œ--print-data-baseâ€
+	è¾“å‡ºmakefileä¸­çš„æ‰€æœ‰æ•°æ®ï¼ŒåŒ…æ‹¬æ‰€æœ‰çš„è§„åˆ™å’Œå˜é‡ã€‚è¿™ä¸ªå‚æ•°ä¼šè®©ä¸€ä¸ªç®€å•çš„makefileéƒ½ä¼šè¾“å‡ºä¸€å †ä¿¡æ¯ã€‚å¦‚æžœä½ åªæ˜¯æƒ³è¾“å‡ºä¿¡æ¯è€Œä¸æƒ³æ‰§è¡Œ makefileï¼Œä½ å¯ä»¥ä½¿ç”¨â€œmake -q
+	pâ€å‘½ä»¤ã€‚å¦‚æžœä½ æƒ³æŸ¥çœ‹æ‰§è¡Œmakefileå‰çš„é¢„è®¾å˜é‡å’Œè§„åˆ™ï¼Œä½ å¯ä»¥ä½¿ç”¨â€œmake â€“p â€“f /dev/nullâ€ã€‚è¿™ä¸ªå‚æ•°è¾“å‡ºçš„ä¿¡æ¯ä¼šåŒ…å«ç€ä½ çš„makefileæ–‡ä»¶çš„æ–‡ä»¶åå’Œè¡Œå·ï¼Œæ‰€ä»¥ï¼Œç”¨
+	è¿™ä¸ªå‚æ•°æ¥è°ƒè¯•ä½ çš„makefileä¼šæ˜¯å¾ˆæœ‰ç”¨çš„ï¼Œç‰¹åˆ«æ˜¯å½“ä½ çš„çŽ¯å¢ƒå˜é‡å¾ˆå¤æ‚çš„æ—¶å€™ã€‚
 
-¡°-p¡±
-¡°--print-data-base¡±
-Êä³ömakefileÖÐµÄËùÓÐÊý¾Ý£¬°üÀ¨ËùÓÐµÄ¹æÔòºÍ±äÁ¿¡£Õâ¸ö²ÎÊý»áÈÃÒ»¸ö¼òµ¥µÄmakefile¶¼»áÊä³öÒ»¶ÑÐÅÏ¢¡£Èç¹ûÄãÖ»ÊÇÏëÊä³öÐÅÏ¢¶ø²»ÏëÖ´ÐÐ makefile£¬Äã¿ÉÒÔÊ¹ÓÃ¡°make -q
-p¡±ÃüÁî¡£Èç¹ûÄãÏë²é¿´Ö´ÐÐmakefileÇ°µÄÔ¤Éè±äÁ¿ºÍ¹æÔò£¬Äã¿ÉÒÔÊ¹ÓÃ¡°make ¨Cp ¨Cf /dev/null¡±¡£Õâ¸ö²ÎÊýÊä³öµÄÐÅÏ¢»á°üº¬×ÅÄãµÄmakefileÎÄ¼þµÄÎÄ¼þÃûºÍÐÐºÅ£¬ËùÒÔ£¬ÓÃ
-Õâ¸ö²ÎÊýÀ´µ÷ÊÔÄãµÄmakefile»áÊÇºÜÓÐÓÃµÄ£¬ÌØ±ðÊÇµ±ÄãµÄ»·¾³±äÁ¿ºÜ¸´ÔÓµÄÊ±ºò¡£
+	â€œ-qâ€
+	â€œ--questionâ€
+	ä¸è¿è¡Œå‘½ä»¤ï¼Œä¹Ÿä¸è¾“å‡ºã€‚ä»…ä»…æ˜¯æ£€æŸ¥æ‰€æŒ‡å®šçš„ç›®æ ‡æ˜¯å¦éœ€è¦æ›´æ–°ã€‚å¦‚æžœæ˜¯0åˆ™è¯´æ˜Žè¦æ›´æ–°ï¼Œå¦‚æžœæ˜¯2åˆ™è¯´æ˜Žæœ‰é”™è¯¯å‘ç”Ÿã€‚
 
-¡°-q¡±
-¡°--question¡±
-²»ÔËÐÐÃüÁî£¬Ò²²»Êä³ö¡£½ö½öÊÇ¼ì²éËùÖ¸¶¨µÄÄ¿±êÊÇ·ñÐèÒª¸üÐÂ¡£Èç¹ûÊÇ0ÔòËµÃ÷Òª¸üÐÂ£¬Èç¹ûÊÇ2ÔòËµÃ÷ÓÐ´íÎó·¢Éú¡£
+	â€œ-râ€
+	â€œ--no-builtin-rulesâ€
+	ç¦æ­¢makeä½¿ç”¨ä»»ä½•éšå«è§„åˆ™ã€‚
 
-¡°-r¡±
-¡°--no-builtin-rules¡±
-½ûÖ¹makeÊ¹ÓÃÈÎºÎÒþº¬¹æÔò¡£
+	â€œ-Râ€
+	â€œ--no-builtin-variabesâ€
+	ç¦æ­¢makeä½¿ç”¨ä»»ä½•ä½œç”¨äºŽå˜é‡ä¸Šçš„éšå«è§„åˆ™ã€‚
 
-¡°-R¡±
-¡°--no-builtin-variabes¡±
-½ûÖ¹makeÊ¹ÓÃÈÎºÎ×÷ÓÃÓÚ±äÁ¿ÉÏµÄÒþº¬¹æÔò¡£
+	â€œ-sâ€
+	â€œ--silentâ€
+	â€œ--quietâ€
+	åœ¨å‘½ä»¤è¿è¡Œæ—¶ä¸è¾“å‡ºå‘½ä»¤çš„è¾“å‡ºã€‚
 
-¡°-s¡±
-¡°--silent¡±
-¡°--quiet¡±
-ÔÚÃüÁîÔËÐÐÊ±²»Êä³öÃüÁîµÄÊä³ö¡£
+	â€œ-Sâ€
+	â€œ--no-keep-goingâ€
+	â€œ--stopâ€
+	å–æ¶ˆâ€œ-kâ€é€‰é¡¹çš„ä½œç”¨ã€‚å› ä¸ºæœ‰äº›æ—¶å€™ï¼Œmakeçš„é€‰é¡¹æ˜¯ä»ŽçŽ¯å¢ƒå˜é‡â€œMAKEFLAGSâ€ä¸­ç»§æ‰¿ä¸‹æ¥çš„ã€‚æ‰€ä»¥ä½ å¯ä»¥åœ¨å‘½ä»¤è¡Œä¸­ä½¿ç”¨è¿™ä¸ªå‚æ•°æ¥è®©çŽ¯å¢ƒå˜é‡ä¸­çš„â€œ-kâ€é€‰é¡¹å¤±æ•ˆã€‚
 
-¡°-S¡±
-¡°--no-keep-going¡±
-¡°--stop¡±
-È¡Ïû¡°-k¡±Ñ¡ÏîµÄ×÷ÓÃ¡£ÒòÎªÓÐÐ©Ê±ºò£¬makeµÄÑ¡ÏîÊÇ´Ó»·¾³±äÁ¿¡°MAKEFLAGS¡±ÖÐ¼Ì³ÐÏÂÀ´µÄ¡£ËùÒÔÄã¿ÉÒÔÔÚÃüÁîÐÐÖÐÊ¹ÓÃÕâ¸ö²ÎÊýÀ´ÈÃ»·¾³±äÁ¿ÖÐµÄ¡°-k¡±Ñ¡ÏîÊ§Ð§¡£
+	â€œ-tâ€
+	â€œ--touchâ€
+	ç›¸å½“äºŽUNIXçš„touchå‘½ä»¤ï¼Œåªæ˜¯æŠŠç›®æ ‡çš„ä¿®æ”¹æ—¥æœŸå˜æˆæœ€æ–°çš„ï¼Œä¹Ÿå°±æ˜¯é˜»æ­¢ç”Ÿæˆç›®æ ‡çš„å‘½ä»¤è¿è¡Œã€‚
 
-¡°-t¡±
-¡°--touch¡±
-Ïàµ±ÓÚUNIXµÄtouchÃüÁî£¬Ö»ÊÇ°ÑÄ¿±êµÄÐÞ¸ÄÈÕÆÚ±ä³É×îÐÂµÄ£¬Ò²¾ÍÊÇ×èÖ¹Éú³ÉÄ¿±êµÄÃüÁîÔËÐÐ¡£
+	â€œ-vâ€
+	â€œ--versionâ€
+	è¾“å‡ºmakeç¨‹åºçš„ç‰ˆæœ¬ã€ç‰ˆæƒç­‰å…³äºŽmakeçš„ä¿¡æ¯ã€‚
 
-¡°-v¡±
-¡°--version¡±
-Êä³ömake³ÌÐòµÄ°æ±¾¡¢°æÈ¨µÈ¹ØÓÚmakeµÄÐÅÏ¢¡£
+	â€œ-wâ€
+	â€œ--print-directoryâ€
+	è¾“å‡ºè¿è¡Œmakefileä¹‹å‰å’Œä¹‹åŽçš„ä¿¡æ¯ã€‚è¿™ä¸ªå‚æ•°å¯¹äºŽè·Ÿè¸ªåµŒå¥—å¼è°ƒç”¨makeæ—¶å¾ˆæœ‰ç”¨ã€‚
 
-¡°-w¡±
-¡°--print-directory¡±
-Êä³öÔËÐÐmakefileÖ®Ç°ºÍÖ®ºóµÄÐÅÏ¢¡£Õâ¸ö²ÎÊý¶ÔÓÚ¸ú×ÙÇ¶Ì×Ê½µ÷ÓÃmakeÊ±ºÜÓÐÓÃ¡£
+	â€œ--no-print-directoryâ€
+	ç¦æ­¢â€œ-wâ€é€‰é¡¹ã€‚
 
-¡°--no-print-directory¡±
-½ûÖ¹¡°-w¡±Ñ¡Ïî¡£
+	â€œ-W <file>â€
+	â€œ--what-if=<file>â€
+	â€œ--new-file=<file>â€
+	â€œ--assume-file=<file>â€
+	å‡å®šç›®æ ‡<file>éœ€è¦æ›´æ–°ï¼Œå¦‚æžœå’Œâ€œ-nâ€é€‰é¡¹ä½¿ç”¨ï¼Œé‚£ä¹ˆè¿™ä¸ªå‚æ•°ä¼šè¾“å‡ºè¯¥ç›®æ ‡æ›´æ–°æ—¶çš„è¿è¡ŒåŠ¨ä½œã€‚å¦‚æžœæ²¡æœ‰â€œ-nâ€é‚£ä¹ˆå°±åƒè¿è¡ŒUNIXçš„â€œtouchâ€å‘½ä»¤ä¸€æ ·ï¼Œä½¿å¾—<file>çš„ä¿®æ”¹æ—¶
+	é—´ä¸ºå½“å‰æ—¶é—´ã€‚
 
-¡°-W <file>¡±
-¡°--what-if=<file>¡±
-¡°--new-file=<file>¡±
-¡°--assume-file=<file>¡±
-¼Ù¶¨Ä¿±ê<file>ÐèÒª¸üÐÂ£¬Èç¹ûºÍ¡°-n¡±Ñ¡ÏîÊ¹ÓÃ£¬ÄÇÃ´Õâ¸ö²ÎÊý»áÊä³ö¸ÃÄ¿±ê¸üÐÂÊ±µÄÔËÐÐ¶¯×÷¡£Èç¹ûÃ»ÓÐ¡°-n¡±ÄÇÃ´¾ÍÏñÔËÐÐUNIXµÄ¡°touch¡±ÃüÁîÒ»Ñù£¬Ê¹µÃ<file>µÄÐÞ¸ÄÊ±
-¼äÎªµ±Ç°Ê±¼ä¡£
-
-¡°--warn-undefined-variables¡±
-Ö»Òªmake·¢ÏÖÓÐÎ´¶¨ÒåµÄ±äÁ¿£¬ÄÇÃ´¾ÍÊä³ö¾¯¸æÐÅÏ¢
-
-×Ô¶¯»¯±äÁ¿
-$@ 		#±íÊ¾¹æÔòÖÐµÄÄ¿±êÎÄ¼þ¼¯¡£ÔÚÄ£Ê½¹æÔòÖÐ£¬Èç¹ûÓÐ¶à¸öÄ¿±ê£¬ÄÇÃ´£¬"$@"¾ÍÊÇÆ¥ÅäÓÚÄ¿±êÖÐÄ£Ê½¶¨ÒåµÄ¼¯ºÏ
-$%		#½öµ±Ä¿±êÊÇ¾²Ì¬¿âÎÄ¼þÊ±£¬±íÊ¾¹æÔòÖÐµÄÄ¿±ê³ÉÔ±Ãû¡£ÀýÈç£¬Èç¹ûÒ»¸öÄ¿±êÊÇ"foo.a(bar.o)"£¬ÄÇÃ´£¬"$%"¾ÍÊÇ"bar.o"£¬"$@"¾ÍÊÇ"foo.a"¡£Èç¹ûÄ¿±ê²»ÊÇ¾²Ì¬¿âÎÄ¼þ£¨UnixÏÂÊÇ[.a]£¬WindowsÏÂÊÇ[.lib]£©£¬ÄÇÃ´£¬ÆäÖµÎª¿Õ¡£
-$<		#ÒÀÀµÄ¿±êÖÐµÄµÚÒ»¸öÄ¿±êÃû×Ö¡£Èç¹ûÒÀÀµÄ¿±êÊÇÒÔÄ£Ê½£¨¼´"%"£©¶¨ÒåµÄ£¬ÄÇÃ´"$<"½«ÊÇ·ûºÏÄ£Ê½µÄÒ»ÏµÁÐµÄÎÄ¼þ¼¯¡£×¢Òâ£¬ÆäÊÇÒ»¸öÒ»¸öÈ¡³öÀ´µÄ¡£
-$?		#ËùÓÐ±ÈÄ¿±êÐÂµÄÒÀÀµÄ¿±êµÄ¼¯ºÏ¡£ÒÔ¿Õ¸ñ·Ö¸ô
-$^		#ËùÓÐµÄÒÀÀµÄ¿±êµÄ¼¯ºÏ¡£ÒÔ¿Õ¸ñ·Ö¸ô¡£Èç¹ûÔÚÒÀÀµÄ¿±êÖÐÓÐ¶à¸öÖØ¸´µÄ£¬ÄÇ¸öÕâ¸ö±äÁ¿»áÈ¥³ýÖØ¸´µÄÒÀÀµÄ¿±ê£¬Ö»±£ÁôÒ»·Ý
-$+		#Õâ¸ö±äÁ¿ºÜÏñ"$^"£¬Ò²ÊÇËùÓÐÒÀÀµÄ¿±êµÄ¼¯ºÏ¡£Ö»ÊÇËü²»È¥³ýÖØ¸´µÄÒÀÀµÄ¿±ê
-$*		#Õâ¸ö±äÁ¿±íÊ¾Ä¿±êÄ£Ê½ÖÐ"%"¼°ÆäÖ®Ç°µÄ²¿·Ö¡£Èç¹ûÄ¿±êÊÇ"dir/a.foo.b"£¬²¢ÇÒÄ¿±êµÄÄ£Ê½ÊÇ"a.%.b"£¬ÄÇÃ´£¬"$*"µÄÖµ¾ÍÊÇ"dir /a.foo"
-
-ÔÚÉÏÊöËùÁÐ³öÀ´µÄ×Ô¶¯Á¿±äÁ¿ÖÐ¡£ËÄ¸ö±äÁ¿£¨$@¡¢$<¡¢$%¡¢$*£©ÔÚÀ©Õ¹Ê±Ö»»áÓÐÒ»¸öÎÄ¼þ£¬¶øÁíÈý¸öµÄÖµÊÇÒ»¸öÎÄ¼þÁÐ±í¡£ÕâÆß¸ö×Ô¶¯»¯±äÁ¿»¹¿ÉÒÔÈ¡µÃÎÄ¼þµÄÄ¿Â¼Ãû»òÊÇÔÚµ±Ç°Ä¿Â¼ÏÂµÄ·ûºÏÄ£Ê½µÄÎÄ¼þÃû£¬Ö»ÐèÒª´îÅäÉÏ"D"»ò"F"×ÖÑù¡£ÕâÊÇGNU makeÖÐÀÏ°æ±¾µÄÌØÐÔ£¬ÔÚÐÂ°æ±¾ÖÐ£¬ÎÒÃÇÊ¹ÓÃº¯Êý"dir"»ò"notdir"¾Í¿ÉÒÔ×öµ½ÁË¡£"D"µÄº¬Òå¾ÍÊÇDirectory£¬¾ÍÊÇÄ¿Â¼£¬"F"µÄº¬Òå¾ÍÊÇFile£¬¾ÍÊÇÎÄ¼þ¡£
-
-ÉÏÊö¶¼ÊÇgmakeÄÚÈÝ,ÏÂÃæÎªcmakeÄÚÈÝ
-Ò»°ãÄ¬ÈÏÃû³ÆÎªCMakeLists.txt
-ÓÃ·¨:cmake path	  »áÑ°ÕÒpathÂ·¾¶ÏÂµÄCMakeLists.txt
-cmakeÃüÁî²»Çø·Ö´óÐ¡Ð´(²ÎÊýÇø·Ö),ÃüÁîÓÉÃüÁî,²ÎÊýÁÐ±í×é³É,²ÎÊýÖ®¼äÊ¹ÓÃ¿Õ¸ñ½øÐÐ·Ö¸ô
-
-×Ô¶¨Òå±äÁ¿
-ÒþÊ½¶¨Òå:	ÀýPROJECTÖ¸Áî,Ëü»áÒþÊ½µÄ¶¨Òå<projectname>_BINARY_DIRºÍ<projectname>_SOURCE_DIRÁ½¸ö±äÁ¿
-ÏÔÊ¾¶¨Òå:	setÖ¸Áî,SET(HELLO_SRC main.c),¾Í¿ÉÒÔÍ¨¹ý${HELLO_SRC}À´ÒýÓÃÕâ¸ö×Ô¶¨Òå±äÁ¿ÁË
-
-³£ÓÃÖ¸Áî:
-	set(var value1 value2)			¶¨Òå±äÁ¿varÎªvalue1 value2
-	message(var)					Êä³övarµÄÖµ
-	if(expression)					·ÖÖ§¿ØÖÆ,Èç¹ûexpressionÎªon yes true y ·Ç0µÄÊý±íÊ¾Õæ(²»Çø·Ö´óÐ¡Ð´),Îª0¡¢OFF¡¢NO¡¢FALSE¡¢N¡¢IGNORE¡¢¿Õ×Ö·û´®¡¢ÒÔ -NOTFOUND ½áÎ²µÄ×Ö·û´®Ôò±íÊ¾¼Ù,Èô²»·ûºÏÕâ2ÖÖÇé¿ö±íÊ¾±äÁ¿,ÒÔ±äÁ¿ÖµÈôÎªÉÏÊö·ñµÄ¹æÔòÔòÎª¼Ù,ÆäËûÎªÕæ
-		...
-	elseif(expression2)
-		...
-	else()
-		...
-	endif							
-	
-cmake_minimum_required(VERSION 2.8)  	Ö¸¶¨ÔËÐÐ´ËcmakeµÄ×îµÍ°æ±¾,ÈôµÍÓÚÕâ¸ö°æ±¾Ôò»á±¨´í
-set(YES 0),Èç¹ûÓÃif($(YES))¾ÍÊÇ¼ÙµÄÁË,´Ë¹¦ÄÜÔÚcmake2.8²ÅÒýÓÃ
-	
-²Ù×÷·ûÓÅÏÈ¼¶:  Ò»Ôª²Ù×÷·û>¶þÔª²Ù×÷·û>NOT>AND.OR
-COMMAND  command-name				´æÔÚcommand-nameÃüÁî,ºê»òº¯ÊýÇÒÄÜ¹»±»µ÷ÓÃ,ÔòÎªÕæ,·ñÔòÎª¼Ù
-EXISTS 	 name						´æÔÚnameµÄÎÄ¼þ»òÕßÄ¿Â¼(Ó¦¸ÃÊ¹ÓÃ¾ø¶ÔÂ·¾¶)ÔòÎªÕæ,·ñÔòÎª¼Ù
-file1 IS_NEWER_THAN file2			file1±Èfile2ÐÂ»òÕßfile1,file2ÖÐÓÐÒ»¸öÎÄ¼þ²»´æÔÚ(Ó¦¸ÃÊ¹ÓÃ¾ø¶ÔÂ·¾¶)ÔòÎªÕæ,·ñÔòÎª¼Ù
-IS_DIRECTORY directory-name			directory-name±íÊ¾µÄÊÇÒ»¸öÄ¿Â¼(Ó¦¸ÃÊ¹ÓÃ¾ø¶ÔÂ·¾¶)ÔòÎªÕæ,·ñÔòÎª¼Ù	
-variable|string MATHCES regex		±äÁ¿Öµ»ò×Ö·û´®Æ¥ÅäregexÕýÔò±í´ïÊ½ÔòÎªÕæ,·ñÔòÎª¼Ù,MATHCES¿ÉÒÔ»»³ÉLESS,GREATER,EQUAL,ÎªÕæ¾ÍÊÇ×Ö·û´®µÄÊý×ÖÂú×ãÐ¡ÓÚ,´óÓÚ,µÈÓÚ,STRLESS,STRGREATER,STREQUALÔòÊÇ°´×ÖµäÐò±È½Ï
-DEFINED  variable					±äÁ¿±»¶¨ÒåÁËÔòÎªÕæ,·ñÔòÎª¼Ù
-
-set(VAR a b c)
-foreach(f ${VAR}					Ñ­»·
-	message(${f})
-endforeach()
-
-set(VAR 5)
-while(${VAR} GREATER 0)
-	message(${VAR})
-	math(EXPR VAR "${VAR}-1")
-endwhile()
-
-ºê¶¨Òå				ºêÊ¹ÓÃµÄÊÇÈ«¾Ö×÷ÓÃÓò
-macro(hello MESSAGE)			µ÷ÓÃºêhello,hello("hello world")
-	message(${MESSAGE})
-endmacro()
-
-¶¨Òåº¯Êý
-function(hello MESSAGE)			µ÷ÓÃº¯Êýhello,hello("hello world")
-	message(${MESSAGE})
-endfunction()
-º¯ÊýºÍºê¿ÉÒÔÍ¨¹ýÃüÁîreturn()·µ»Ø,µ«ÊÇº¯ÊýºÍºêµÄ·µ»ØÖµ±ØÐëÍ¨¹ý²ÎÊý´«µÝ³öÈ¥
-
-±äÁ¿ÒýÓÃ·½Ê½
-	Ê¹ÓÃ${}½øÐÐ±äÁ¿µÄÒýÓÃ,ÔÚifµÈÓï¾äÖÐ,ÊÇÖ±½ÓÊ¹ÓÃ±äÁ¿Ãû¶ø²»Í¨¹ý${}È¡Öµ
-	
-³£ÓÃÃüÁî
-	option(<option_variable> "help string describing option" [initial value])	Ìá¹©Ñ¡ÏîÈÃÓÃ»§Ñ¡ÔñÊÇON»¹ÊÇOFF
-	project(<projectname> [languageName1 languageName2...])						ÓÃÓÚÖ¸¶¨ÏîÄ¿µÄÃû³Æ
-	cmake_minimum_required(VERSION major[.minor[.patch][.tweak]]][FATAL_ERROR])	ÓÃÓÚÖ¸¶¨ÐèÒªµÄCMakeµÄ×îµÍ°æ±¾
-	aux_source_directory(<dir> <variable>)										ÓÃÓÚ½«dirÄ¿Â¼ÏÂµÄËùÓÐÔ´ÎÄ¼þµÄÃû×Ö±£´æÔÚ±äÁ¿variableÖÐ
-	add_executable(<name> [WIN32][MACOSX_BUNDLE][EXCLUDE_FROM_ALL] source1 source2... sourceN)  ÓÃÓÚÖ¸¶¨´ÓÒ»×éÔ´ÎÄ¼þsource1 source2...sourceN±àÒë³öÒ»¸ö¿ÉÖ´ÐÐÎÄ¼þÇÒÃüÃûÎªname
-	add_library(<name> [STATIC|SHARED|MODULE|EXCLUDE_FROM_ALL] source1 source2...sourceN)	ÓÃÓÚÖ¸¶¨´ÓÒ»×éÔ´ÎÄ¼þsource1 source2...sourceN±àÒë³öÒ»¸ö¿âÎÄ¼þÇÒÃüÃûÎªname
-	add_dependencies(target-name depend-target1 depend-target2...)				ÓÃÓÚÖ¸¶¨Ä³¸öÄ¿±ê(¿ÉÖ´ÐÐÎÄ¼þ»òÕß¿âÎÄ¼þ)ÒÀÀµÓÚÆäËûµÄÄ¿±ê,ÕâÀïµÄÄ¿±ê±ØÐëÊÇadd_executable,add_library,add_custom_targetÃüÁî´´½¨µÄÄ¿±ê
-	add_subdirectory(source_dir [binary_dir][EXCLUDE_FROM_ALL])					ÓÃÓÚÌí¼ÓÒ»¸öÐèÒª½øÐÐ¹¹½¨µÄ×ÓÄ¿Â¼
-	target_link_libraries(<target> [item1 [item2 [...]]][[debug|optimized|general]]...)		ÓÃÓÚÖ¸¶¨targetÐèÒªÁ´½Óitem1 item2..ÕâÀïtarget±ØÐëÒÑ¾­±»´´½¨,Á´½ÓµÄitem¿ÉÒÔÊÇÒÑ¾­´æÔÚµÄtarget(ÒÀÀµ¹ØÏµ»á×Ô¶¯Ìí¼Ó)
-	set(<variable> <value> [[CACHE <type><docstring> [FORCE]]|PARENT_SCOPE])	ÓÃÓÚÉè¶¨±äÁ¿variableµÄÖµÎªvalue,Èç¹ûÖ¸¶¨ÁËCACHE±äÁ¿½«±»·ÅÈëCachek 
-	unset(<variable> [CACHE])													ÓÃÓÚÒÆ³ý±äÁ¿variable,Èç¹ûÖ¸¶¨ÁËCACHE±äÁ¿½«±»´ÓCacheÖÐÒÆ³ý
-	message([STATUS|WARNING|AUTHOR_WARNING|FATAL_ERROR|SEND_ERROR] "message todisplay"...)	ÓÃÓÚÊä³öÐÅÏ¢
-	include(<file|module> [OPTIONAL] [RESULT_VARIABLE <VAR>] [NO_POLICY_SCOPE])	include´Ó¸ø¶¨µÄÎÄ¼þÖÐ¶ÁÈ¡CMakeµÄÁÐ±íÎÄ¼þ,ÔÚÇåµ¥ÎÄ¼þÖÐµÄÃüÁî»á±»Á¢¼´´¦Àí,¾ÍÏñËüÃÇÊÇÐ´ÔÚÕâÌõincludeÃüÁîÕ¹¿ªµÄµØ·½Ò»Ñù
-																				Èç¹ûÖ¸¶¨ÁËOPTIONALÑ¡Ïî£¬ÄÇÃ´Èç¹û±»°üº¬ÎÄ¼þ²»´æÔÚµÄ»°£¬²»»á±¨´í¡£Èç¹ûÖ¸¶¨ÁËRESULT_VARIABLEÑ¡Ïî£¬ÄÇÃ´var»òÕß»á±»ÉèÖÃÎª±»°üº¬ÎÄ¼þµÄÍêÕûÂ·¾¶£¬»òÕßÊÇNOTFOUND£¬±íÊ¾Ã»ÓÐÕÒµ½¸ÃÎÄ¼þ
-																				Èç¹ûÖ¸¶¨µÄÊÇÒ»¸öÄ£¿é£¨module£©¶ø²»ÊÇÒ»¸öÎÄ¼þ£¬²éÕÒµÄ¶ÔÏó»á±ä³ÉÂ·¾¶CMAKE_MODULE_PATHÏÂµÄÎÄ¼þ<modulename>.camke¡£
-																				OPTIONAL ²ÎÊýµÄ×÷ÓÃÊÇÎÄ¼þ²»´æÔÚÒ²²»»á²úÉú´íÎó¡£
-																				¿ÉÒÔÖ¸¶¨ÔØÈëÒ»¸öÎÄ¼þ,Èç¹û¶¨ÒåµÄÊÇÒ»¸öÄ£¿é,ÄÇÃ´½«ÔÚ CMAKE_MODULE_PATH ÖÐËÑË÷Õâ¸öÄ£¿é²¢ÔØÈë¡£
-ÔØÈëµÄÄÚÈÝ½«ÔÚ´¦Àíµ½ INCLUDE Óï¾äÊÇÖ±½ÓÖ´ÐÐ¡£
-	include_directories([AFTER|BEFORE|] [SYSTEM] dir1 dir2...)					ÓÃÓÚÉè¶¨Ä¿Â¼,ÕâÐ©Éè¶¨µÄÄ¿Â¼½«±»±àÒëÆ÷ÓÃÀ´²éÕÒincludeÎÄ¼þ
-	find_path(<VAR> name1 [path1 path2...])										ÓÃÓÚ²éÕÒ°üº¬ÎÄ¼þname1µÄÂ·¾¶,Èç¹ûÕÒµ½Ôò½«Â·¾¶±£´æÔÚVARÖÐ(´ËÂ·¾¶Îª¾ø¶ÔÂ·¾¶),Èç¹ûÃ»ÓÐÕÒµ½Ôò½á¹ûÎª<VAR>-NOTFOUND,Ä¬ÈÏÇé¿öÏÂ,VAR»á±»±£´æÔÚCacheÖÐ,ÕâÊ±ºòÐèÒªÇå³ýVAR²Å¿ÉÒÔ½øÐÐÏÂÒ»´Î²éÑ¯(Ê¹ÓÃunsetÃüÁî)
-	find_library(<VAR> name1 [path1 path2...])									ÓÃÓÚ²éÕÒ¿âÎÄ¼þname1µÄÂ·¾¶,Èç¹ûÕÒµ½Ôò½«Â·¾¶±£´æÔÚVARÖÐ(´ËÂ·¾¶Îª¾ø¶ÔÂ·¾¶),Èç¹ûÃ»ÓÐÕÒµ½Ôò½á¹ûÎª<VAR>-NOTFOUND
-	add_definitions(-DFOO -DBAR...)												ÓÃÓÚÌí¼Ó±àÒëÆ÷ÃüÁîÐÐ±êÖ¾Ñ¡Ïî,Í¨³£ÓÃÀ´Ìí¼ÓÔ¤´¦ÀíÆ÷¶¨Òå
-	execute_process(COMMAND <cmd1>[args1...]]									ÓÃÓÚÖ´ÐÐÒ»¸ö»ò¶à¸öÍâ²¿ÃüÁî,Ã¿Ò»¸öÃüÁîµÄ±ê×¼Êä³öÍ¨¹ý¹ÜµÀ×ªÎªÏÂÒ»¸öÃüÁîµÄ±ê×¼ÊäÈë
-					[COMMAND <cmd2>[args2...] [...]]
-                    [WORKING_DIRECTORY<directory>]								ÓÃÓÚÖ¸¶¨Íâ²¿ÃüÁîµÄ¹¤×÷Ä¿Â¼
-                    [TIMEOUT <seconds>]
-                    [RESULT_VARIABLE<variable>]									ÓÃÓÚÖ¸¶¨Ò»¸ö±äÁ¿±£´æÍâ²¿ÃüÁîÖ´ÐÐµÄ½á¹û,Õâ¸ö½á¹û¿ÉÄÜÊÇ×îºóÒ»¸öÖ´ÐÐµÄÍâ²¿ÃüÁîµÄÍË³öÂë»òÕßÊÇÒ»¸öÃèÊö´íÎóÌõ¼þµÄ×Ö·û´®
-                    [OUTPUT_VARIABLE<variable>]									ºÍÏÂÃæµÄERROR_VARIABLEÓÃÓÚÖ¸¶¨Ò»¸ö±äÁ¿±£´æ±ê×¼Êä³ö»òÕß±ê×¼´íÎó
-                    [ERROR_VARIABLE<variable>]
-                    [INPUT_FILE <file>]
-                    [OUTPUT_FILE <file>]
-                    [ERROR_FILE <file>]
-                    [OUTPUT_QUIET]												ºÍÏÂÃæµÄERROR_QUIETÓÃÓÚºöÂÔ±ê×¼Êä³öºÍ±ê×¼´íÎó
-                    [ERROR_QUIET]
-					[OUTPUT_STRIP_TRAILING_WHITESPACE]
-					[ERROR_STRIP_TRAILING_WHITESPACE])
-	file(GLOB variable [RELATIVE path][globbing expressions]...)				GLOBÓÃÓÚ²úÉúÒ»¸öÎÄ¼þ(Ä¿Â¼)Â·¾¶ÁÐ±í±£´æÔÚvariableÖÐ,Â·¾¶ÁÐ±íÖÐµÄÃ¿¸öÎÄ¼þµÄÎÄ¼þÃû¶¼ÄÜÆ¥Åäglobbing expression(·ÇÕýÔò±í´ïÊ½,µ«ÊÇÀàËÆ),Èç¹ûÖ¸¶¨ÁËRELATIVEÂ·¾¶,ÄÇÃ´·µ»ØµÄÎÄ¼þÂ·¾¶ÁÐ±íÖÐµÄÂ·¾¶ÎªÏà¶ÔÓÚRELATIVEµÄÂ·¾¶
-	
-	
-³£ÓÃ±äÁ¿
-	CMAKE_BINARY_DIR 
-	PROJECT_BINARY_DIR 
-	< projectname >_BINARY_DIR 
-	ÕâÈý¸ö±äÁ¿Ö¸´úµÄÄÚÈÝÊÇÒ»ÖÂµÄ£¬Èç¹ûÊÇin-source±àÒë£¬Ö¸µÃ¾ÍÊÇ¹¤³Ì¶¥²ãÄ¿Â¼£»Èç¹ûÊÇout-of-source±àÒë£¬Ö¸µÄÊÇ¹¤³Ì±àÒë·¢ÉúµÄÄ¿Â¼
-	
-	CMAKE_SOURCE_DIR 
-	PROJECT_SOURCE_DIR 
-	< projectname >_SOURCE_DIR 
-	ÕâÈý¸ö±äÁ¿Ö¸´úµÄÄÚÈÝÊÇÒ»ÖÂµÄ£¬²»ÂÛ²ÉÓÃºÎÖÖ±àÒë·½Ê½£¬¶¼ÊÇ¹¤³Ì¶¥²ãÄ¿Â¼¡£Ò²¾ÍÊÇÔÚin-source±àÒëÊ±,Ëû¸úCMAKE_BINARY_DIRµÈ±äÁ¿Ò»ÖÂ
-	
-	CMAKE_CURRENT_SOURCE_DIR 
-	µ±Ç°´¦ÀíµÄCMakeLists.txtËùÔÚµÄÂ·¾¶
-	
-	CMAKE_CURRRENT_BINARY_DIR 
-	Èç¹ûÊÇin-source±àÒë£¬Ëü¸úCMAKE_CURRENT_SOURCE_DIRÒ»ÖÂ£»Èç¹ûÊÇout-of-source±àÒë£¬Ö¸µÄÊÇtarget±àÒëÄ¿Â¼¡£Ê¹ÓÃADD_SUBDIRECTORY(src bin)¿ÉÒÔ¸ü¸ÄÕâ¸ö±äÁ¿µÄÖµ¡£Ê¹ÓÃSET(EXECUTABLE_OUTPUT_PATH <ÐÂÂ·¾¶>)²¢²»»á¶ÔÕâ¸ö±äÁ¿Ôì³ÉÓ°Ïì,Ëü½ö½öÐÞ¸ÄÁË×îÖÕÄ¿±êÎÄ¼þ´æ·ÅµÄÂ·¾¶¡£
-	
-	CMAKE_CURRENT_LIST_FILE 
-	Êä³öµ÷ÓÃÕâ¸ö±äÁ¿µÄCMakeLists.txtµÄÍêÕûÂ·¾¶
-	
-	CMAKE_CURRENT_LIST_LINE 
-	Êä³öÕâ¸ö±äÁ¿ËùÔÚµÄÐÐ
-	
-	CMAKE_MODULE_PATH 
-	Õâ¸ö±äÁ¿ÓÃÀ´¶¨Òå×Ô¼ºµÄcmakeÄ£¿éËùÔÚµÄÂ·¾¶¡£Èç¹û¹¤³Ì±È½Ï¸´ÔÓ£¬ÓÐ¿ÉÄÜ»á×Ô¼º±àÐ´Ò»Ð©cmakeÄ£¿é£¬ÕâÐ©cmakeÄ£¿éÊÇËæ¹¤³Ì·¢²¼µÄ£¬ÎªÁËÈÃcmakeÔÚ´¦ÀíCMakeLists.txtÊ±ÕÒµ½ÕâÐ©Ä£¿é£¬ÄãÐèÒªÍ¨¹ýSETÖ¸Áî½«cmakeÄ£¿éÂ·¾¶ÉèÖÃÒ»ÏÂ¡£±ÈÈçSET(CMAKE_MODULE_PATH,${PROJECT_SOURCE_DIR}/cmake) 
-	ÕâÊ±ºò¾Í¿ÉÒÔÍ¨¹ýINCLUDEÖ¸ÁîÀ´µ÷ÓÃ×Ô¼ºµÄÄ£¿éÁË¡£
-	
-	EXECUTABLE_OUTPUT_PATH 
-	ÐÂ¶¨Òå×îÖÕ½á¹ûµÄ´æ·ÅÄ¿Â¼
-	
-	LIBRARY_OUTPUT_PATH 
-	ÐÂ¶¨Òå×îÖÕ½á¹ûµÄ´æ·ÅÄ¿Â¼
-	
-	PROJECT_NAME 
-	·µ»ØÍ¨¹ýPROJECTÖ¸Áî¶¨ÒåµÄÏîÄ¿Ãû³Æ
-	
-	UNIX Èç¹ûÎªÕæ£¬±íÊ¾Îª UNIX-like µÄÏµÍ³£¬°üÀ¨ AppleOS X ºÍ CygWin
-
-	WIN32 Èç¹ûÎªÕæ£¬±íÊ¾Îª Windows ÏµÍ³£¬°üÀ¨ CygWin
-	
-	APPLE Èç¹ûÎªÕæ£¬±íÊ¾Îª Apple ÏµÍ³
-	
-	CMAKE_SIZEOF_VOID_P ±íÊ¾ void* µÄ´óÐ¡£¨ÀýÈçÎª 4 »òÕß 8£©£¬¿ÉÒÔÊ¹ÓÃÆäÀ´ÅÐ¶Ïµ±Ç°¹¹½¨Îª 32 Î»»¹ÊÇ 64 Î»
-	
-	CMAKE_CURRENT_LIST_DIR ±íÊ¾ÕýÔÚ´¦ÀíµÄCMakeLists.txt ÎÄ¼þµÄËùÔÚµÄÄ¿Â¼µÄ¾ø¶ÔÂ·¾¶£¨2.8.3 ÒÔ¼°ÒÔºó°æ±¾²ÅÖ§³Ö£©
-	
-	CMAKE_ARCHIVE_OUTPUT_DIRECTORY ÓÃÓÚÉèÖÃ ARCHIVE Ä¿±êµÄÊä³öÂ·¾¶
-	
-	CMAKE_LIBRARY_OUTPUT_DIRECTORY ÓÃÓÚÉèÖÃ LIBRARY Ä¿±êµÄÊä³öÂ·¾¶
-	
-	CMAKE_RUNTIME_OUTPUT_DIRECTORY ÓÃÓÚÉèÖÃ RUNTIME Ä¿±êµÄÊä³öÂ·¾¶
-	
-µ÷ÓÃ»·¾³±äÁ¿
-	Ê¹ÓÃ$ENV{NAME}Ö¸Áîµ÷ÓÃÏµÍ³»·¾³±äÁ¿,ÉèÖÃ»·¾³±äÁ¿µÄ·½Ê½ÊÇSET(ENV{±äÁ¿Ãû} Öµ)
-	
-¹¹½¨ÀàÐÍ
-	CMake ÎªÎÒÃÇÌá¹©ÁËËÄÖÖ¹¹½¨ÀàÐÍ£º
-		Debug
-		Release
-		MinSizeRel
-		RelWithDebInfo
-
-Èç¹ûÊ¹ÓÃ CMake Îª Windows MSVC Éú³É projects/workspaces ÄÇÃ´ÎÒÃÇ½«µÃµ½ÉÏÊöµÄ 4 ÖÖ½â¾ö·½°¸ÅäÖÃ¡£
-Èç¹ûÊ¹ÓÃ CMake Éú³É Makefile Ê±£¬ÎÒÃÇÐèÒª×öÒ»Ð©²»Í¬µÄ¹¤×÷¡£CMake ÖÐ´æÔÚÒ»¸ö±äÁ¿ CMAKE_BUILD_TYPE ÓÃÓÚÖ¸¶¨¹¹½¨ÀàÐÍ£¬´Ë±äÁ¿Ö»ÓÃÓÚ»ùÓÚ make µÄÉú³ÉÆ÷¡£ÎÒÃÇ¿ÉÒÔÕâÑùÖ¸¶¨¹¹½¨ÀàÐÍ£º
-
-$ CMake -DCMAKE_BUILD_TYPE=Debug .			//¿ÉÒÔÊ¹ÓÃgdbµ÷ÊÔ
-ÕâÀïµÄ CMAKE_BUILD_TYPE µÄÖµÎªÉÏÊöµÄ 4 ÖÖ¹¹½¨ÀàÐÍÖÐµÄÒ»ÖÖ¡£
-
-±àÒëºÍÁ´½Ó±êÖ¾
-C ±àÒë±êÖ¾Ïà¹Ø±äÁ¿£º
-	CMAKE_C_FLAGS
-	CMAKE_C_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO]
-C++ ±àÒë±êÖ¾Ïà¹Ø±äÁ¿£º
-	CMAKE_CXX_FLAGS
-	CMAKE_CXX_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO]
-	CMAKE_C_FLAGS »òCMAKE_CXX_FLAGS ¿ÉÒÔÖ¸¶¨±àÒë±êÖ¾
-	CMAKE_C_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO]»ò CMAKE_CXX_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO] ÔòÖ¸¶¨ÌØ¶¨¹¹½¨ÀàÐÍµÄ±àÒë±êÖ¾£¬ÕâÐ©±àÒë±êÖ¾½«±»¼ÓÈëµ½ CMAKE_C_FLAGS »ò CMAKE_CXX_FLAGS ÖÐÈ¥£¬ÀýÈç£¬Èç¹û¹¹½¨ÀàÐÍÎª DEBUG£¬ÄÇÃ´ CMAKE_CXX_FLAGS_DEBUG ½«±»¼ÓÈëµ½ CMAKE_CXX_FLAGSÖÐÈ¥
-Á´½Ó±êÖ¾Ïà¹Ø±äÁ¿£º
-	CMAKE_EXE_LINKER_FLAGS
-	CMAKE_EXE_LINKER_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO]
-	CMAKE_MODULE_LINKER_FLAGS
-	CMAKE_MODULE_LINKER_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO]
-	CMAKE_SHARED_LINKER_FLAGS
-	CMAKE_SHARED_LINKER_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO]
-
-ËüÃÇÀàËÆÓÚ±àÒë±êÖ¾Ïà¹Ø±äÁ¿
-Éú³ÉDebugºÍRelease°æ±¾
-ÔÚ Visual Studio ÖÐÎÒÃÇ¿ÉÒÔÉú³É debug °æºÍ release °æµÄ³ÌÐò,Ê¹ÓÃ CMake ÎÒÃÇÒ²¿ÉÒÔ´ïµ½ÉÏÊöÐ§¹û¡£debug °æµÄÏîÄ¿Éú³ÉµÄ¿ÉÖ´ÐÐÎÄ¼þÐèÒªÓÐµ÷ÊÔÐÅÏ¢²¢ÇÒ²»ÐèÒª½øÐÐÓÅ»¯,¶ø release °æµÄ²»ÐèÒªµ÷ÊÔÐÅÏ¢µ«ÐèÒªÓÅ»¯¡£ÕâÐ©ÌØÐÔÔÚ gcc/g++ ÖÐÊÇÍ¨¹ý±àÒëÊ±µÄ²ÎÊýÀ´¾ö¶¨µÄ,Èç¹û½«ÓÅ»¯³Ì¶Èµ÷µ½×î¸ßÐèÒªÉèÖÃ²ÎÊý-O3,×îµÍÊÇ -O0 ¼´²»×öÓÅ»¯;Ìí¼Óµ÷ÊÔÐÅÏ¢µÄ²ÎÊýÊÇ -g -ggdb ,Èç¹û²»Ìí¼ÓÕâ¸ö²ÎÊý,µ÷ÊÔÐÅÏ¢¾Í²»»á±»°üº¬ÔÚÉú³ÉµÄ¶þ½øÖÆÎÄ¼þÖÐ¡£
-CMake ÖÐÓÐÒ»¸ö±äÁ¿CMAKE_BUILD_TYPE ,¿ÉÒÔµÄÈ¡ÖµÊÇ Debug¡¢Release¡¢RelWithDebInfo ºÍ MinSizeRel¡£µ±Õâ¸ö±äÁ¿ÖµÎª Debug µÄÊ±ºò,CMake »áÊ¹ÓÃ±äÁ¿ CMAKE_CXX_FLAGS_DEBUG ºÍ CMAKE_C_FLAGS_DEBUGÖÐµÄ×Ö·û´®×÷Îª±àÒëÑ¡ÏîÉú³ÉMakefile ,µ±Õâ¸ö±äÁ¿ÖµÎª Release µÄÊ±ºò,¹¤³Ì»áÊ¹ÓÃ±äÁ¿ CMAKE_CXX_FLAGS_RELEASE ºÍCMAKE_C_FLAGS_RELEASE Ñ¡ÏîÉú³É Makefile¡£
-
+	â€œ--warn-undefined-variablesâ€
+	åªè¦makeå‘çŽ°æœ‰æœªå®šä¹‰çš„å˜é‡ï¼Œé‚£ä¹ˆå°±è¾“å‡ºè­¦å‘Šä¿¡æ¯

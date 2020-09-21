@@ -94,6 +94,7 @@ docker run	镜像名  进程(如:/bin/bash 启动docker容器执行/bin/bash这�
 	--h hostname1：指定容器主机名为hostname1;
 	--dns ip:		指定容器的DNS,可以在启动docker服务时指定(即默认值),也可在容器启动时运行,会覆盖默认值
 	--rm:	容器退出后随之将其删除
+	--privileged:	使用该参数，container内的root拥有真正的root权限。否则，container内的root只是外部的一个普通用户权限
 	-P:	表示让容器随机对应一个宿主机的端口,范围49000~49900
 	-p:	hostPort:containerPort(映射所有地址的端口) | ip:hostPort:containerPort(映射到指定地址的指定端口) | ip::containerPort(映射到指定地址的任意端口)
 	-p: ip:hostPort:containerPort
@@ -139,6 +140,8 @@ top
 docker attach 容器id	容器启动时必须有-i -t,才可以attach进去,且ctrl-d或exit退出时,会导致容器退出
 events
 docker logs 容器id		显示容器后台输出的信息
+	-f 			打印实时日志
+	--tail n 	打印后几行日志
 wait
 docker export 容器id > 名字.tar   导出某个容器快照到本地文件,后续可以使用cat 名字.tar | docker import - test/ubuntu:V1.0 导入为镜像
 			和docker load的区别是容器快照文件将丢弃所有的历史记录和元数据信息(即仅保存容器当时的快照状态)
@@ -198,11 +201,19 @@ Dockerfile		使用docker commit来生成镜像的话会有大量无关内容被�
 	RUN		用来执行命令行命令,有2种格式
 		shell格式:RUN<命令>,如 RUN echo '<h1>Hello, Docker!<!h1>' > /usr/share/nginx/html/index.xml
 		exec格式: RUN["可执行文件","参数1","参数2"],更低函数调用格式
-	COPY	<源路径> ... <目标路径>  复制上下文路径中的文件,如 COPY ./package.json /app/ 并不是复制运行docker build目录下的package.json,也不是复制Dockerfile目录下的package.json
+	COPY	<源路径> ... <目标路径>  复制上下文路径中的文件,如 COPY ./package.json /app/ ,src必须是build上下文中的路径
 			["<源路径1>",..."<目标路径>"]	源路径可以是多个,可以是通配符
+			当复制一个目录时，并不会复制目录本身，而是会递归复制其下子目录至目标目标下
+			如果指定了多个src,或在src中使用了通配符，则dest必须是一个目录，且必须以/结尾
+			如果dest事先不存在，它将会被自动创建，这包括其父目录
 			--from  	可以从其他镜像复制文件
 	LABEL	<key>=<value> <key>=<value> <key>=<value> ...		为镜像指定标签
 	ADD		更高级的复制文件,如果源路径是一个url,则会去下载,如果源文件是一个tar压缩文件,压缩格式为gzip,bzip2,以及xz的情况下则会自动解压缩到目标路径去,因此除了需要自动解压缩的地方,不推荐使用
+    		如果<src>为URL且<dest>不以/结尾，则<src>指定的文件将被下载并直接被创建为<dest>;如果<dest>以/结尾，则文件名URL指定的文件将被直接下载并保存为<dest>/<filename>
+    		如果<src>是一个本地文件系统上的压缩格式的tar文件，它将被展开为一个目录，其行为类似于"tar -x"命令;然而，通过URL获取到的tar文件将不会自动展开。
+    		如果<src>有多个，或其间接或直接使用了通配符，则<dest>必须是一个以/结尾的目录路径;如果<dest>不以/结尾，则其被视作一个普通文件，<src>内容将被直接写入到<dest>
+    		为了让镜像尽量小，最好不要使用 ADD 指令从远程 URL 获取包，而是使用 curl 和 wget。这样你可以在文件提取完之后删掉不再需要的文件来避免在镜像中额外添加一层。
+
 	CMD		shell格式: 		CMD <命令>
 			exec格式:  		CMD ["可执行文件","参数1","参数2"...]
 			参数列表格式:	CMD ["参数1","参数2"...],在指定了ENTRYPOINT指令后,用CMD指定具体参数

@@ -1,0 +1,186 @@
+一般默认名称为CMakeLists.txt
+用法:cmake path	  会寻找path路径下的CMakeLists.txt
+cmake命令不区分大小写(参数区分),命令由命令,参数列表组成,参数之间使用空格进行分隔
+
+自定义变量
+隐式定义:	例PROJECT指令,它会隐式的定义<projectname>_BINARY_DIR和<projectname>_SOURCE_DIR两个变量
+显示定义:	set指令,SET(HELLO_SRC main.c),就可以通过${HELLO_SRC}来引用这个自定义变量了
+
+常用指令:
+	set(var value1 value2)			定义变量var为value1 value2
+	message(var)					输出var的值
+	if(expression)					分支控制,如果expression为on yes true y 非0的数表示真(不区分大小写),为0、OFF、NO、FALSE、N、IGNORE、空字符串、以 -NOTFOUND 结尾的字符串则表示假,若不符合这2种情况表示变量,以变量值若为上述否的规则则为假,其他为真
+		...
+	elseif(expression2)
+		...
+	else()
+		...
+	endif							
+	
+cmake_minimum_required(VERSION 2.8)  	指定运行此cmake的最低版本,若低于这个版本则会报错
+set(YES 0),如果用if($(YES))就是假的了,此功能在cmake2.8才引用
+	
+操作符优先级:  一元操作符>二元操作符>NOT>AND.OR
+COMMAND  command-name				存在command-name命令,宏或函数且能够被调用,则为真,否则为假
+EXISTS 	 name						存在name的文件或者目录(应该使用绝对路径)则为真,否则为假
+file1 IS_NEWER_THAN file2			file1比file2新或者file1,file2中有一个文件不存在(应该使用绝对路径)则为真,否则为假
+IS_DIRECTORY directory-name			directory-name表示的是一个目录(应该使用绝对路径)则为真,否则为假	
+variable|string MATHCES regex		变量值或字符串匹配regex正则表达式则为真,否则为假,MATHCES可以换成LESS,GREATER,EQUAL,为真就是字符串的数字满足小于,大于,等于,STRLESS,STRGREATER,STREQUAL则是按字典序比较
+DEFINED  variable					变量被定义了则为真,否则为假
+
+set(VAR a b c)
+foreach(f ${VAR}					循环
+	message(${f})
+endforeach()
+
+set(VAR 5)
+while(${VAR} GREATER 0)
+	message(${VAR})
+	math(EXPR VAR "${VAR}-1")
+endwhile()
+
+宏定义				宏使用的是全局作用域
+macro(hello MESSAGE)			调用宏hello,hello("hello world")
+	message(${MESSAGE})
+endmacro()
+
+定义函数
+function(hello MESSAGE)			调用函数hello,hello("hello world")
+	message(${MESSAGE})
+endfunction()
+函数和宏可以通过命令return()返回,但是函数和宏的返回值必须通过参数传递出去
+
+变量引用方式
+	使用${}进行变量的引用,在if等语句中,是直接使用变量名而不通过${}取值
+	
+常用命令
+	OPTION(<option_variable> "help string describing option" [initial value])	提供选项让用户选择是ON还是OFF
+	PROJECT(<projectname> [languageName1 languageName2...])						用于指定项目的名称
+	CMAKE_MINIMUM_REQUIRED(VERSION major[.minor[.patch][.tweak]]][FATAL_ERROR])	用于指定需要的CMake的最低版本
+	AUX_SOURCE_DIRECTORY(<dir> <variable>)										用于将dir目录下的所有源文件的名字保存在变量variable中
+	ADD_EXECUTABLE(<name> [WIN32][MACOSX_BUNDLE][EXCLUDE_FROM_ALL] source1 source2... sourceN)  用于指定从一组源文件source1 source2...sourceN编译出一个可执行文件且命名为name
+	ADD_LIBRARY(<name> [STATIC|SHARED|MODULE|EXCLUDE_FROM_ALL] source1 source2...sourceN)	用于指定从一组源文件source1 source2...sourceN编译出一个库文件且命名为name
+	ADD_DEPENDENCIES(target-name depend-target1 depend-target2...)				用于指定某个目标(可执行文件或者库文件)依赖于其他的目标,这里的目标必须是add_executable,add_library,add_custom_target命令创建的目标
+	ADD_SUBDIRECTORY(source_dir [binary_dir][EXCLUDE_FROM_ALL])					用于添加一个需要进行构建的子目录
+	TARGET_LINK_LIBRARIES(<target> [item1 [item2 [...]]][[debug|optimized|general]]...)		用于指定target需要链接item1 item2..这里target必须已经被创建,链接的item可以是已经存在的target(依赖关系会自动添加)
+	LINK_DIRECTORIES(/home/myproject/libs)
+	SET(<variable> <value> [[CACHE <type><docstring> [FORCE]]|PARENT_SCOPE])	用于设定变量variable的值为value,如果指定了CACHE变量将被放入Cachek 
+	UNSET(<variable> [CACHE])													用于移除变量variable,如果指定了CACHE变量将被从Cache中移除
+	MESSAGE([STATUS|WARNING|AUTHOR_WARNING|FATAL_ERROR|SEND_ERROR] "message todisplay"...)	用于输出信息
+	INCLUDE(<file|module> [OPTIONAL] [RESULT_VARIABLE <VAR>] [NO_POLICY_SCOPE])	include从给定的文件中读取CMake的列表文件,在清单文件中的命令会被立即处理,就像它们是写在这条include命令展开的地方一样
+																				如果指定了OPTIONAL选项，那么如果被包含文件不存在的话，不会报错。如果指定了RESULT_VARIABLE选项，那么var或者会被设置为被包含文件的完整路径，或者是NOTFOUND，表示没有找到该文件
+																				如果指定的是一个模块（module）而不是一个文件，查找的对象会变成路径CMAKE_MODULE_PATH下的文件<modulename>.camke。
+																				OPTIONAL 参数的作用是文件不存在也不会产生错误。
+																				可以指定载入一个文件,如果定义的是一个模块,那么将在 CMAKE_MODULE_PATH 中搜索这个模块并载入。
+载入的内容将在处理到 INCLUDE 语句是直接执行。
+	include_directories([AFTER|BEFORE|] [SYSTEM] dir1 dir2...)					用于设定目录,这些设定的目录将被编译器用来查找include文件
+	find_path(<VAR> name1 [path1 path2...])										用于查找包含文件name1的路径,如果找到则将路径保存在VAR中(此路径为绝对路径),如果没有找到则结果为<VAR>-NOTFOUND,默认情况下,VAR会被保存在Cache中,这时候需要清除VAR才可以进行下一次查询(使用unset命令)
+	find_library(<VAR> name1 [path1 path2...])									用于查找库文件name1的路径,如果找到则将路径保存在VAR中(此路径为绝对路径),如果没有找到则结果为<VAR>-NOTFOUND
+	add_definitions(-DFOO -DBAR...)												用于添加编译器命令行标志选项,通常用来添加预处理器定义
+	execute_process(COMMAND <cmd1>[args1...]]									用于执行一个或多个外部命令,每一个命令的标准输出通过管道转为下一个命令的标准输入
+					[COMMAND <cmd2>[args2...] [...]]
+                    [WORKING_DIRECTORY<directory>]								用于指定外部命令的工作目录
+                    [TIMEOUT <seconds>]
+                    [RESULT_VARIABLE<variable>]									用于指定一个变量保存外部命令执行的结果,这个结果可能是最后一个执行的外部命令的退出码或者是一个描述错误条件的字符串
+                    [OUTPUT_VARIABLE<variable>]									和下面的ERROR_VARIABLE用于指定一个变量保存标准输出或者标准错误
+                    [ERROR_VARIABLE<variable>]
+                    [INPUT_FILE <file>]
+                    [OUTPUT_FILE <file>]
+                    [ERROR_FILE <file>]
+                    [OUTPUT_QUIET]												和下面的ERROR_QUIET用于忽略标准输出和标准错误
+                    [ERROR_QUIET]
+					[OUTPUT_STRIP_TRAILING_WHITESPACE]
+					[ERROR_STRIP_TRAILING_WHITESPACE])
+	file(GLOB variable [RELATIVE path][globbing expressions]...)				GLOB用于产生一个文件(目录)路径列表保存在variable中,路径列表中的每个文件的文件名都能匹配globbing expression(非正则表达式,但是类似),如果指定了RELATIVE路径,那么返回的文件路径列表中的路径为相对于RELATIVE的路径
+	
+	
+常用变量
+	CMAKE_BINARY_DIR 
+	PROJECT_BINARY_DIR 
+	< projectname >_BINARY_DIR 
+		这三个变量指代的内容是一致的，如果是in-source编译，指得就是工程顶层目录；如果是out-of-source编译，指的是工程编译发生的目录
+	
+	CMAKE_SOURCE_DIR 
+	PROJECT_SOURCE_DIR 
+	< projectname >_SOURCE_DIR 
+		这三个变量指代的内容是一致的，不论采用何种编译方式，都是工程顶层目录。也就是在in-source编译时,他跟CMAKE_BINARY_DIR等变量一致
+	
+	CMAKE_CURRENT_SOURCE_DIR 
+		当前处理的CMakeLists.txt所在的路径
+	
+	CMAKE_CURRRENT_BINARY_DIR 
+		如果是in-source编译，它跟CMAKE_CURRENT_SOURCE_DIR一致；如果是out-of-source编译，指的是target编译目录。使用ADD_SUBDIRECTORY(src bin)可以更改这个变量的值。使用SET(EXECUTABLE_OUTPUT_PATH <新路径>)并不会对这个变量造成影响,它仅仅修改了最终目标文件存放的路径。
+	
+	CMAKE_CURRENT_LIST_FILE 
+		输出调用这个变量的CMakeLists.txt的完整路径
+	
+	CMAKE_CURRENT_LIST_LINE 
+		输出这个变量所在的行
+	
+	CMAKE_MODULE_PATH 
+		这个变量用来定义自己的cmake模块所在的路径。如果工程比较复杂，有可能会自己编写一些cmake模块，这些cmake模块是随工程发布的，为了让cmake在处理CMakeLists.txt时找到这些模块，你需要通过SET指令将cmake模块路径设置一下。比如SET(CMAKE_MODULE_PATH,${PROJECT_SOURCE_DIR}/cmake) 
+		这时候就可以通过INCLUDE指令来调用自己的模块了。
+	
+	EXECUTABLE_OUTPUT_PATH 
+		可执行文件的存放目录
+	
+	LIBRARY_OUTPUT_PATH 
+		库的存放目录
+	
+	PROJECT_NAME 
+		返回通过PROJECT指令定义的项目名称
+	
+	UNIX 如果为真，表示为 UNIX-like 的系统，包括 AppleOS X 和 CygWin
+
+	WIN32 如果为真，表示为 Windows 系统，包括 CygWin
+	
+	APPLE 如果为真，表示为 Apple 系统
+	
+	CMAKE_SIZEOF_VOID_P 表示 void* 的大小（例如为 4 或者 8），可以使用其来判断当前构建为 32 位还是 64 位
+	
+	CMAKE_CURRENT_LIST_DIR 表示正在处理的CMakeLists.txt 文件的所在的目录的绝对路径（2.8.3 以及以后版本才支持）
+	
+	CMAKE_ARCHIVE_OUTPUT_DIRECTORY 用于设置 ARCHIVE 目标的输出路径
+	
+	CMAKE_LIBRARY_OUTPUT_DIRECTORY 用于设置 LIBRARY 目标的输出路径
+	
+	CMAKE_RUNTIME_OUTPUT_DIRECTORY 用于设置 RUNTIME 目标的输出路径
+	
+调用环境变量
+	使用$ENV{NAME}指令调用系统环境变量,设置环境变量的方式是SET(ENV{变量名} 值)
+	
+构建类型
+	CMake 为我们提供了四种构建类型：
+		Debug
+		Release
+		MinSizeRel
+		RelWithDebInfo
+
+如果使用 CMake 为 Windows MSVC 生成 projects/workspaces 那么我们将得到上述的 4 种解决方案配置。
+如果使用 CMake 生成 Makefile 时，我们需要做一些不同的工作。CMake 中存在一个变量 CMAKE_BUILD_TYPE 用于指定构建类型，此变量只用于基于 make 的生成器。我们可以这样指定构建类型：
+
+$ CMake -DCMAKE_BUILD_TYPE=Debug .			//可以使用gdb调试
+这里的 CMAKE_BUILD_TYPE 的值为上述的 4 种构建类型中的一种。
+
+编译和链接标志
+C 编译标志相关变量：
+	CMAKE_C_FLAGS
+	CMAKE_C_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO]
+C++ 编译标志相关变量：
+	CMAKE_CXX_FLAGS
+	CMAKE_CXX_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO]
+	CMAKE_C_FLAGS 或CMAKE_CXX_FLAGS 可以指定编译标志
+	CMAKE_C_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO]或 CMAKE_CXX_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO] 则指定特定构建类型的编译标志，这些编译标志将被加入到 CMAKE_C_FLAGS 或 CMAKE_CXX_FLAGS 中去，例如，如果构建类型为 DEBUG，那么 CMAKE_CXX_FLAGS_DEBUG 将被加入到 CMAKE_CXX_FLAGS中去
+链接标志相关变量：
+	CMAKE_EXE_LINKER_FLAGS
+	CMAKE_EXE_LINKER_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO]
+	CMAKE_MODULE_LINKER_FLAGS
+	CMAKE_MODULE_LINKER_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO]
+	CMAKE_SHARED_LINKER_FLAGS
+	CMAKE_SHARED_LINKER_FLAGS_[DEBUG|RELEASE|MINSIZEREL|RELWITHDEBINFO]
+
+它们类似于编译标志相关变量
+生成Debug和Release版本
+在 Visual Studio 中我们可以生成 debug 版和 release 版的程序,使用 CMake 我们也可以达到上述效果。debug 版的项目生成的可执行文件需要有调试信息并且不需要进行优化,而 release 版的不需要调试信息但需要优化。这些特性在 gcc/g++ 中是通过编译时的参数来决定的,如果将优化程度调到最高需要设置参数-O3,最低是 -O0 即不做优化;添加调试信息的参数是 -g -ggdb ,如果不添加这个参数,调试信息就不会被包含在生成的二进制文件中。
+CMake 中有一个变量CMAKE_BUILD_TYPE ,可以的取值是 Debug、Release、RelWithDebInfo 和 MinSizeRel。当这个变量值为 Debug 的时候,CMake 会使用变量 CMAKE_CXX_FLAGS_DEBUG 和 CMAKE_C_FLAGS_DEBUG中的字符串作为编译选项生成Makefile ,当这个变量值为 Release 的时候,工程会使用变量 CMAKE_CXX_FLAGS_RELEASE 和CMAKE_C_FLAGS_RELEASE 选项生成 Makefile。
+

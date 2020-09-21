@@ -1,0 +1,7 @@
+bench_bitcoin：     根据https://github.com/bitcoin/bitcoin/issues/829 解释，作用是编译系统更新，也就是检查系统使用的一些加密算法是否有新的更新。
+bitcoin-cli：       是Bitcoind的一个功能完备的RPC客户端，包括查询区块，交易信息等等，具体将在相应章节介绍。
+bitcoind：          是比特币运行的核心程序俗称bitcoin core，也是我们分析的重点。
+bitcoin-qt：        比特币钱包。
+bitcoin-tx：        比特币交易处理模块，支持交易的查询和创建。
+test_bitcoin：      运行各个模块的测试代码。
+test_bitcoin-qt：   运行钱包的模块测试代码。

@@ -32,6 +32,8 @@ git rm              移除某个文件,并会删除,还需要提交,如果删除
     --cached        从git仓库中删除,但工作目录保留
     例: git rm \*.log    会递归匹配,若不加\,也可以执行,但不会递归,因为git本就支持*,不用shell去扩展
 git reset           将文件状态从已暂存变为已修改,未暂存
+    --hard 目标版本号   将版本回退
+git revert          反做某一个版本,但保留这个版本之后的更新
 git checkout -- 文件名 所有对文件的修改都重置   
 git mv              改名,相当于执行3条命令,mv->git rm->git add
 git log             查看提交历史
@@ -69,9 +71,10 @@ git log             查看提交历史
 
 git remote      查看当前配置的有哪些远程仓库,显示简短名字,在克隆完某个仓库后,至少可以看到一个origin远程仓库,Git默认使用这个名字来标识所克隆的原始仓库
     -v(verbose) 显示远程仓库的地址
+    set-url     切换远程仓库地址
 git remote add  [shortname] [url]       指定一个简单的名字,以便将来引用
 git fetch   [remote-name]               从远程仓库抓取数据到本地,如果是克隆了一个仓库，此命令会自动将远程仓库归于 origin 名下。所以，git fetch origin 会抓取从你上次克隆以来别人上传到此远程仓库中的所有更新（或是上次 fetch 以来别人提交的更新）
-git push [remote-name] [branch-name]    将数据推送到远程仓库
+git push [remote-host] [local_branch_name]:[remote_branch_name]    将数据推送到远程仓库
 git pull [options] [<repository> [<refspec>…]]  取回远程主机某个分支的更新，再与本地的指定分支合并
             git pull使用给定的参数运行git fetch，并调用git merge将检索到的分支头合并到当前分支中。 使用--rebase，它运行git rebase而不是git merge
 git remote show [remote-name]           查看某个远程仓库的详细信息
@@ -95,9 +98,10 @@ git push origin [tagname]     推送标签
 git branch 分支名             创建一个新的分支,保存着一个名为HEAD的特别指针,它是一个指向正在工作的本地分支的指针,并没有转到新建的分支,不加任何参数可以显示所有的分支
 	-d	   分支名			  删除某个分支
 	-D	   分支名			  强制删除某个分支,因为用-d删除分支时,如果分支没有合并到主分支,表示有尚未合并进来的工作成果,会提示错误
-	--merged				  查看哪些分支被合并到了当前分支,也就是说哪些分支是当前分支的直接上游
-	--no-merged				  查看尚未合并的分支
-	-a						  查看本地及远程分支
+	--merged				 查看哪些分支被合并到了当前分支,也就是说哪些分支是当前分支的直接上游
+	--no-merged				 查看尚未合并的分支
+	-a						 查看本地及远程分支
+    -v                       查看详细信息  
 	
 git checkout 分支名           转换分支,如果加上-b参数,表示新建分支并切换,如果在-b参数后加上远程仓库名/分支名,表示用后面的分支来创建新的分支
 

@@ -1,0 +1,55 @@
+docker run -t -i --rm --name seafile -p 10001:10001 -p 12001:12001 -p 8000:8000 -p 8080:8080 -p 8082:8082 -v /aseit-data/seafile:/opt/seafile jenserat/seafile  /bin/bash
+
+docker run -it --net host --restart on-failure -v /aseit-data/ai/dynamicdata:/wcdl/psd/dynamicdata \
+            -v /etc/localtime:/etc/localtime:ro \
+            -v /etc/timezone:/etc/timezone:ro \
+            --device /dev/nvidia0:/dev/nvidia0 \
+            --device /dev/nvidia1:/dev/nvidia1 \
+            --device /dev/nvidiactl:/dev/nvidiactl \
+            --device /dev/nvidia-modeset:/dev/nvidia-modeset \
+            -v /usr/bin/nvidia-smi:/usr/bin/nvidia-smi \
+            --device /dev/nvidia-uvm:/dev/nvidia-uvm \
+            -v /usr/lib/nvidia-410:/usr/lib/nvidia-410 \
+            -v /usr/local/cuda-10.0/:/usr/local/cuda-10.0 \
+            -v /usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu \
+            harbor.aseit.cn/deploy/elecwx/visual-ai/jssz_jinjihu:jssz_jinjihu_16.04_cuda_10_cudnn_7.4.1_psd_be_v2.0.20191202 bash
+
+docker run -it --device /dev/nvidia0:/dev/nvidia0 \
+                --device /dev/nvidiactl:/dev/nvidiactl \
+                --device /dev/nvidia-uvm:/dev/nvidia-uvm \
+                --device /dev/nvidia-modeset:/dev/nvidia-modeset \
+                -v /usr/bin/nvidia-smi:/usr/bin/nvidia-smi \
+                -v /usr/bin/nvidia-cuda-mps-server:/usr/bin/nvidia-cuda-mps-server \
+                -v /usr/bin/nvidia-bug-report.sh:/usr/bin/nvidia-bug-report.sh \
+                -v /usr/bin/nvidia-cuda-mps-control:/usr/bin/nvidia-cuda-mps-control \
+                -v /usr/bin/nvidia-debugdump:/usr/bin/nvidia-debugdump \
+                -v /usr/bin/nvidia-detector:/usr/bin/nvidia-detector \
+                -v /usr/bin/nvidia-persistenced:/usr/bin/nvidia-persistenced \
+                -v /usr/bin/nvidia-settings:/usr/bin/nvidia-settings \
+                -v /usr/bin/nvidia-xconfig:/usr/bin/nvidia-xconfig \
+                -v /usr/local/cuda-10.0/:/usr/local/cuda-10.0 \
+                -v /usr/lib/nvidia-410:/usr/lib/nvidia-410 \
+                -v /usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu \
+                ubuntu:16.04 bash
+                nvidia/cuda:10.1-cudnn7-runtime-ubuntu16.04 bash
+
+docker run -p 8081:80 --restart always -d -v /aseit-data/html:/usr/share/nginx/html -v /home/dell/nginx.conf:/etc/nginx/nginx.conf nginx 
+
+docker run -d -p 1935:1935  tiangolo/nginx-rtmp
+
+rtmp://192.168.5.99:1935/live
+
+    worker_processes auto;
+    rtmp_auto_push on;
+    events {}
+    rtmp {
+        server {
+            listen 1935;
+            listen [::]:1935 ipv6only=on;
+
+            application live {
+                live on;
+                record off;
+            }
+        }
+    }

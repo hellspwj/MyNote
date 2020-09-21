@@ -1,0 +1,28 @@
+gRPC支持定义四种类型的方法：
+一元RPC方法：客户端发起一个请求，从服务端得到一个响应，和普通函数调用相似
+    rpc SayHello(HelloRequest) returns (HelloResponse){
+
+    }
+服务端返回流RPC方法：客户端发起一个请求，从服务端得到一个消息流，客户端可以一直从流中读取数据直到读取完服务端返回的所有数据
+    rpc LotsOfReplies(HelloRequest) return (stream HelloResponse){
+
+    }
+客户端发送流RPC方法：客户端向请求中写入流并发送给服务端，客户端发送完全部数据，客户端会使用相同的流获取服务端的返回
+    rpc LotsOfGreetins(stream HelloRequest) return (HelloResponse){
+
+    }
+双向流RPC方法：客户端和服务端都可以使用读-写流发送一系列消息，读，写流的操作互相独立，客户端和服务端都可以按照各自的顺序读写数据。
+                服务端响应客户端的三种方式：
+                    1.读完所有请求，然后返回响应
+                    2.边读边发送响应
+                    3.1和2的任意组合，读写流中数据的顺序保持不变
+    rpc BidiHello(stream HelloRequest) return (stream HelloResponse){
+
+    }
+API
+    使用.proto文件定义一个服务，gRPC提供protocol buffer编译插件来生成客户端和服务端代码，服务端实现API,客户端调用API
+    服务端：服务端需要实现.proto中定义的方法，并启动一个gRPC服务器用于处理客户端请求。gRPC反序列化到达的请求，执行服务方法，序列化服务端响应并发送给客户端
+    客户端：客户端本地有一个实现了服务端一样方法的对象，gRPC中称为桩，其他语言中更习惯称为客户端，客户端调用本地桩的方法，将参数按照合适的协议封装并将请求发送给服务端，并接收服务端的响应
+同步vs异步
+    在服务器返回响应前，同步RPC调用将阻塞客户端当前线程，同步RPC调用与gRPC的抽象过程调用模型最接近。
+    从另一方面来看，网络本质上是异步的，在许多情况下，能够在不阻塞当前线程的情况下进行RPC调用非常有用。大多数编程语言对应的gRPC接口都同时支持异步和同步RPC调用。
